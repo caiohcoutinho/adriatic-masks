@@ -372,7 +372,7 @@ insert into negocio(id, nome, bairro, tipo_negocio) values(38, 'Gems of Venice',
 insert into negocio(id, nome, bairro, tipo_negocio) values(39, 'Ohmyblue', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Joalheria'));
 insert into negocio(id, nome, bairro, tipo_negocio) values(40, 'Cartier', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Joalheria'));
 insert into negocio(id, nome, bairro, tipo_negocio) values(41, 'Lan House', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Lan House'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(42, 'Sacca San Biagio', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Lixão e incineradora - Sacca San Biagio'));
+insert into negocio(id, nome, bairro, tipo_negocio) values(42, 'Sacca San Biagio', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Lixão e incineradora'));
 insert into negocio(id, nome, bairro, tipo_negocio) values(43, 'Givenchy', (select id from bairro where nome = 'San Polo'), (select id from tipo_negocio where nome = 'Loja de roupa'));
 insert into negocio(id, nome, bairro, tipo_negocio) values(44, 'Dolce & Gabbana', (select id from bairro where nome = 'San Polo'), (select id from tipo_negocio where nome = 'Loja de roupa'));
 insert into negocio(id, nome, bairro, tipo_negocio) values(45, 'Prada', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Loja de roupa'));
@@ -1094,4 +1094,18 @@ update npc set instinto = (select id from instinto where nome = 'Procrastination
 update npc set instinto = (select id from instinto where nome = 'Revenge'), obrigacao = (select id from obrigacao where nome = 'Direct Inferior'), natureza_obrigacao = (select id from natureza_obrigacao where nome = 'Familial Pressure') where id = 199;
 update npc set instinto = (select id from instinto where nome = 'Honesty'), obrigacao = (select id from obrigacao where nome = 'Extended Family'), natureza_obrigacao = (select id from natureza_obrigacao where nome = 'Monetary') where id = 200;
 
+create sequence preferencias_npcs_id_seq;
 
+create table preferencias_npcs(
+	id int NOT NULL DEFAULT nextval('preferencias_npcs_id_seq'), 
+	npc int references npc(id),
+	negocio int references negocio(id),
+	seed numeric(100,10),
+	PRIMARY KEY (id)
+);
+
+insert into preferencias_npcs(npc, negocio, seed)
+(
+	select npc.id npc, negocio.id negocio, random() seed
+	from npc, negocio
+);

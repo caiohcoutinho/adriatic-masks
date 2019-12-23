@@ -7,4 +7,4 @@ export PGHOST=localhost;
 export PGPASSWORD=vam5;
 export PGDATABASE=vam5;
 export PGPORT=5432;
-node server.js & npm start;
+node server.js;
