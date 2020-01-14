@@ -139,6 +139,9 @@ insert into profissao(id, nome) values(41, 'Tatuador');
 insert into profissao(id, nome) values(42, 'Transporte de Drogas');
 insert into profissao(id, nome) values(43, 'Turista');
 insert into profissao(id, nome) values(44, 'Vendedor');
+insert into profissao(id, nome) values(45, 'Político');	
+insert into profissao(id, nome) values(46, 'Vendedor de Drogas');	
+
 
 create sequence moradia_id_seq;
 
@@ -171,7 +174,7 @@ insert into moradia(id, nome, bairro) values(19, 'Casa 4', (select id from bairr
 insert into moradia(id, nome, bairro) values(20, 'Casa 4', (select id from bairro where nome = 'Santa Croce'));
 insert into moradia(id, nome, bairro) values(21, 'Casa 5', (select id from bairro where nome = 'Castello'));
 insert into moradia(id, nome, bairro) values(22, 'Casa 5', (select id from bairro where nome = 'Dorsoduro'));
-insert into moradia(id, nome, bairro) values(23, 'Casa 5', (select id from bairro where nome = 'San Polo'));
+insert into moradia(id, nome, bairro) values(2,3 'Casa 5', (select id from bairro where nome = 'San Polo'));
 insert into moradia(id, nome, bairro) values(24, 'Casa 5', (select id from bairro where nome = 'Santa Croce'));
 insert into moradia(id, nome, bairro) values(25, 'Casa 6', (select id from bairro where nome = 'Cannaregio'));
 insert into moradia(id, nome, bairro) values(26, 'Casa 6', (select id from bairro where nome = 'Castello'));
@@ -320,6 +323,7 @@ insert into tipo_negocio(id, nome) values(32, 'Salão de Beleza');
 insert into tipo_negocio(id, nome) values(33, 'Supermercado');
 insert into tipo_negocio(id, nome) values(34, 'Tabacaria');
 insert into tipo_negocio(id, nome) values(35, 'Tatoo/Piercing Studio');
+insert into tipo_negocio(id, nome) values(36, 'Ponto de Prostituição');
 
 create sequence negocio_id_seq;
 
@@ -328,80 +332,90 @@ create table negocio(
 	nome varchar(255),
 	tipo_negocio int references tipo_negocio(id),
 	bairro int references bairro(id),
+	n1 boolean,
+	n2 boolean,
+	n3 boolean,
  	PRIMARY KEY (id)
 );
 
-insert into negocio(id, nome, bairro, tipo_negocio) values(1, 'Venetur', (select id from bairro where nome = 'San Polo'), (select id from tipo_negocio where nome = 'Agência de passeios'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(2, 'Venetian Tur', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Agência de passeios'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(3, 'Casanova Grand Ball', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Baile de Máscaras'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(4, 'Barbarian', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Balada'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(5, 'Club Delirium', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Balada'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(6, 'Inferno', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Balada'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(7, 'Unicredit', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Banco'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(8, 'Banco San Marco', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Banco'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(9, 'Oceanic', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Biblioteca / Livraria'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(10, 'Global', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Biblioteca / Livraria'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(11, 'Santa Croce – Casa', (select id from bairro where nome = 'Santa Croce'), (select id from tipo_negocio where nome = 'Casa para alugar'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(12, 'Dorsoduro – Casa 1', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Casa para alugar'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(13, 'Dorsoduro – Casa 2', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Casa para alugar'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(14, 'Corpo de Bombeiros', (select id from bairro where nome = 'San Polo'), (select id from tipo_negocio where nome = 'Corpo de Bombeiros'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(15, 'Delegacia', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Delegacia'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(16, 'Vino Veneza', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Enoteca'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(17, 'Escola de ensino médio', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Escola de ensino médio'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(18, 'Escola de italiano', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Escola de italiano'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(19, 'Escola de primário', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Escola de primário'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(20, 'D’Alto Rampone', (select id from bairro where nome = 'Santa Croce'), (select id from tipo_negocio where nome = 'Escritório de Advocacia'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(21, 'Droga 24', (select id from bairro where nome = 'San Polo'), (select id from tipo_negocio where nome = 'Farmácia'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(22, 'Vene++', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Farmácia'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(23, 'Farmacia San Polo', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Farmácia'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(24, 'Dorsoduro – Galeria', (select id from bairro where nome = 'San Polo'), (select id from tipo_negocio where nome = 'Galeria'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(25, 'San Polo – Galeria', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Galeria'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(26, 'Castello – Galeria', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Galeria'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(27, 'Hospital', (select id from bairro where nome = 'Santa Croce'), (select id from tipo_negocio where nome = 'Hospital'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(28, 'Royal Hotel', (select id from bairro where nome = 'San Polo'), (select id from tipo_negocio where nome = 'Hotel'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(29, 'The Prophecy', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Hotel'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(30, 'Olive Tower', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Hotel'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(31, 'Obsidian Sanctum', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Hotel'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(32, 'Chiesa di San Simeone Piccolo', (select id from bairro where nome = 'Santa Croce'), (select id from tipo_negocio where nome = 'Igreja'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(33, 'Chiesa dell Abbazia della Misericordia', (select id from bairro where nome = 'San Polo'), (select id from tipo_negocio where nome = 'Igreja'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(34, 'Chiesa di San Giacomo di Rialto', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Igreja'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(35, 'Chiesa di San Barnaba', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Igreja'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(36, 'Basilica di San Marco', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Igreja'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(37, 'Chiesa di San Lorenzo', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Igreja'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(38, 'Gems of Venice', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Joalheria'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(39, 'Ohmyblue', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Joalheria'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(40, 'Cartier', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Joalheria'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(41, 'Lan House', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Lan House'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(42, 'Sacca San Biagio', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Lixão e incineradora'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(43, 'Givenchy', (select id from bairro where nome = 'San Polo'), (select id from tipo_negocio where nome = 'Loja de roupa'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(44, 'Dolce & Gabbana', (select id from bairro where nome = 'San Polo'), (select id from tipo_negocio where nome = 'Loja de roupa'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(45, 'Prada', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Loja de roupa'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(46, 'Versace', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Loja de roupa'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(47, 'Gucci', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Loja de roupa'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(48, 'Fendi', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Loja de roupa'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(49, 'Castello', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Loja que vende barco'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(50, 'Loja de barcos', (select id from bairro where nome = 'Santa Croce'), (select id from tipo_negocio where nome = 'Mecânica de barco'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(51, 'Universidade', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Universidade'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(52, 'Museo Ebraico Di Venezia', (select id from bairro where nome = 'San Polo'), (select id from tipo_negocio where nome = 'Museu'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(53, 'Leonardo da Vinci Museum', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Museu'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(54, 'Museo Correr', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Museu'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(55, 'Piazza San Marco', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Pontos turísticos chave'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(56, 'Campo d’Arsenal', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Pontos turísticos chave'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(57, 'Parco Savorgnan', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Pontos turísticos chave'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(58, 'Posto de gasolina para barco', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Posto de gasolina para barco'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(59, 'Prefeitura', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Prefeitura'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(60, 'Vino Vero', (select id from bairro where nome = 'Santa Croce'), (select id from tipo_negocio where nome = 'Restaurante'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(61, 'Cantina do Spade', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Restaurante'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(62, 'Pizza al Volo', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Restaurante'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(63, 'Trattoria Dai Tosi', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Restaurante'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(64, 'Rodoviária', (select id from bairro where nome = 'Santa Croce'), (select id from tipo_negocio where nome = 'Rodoviária'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(65, 'Salão de Beleza - Dorsoduro', (select id from bairro where nome = 'Santa Croce'), (select id from tipo_negocio where nome = 'Salão de Beleza'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(66, 'Salão de Beleza – Castello', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Salão de Beleza'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(67, 'Salão de Beleza - Santa Croce', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Salão de Beleza'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(68, 'Castello – Coop', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Supermercado'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(69, 'Dorsoduro – Coop', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Supermercado'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(70, 'Tabacaria', (select id from bairro where nome = 'Santa Croce'), (select id from tipo_negocio where nome = 'Tabacaria'));
-insert into negocio(id, nome, bairro, tipo_negocio) values(71, 'Tatoo Parlor', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Tatoo/Piercing Studio'));
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(1, 'Venetur', (select id from bairro where nome = 'San Polo'), (select id from tipo_negocio where nome = 'Agência de passeios'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(2, 'Venetian Tur', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Agência de passeios'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(3, 'Casanova Grand Ball', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Baile de Máscaras'), false, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(4, 'Barbarian', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Balada'), false, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(5, 'Club Delirium', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Balada'), false, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(6, 'Inferno', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Balada'), false, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(7, 'Unicredit', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Banco'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(8, 'Banco San Marco', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Banco'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(9, 'Oceanic', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Biblioteca / Livraria'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(10, 'Global', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Biblioteca / Livraria'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(11, 'Santa Croce – Casa', (select id from bairro where nome = 'Santa Croce'), (select id from tipo_negocio where nome = 'Casa para alugar'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(12, 'Dorsoduro – Casa 1', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Casa para alugar'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(13, 'Dorsoduro – Casa 2', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Casa para alugar'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(14, 'Corpo de Bombeiros', (select id from bairro where nome = 'San Polo'), (select id from tipo_negocio where nome = 'Corpo de Bombeiros'), true, true, true);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(15, 'Delegacia', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Delegacia'), true, true, true);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(16, 'Vino Veneza', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Enoteca'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(17, 'Escola de ensino médio', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Escola de ensino médio'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(18, 'Escola de italiano', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Escola de italiano'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(19, 'Escola de primário', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Escola de primário'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(20, 'D’Alto Rampone', (select id from bairro where nome = 'Santa Croce'), (select id from tipo_negocio where nome = 'Escritório de Advocacia'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(21, 'Droga 24', (select id from bairro where nome = 'San Polo'), (select id from tipo_negocio where nome = 'Farmácia'), true, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(22, 'Vene++', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Farmácia'), true, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(23, 'Farmacia San Polo', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Farmácia'), true, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(24, 'Dorsoduro – Galeria', (select id from bairro where nome = 'San Polo'), (select id from tipo_negocio where nome = 'Galeria'), false, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(25, 'San Polo – Galeria', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Galeria'), false, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(26, 'Castello – Galeria', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Galeria'), false, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(27, 'Hospital', (select id from bairro where nome = 'Santa Croce'), (select id from tipo_negocio where nome = 'Hospital'), true, true, true);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(28, 'Royal Hotel', (select id from bairro where nome = 'San Polo'), (select id from tipo_negocio where nome = 'Hotel'), true, true, true);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(29, 'The Prophecy', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Hotel'), true, true, true);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(30, 'Olive Tower', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Hotel'), true, true, true);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(31, 'Obsidian Sanctum', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Hotel'), true, true, true);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(32, 'Chiesa di San Simeone Piccolo', (select id from bairro where nome = 'Santa Croce'), (select id from tipo_negocio where nome = 'Igreja'), true, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(33, 'Chiesa dell Abbazia della Misericordia', (select id from bairro where nome = 'San Polo'), (select id from tipo_negocio where nome = 'Igreja'), true, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(34, 'Chiesa di San Giacomo di Rialto', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Igreja'), true, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(35, 'Chiesa di San Barnaba', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Igreja'), true, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(36, 'Basilica di San Marco', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Igreja'), true, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(37, 'Chiesa di San Lorenzo', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Igreja'), true, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(38, 'Gems of Venice', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Joalheria'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(39, 'Ohmyblue', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Joalheria'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(40, 'Cartier', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Joalheria'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(41, 'Lan House', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Lan House'), true, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(42, 'Sacca San Biagio', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Lixão e incineradora'), true, true, true);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(43, 'Givenchy', (select id from bairro where nome = 'San Polo'), (select id from tipo_negocio where nome = 'Loja de roupa'), false, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(44, 'Dolce & Gabbana', (select id from bairro where nome = 'San Polo'), (select id from tipo_negocio where nome = 'Loja de roupa'), false, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(45, 'Prada', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Loja de roupa'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(46, 'Versace', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Loja de roupa'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(47, 'Gucci', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Loja de roupa'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(48, 'Fendi', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Loja de roupa'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(49, 'Castello', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Loja que vende barco'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(50, 'Loja de barcos', (select id from bairro where nome = 'Santa Croce'), (select id from tipo_negocio where nome = 'Mecânica de barco'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(51, 'Universidade', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Universidade'), true, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(52, 'Museo Ebraico Di Venezia', (select id from bairro where nome = 'San Polo'), (select id from tipo_negocio where nome = 'Museu'), true, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(53, 'Leonardo da Vinci Museum', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Museu'), true, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(54, 'Museo Correr', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Museu'), true, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(55, 'Piazza San Marco', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Pontos turísticos chave'), true, true, true);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(56, 'Campo d’Arsenal', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Pontos turísticos chave'), true, true, true);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(57, 'Parco Savorgnan', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Pontos turísticos chave'), true, true, true);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(58, 'Posto de gasolina para barco', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Posto de gasolina para barco'), true, true, true);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(59, 'Prefeitura', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Prefeitura'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(60, 'Vino Vero', (select id from bairro where nome = 'Santa Croce'), (select id from tipo_negocio where nome = 'Restaurante'), true, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(61, 'Cantina do Spade', (select id from bairro where nome = 'San Marco'), (select id from tipo_negocio where nome = 'Restaurante'), true, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(62, 'Pizza al Volo', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Restaurante'), true, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(63, 'Trattoria Dai Tosi', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Restaurante'), true, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(64, 'Rodoviária', (select id from bairro where nome = 'Santa Croce'), (select id from tipo_negocio where nome = 'Rodoviária'), true, true, true);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(65, 'Salão de Beleza - Dorsoduro', (select id from bairro where nome = 'Santa Croce'), (select id from tipo_negocio where nome = 'Salão de Beleza'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(66, 'Salão de Beleza – Castello', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Salão de Beleza'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(67, 'Salão de Beleza - Santa Croce', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Salão de Beleza'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(68, 'Castello – Coop', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Supermercado'), true, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(69, 'Dorsoduro – Coop', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Supermercado'), true, true, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(70, 'Tabacaria', (select id from bairro where nome = 'Santa Croce'), (select id from tipo_negocio where nome = 'Tabacaria'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(71, 'Tatoo Parlor', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Tatoo/Piercing Studio'), true, false, false);
+
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(74, 'Beco Dorsoduro (Prostituição)', (select id from bairro where nome = 'Dorsoduro'), (select id from tipo_negocio where nome = 'Ponto de Prostituição'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(72, 'Beco Santa Croce (Prostituição)', (select id from bairro where nome = 'Santa Croce'), (select id from tipo_negocio where nome = 'Ponto de Prostituição'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(75, 'Beco Cannaregio (Prostituição)', (select id from bairro where nome = 'Cannaregio'), (select id from tipo_negocio where nome = 'Ponto de Prostituição'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(76, 'Beco Castello (Prostituição)', (select id from bairro where nome = 'Castello'), (select id from tipo_negocio where nome = 'Ponto de Prostituição'), true, false, false);
+insert into negocio(id, nome, bairro, tipo_negocio, n1, n2, n3) values(73, 'Rodoviária (Prostituição)', (select id from bairro where nome = 'Santa Croce'), (select id from tipo_negocio where nome = 'Ponto de Prostituição'), true, false, false);
+
 
 create sequence familia_id_seq;
 
@@ -1109,3 +1123,313 @@ insert into preferencias_npcs(npc, negocio, seed)
 	select npc.id npc, negocio.id negocio, random() seed
 	from npc, negocio
 );
+
+create sequence cliente_negocio_id_seq;
+
+create table cliente_negocio(
+	id int NOT NULL DEFAULT nextval('cliente_negocio_id_seq'), 
+	negocio int references negocio(id),
+	comProfissao int references profissao(id),
+	semProfissao int references profissao(id),
+	idadeMaior int,
+	idadeMenor int,
+	riquezaMaior int,
+	riquezaMenor int,
+	comSexo int references sexo(id),
+	semSexo int references sexo(id),
+	--comReligiao 
+	--semReligiao
+	mesmoBairro boolean,
+	modificador numeric(100, 10),
+	PRIMARY KEY (id)
+);
+
+
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Venetur'),  (SELECT id FROM profissao where nome = 'Turista'),null,null,null,null,null,null,null,false,6);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Venetur'), null, (SELECT id FROM profissao where nome = 'Turista'),null,null,null,null,null,null,false,0.15);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Venetian Tur'),  (SELECT id FROM profissao where nome = 'Turista'),null,null,null,null,null,null,null,false,6);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Venetian Tur'), null, (SELECT id FROM profissao where nome = 'Turista'),null,null,null,null,null,null,false,0.15);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Barbarian'), null,null,16,40,null,null,null,null,false,4);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Barbarian'), null,null,40,null,null,null,null,null,false,0.25);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Barbarian'), null,null,null,16,null,null,null,null,false,0.25);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Club Delirium'), null,null,16,40,null,null,null,null,false,4);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Club Delirium'), null,null,40,null,null,null,null,null,false,0.25);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Club Delirium'), null,null,null,16,null,null,null,null,false,0.25);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Inferno'), null,null,16,40,null,null,null,null,false,4);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Inferno'), null,null,40,null,null,null,null,null,false,0.25);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Inferno'), null,null,null,16,null,null,null,null,false,0.25);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Unicredit'), null,null,null,18,null,null,null,null,false,0.1);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Banco San Marco'), null,null,null,18,null,null,null,null,false,0.1);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Santa Croce – Casa'), null,null,null,null,null,null,null,null,false,0.2);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Dorsoduro – Casa 1'), null,null,null,null,null,null,null,null,false,0.2);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Dorsoduro – Casa 2'), null,null,null,null,null,null,null,null,false,0.2);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Corpo de Bombeiros'), null,null,null,null,null,null,null,null,false,0.2);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Delegacia'), null,null,null,null,null,null,null,null,false,0.2);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Escola de ensino médio'), null,null,18,15,null,null,null,null,false,0.1);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Escola de italiano'), null,null,null,null,null,null,null,null,false,0.2);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Escola de primário'), null,null,15,null,null,null,null,null,false,0.1);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'D’Alto Rampone'), null,null,null,null,null,null,null,null,false,0.2);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Droga 24'), null,null,null,null,null,null,null,null,false,0.75);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Vene++'), null,null,null,null,null,null,null,null,false,0.75);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Farmacia San Polo'), null,null,null,null,null,null,null,null,false,0.75);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Hospital'), null,null,null,null,null,null,null,null,false,0.2);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Royal Hotel'), null,null,null,null,null,null,null,null,false,0);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'The Prophecy'), null,null,null,null,null,null,null,null,false,0);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Olive Tower'), null,null,null,null,null,null,null,null,false,0);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Obsidian Sanctum'), null,null,null,null,null,null,null,null,false,0);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Chiesa di San Simeone Piccolo'), null,null,null,null,null,null,null,null,false,0.8);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Chiesa dell Abbazia della Misericordia'), null,null,null,null,null,null,null,null,false,0.8);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Chiesa di San Giacomo di Rialto'), null,null,null,null,null,null,null,null,false,0.8);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Chiesa di San Barnaba'), null,null,null,null,null,null,null,null,false,0.8);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Basilica di San Marco'), null,null,null,null,null,null,null,null,false,3);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Chiesa di San Lorenzo'), null,null,null,null,null,null,null,null,false,0.8);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Lan House'), null,null,null,null,null,null,null,null,false,0.5);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Sacca San Biagio'), null,null,null,null,null,null,null,null,false,0);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Givenchy'), null,null,null,null,null,null,null,null,false,1.2);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Dolce & Gabbana'), null,null,null,null,null,null,null,null,false,1.2);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Prada'), null,null,null,null,null,null,null,null,false,1.2);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Versace'), null,null,null,null,null,null,null,null,false,1.2);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Gucci'), null,null,null,null,null,null,null,null,false,1.2);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Fendi'), null,null,null,null,null,null,null,null,false,1.2);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Castello Traghetto'), null,null,null,null,null,null,null,null,false,0.5);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Mecânica de barcos'), null,null,null,null,null,null,null,null,false,0.6);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Universidade'), null,null,null,null,null,null,null,null,false,0.4);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Piazza San Marco'), null,null,null,null,null,null,null,null,false,2);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Posto de gasolina para barco'), null,null,null,null,null,null,null,null,false,0);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Prefeitura'), null,null,null,null,null,null,null,null,false,0.2);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Vino Vero'), null,null,null,null,null,null,null,null,false,1.3);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Cantina do Spade'), null,null,null,null,null,null,null,null,false,1.3);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Pizza al Volo'), null,null,null,null,null,null,null,null,false,0.8);
+INSERT INTO cliente_negocio(negocio, comprofissao, semprofissao, idademaior, idademenor, riquezamaior, riquezamenor, comsexo, semsexo, mesmobairro, modificador) values ((select id from negocio where nome = 'Rodoviária'), null,null,null,null,null,null,null,null,false,0.3);
+
+
+create sequence profissao_npc_id_seq;
+
+create table profissao_npc(
+	id int NOT NULL DEFAULT nextval('profissao_npc_id_seq'), 
+	npc int NOT NULL references npc(id),
+	profissao int NOT NULL references profissao(id),
+	negocio int references negocio(id),
+	PRIMARY KEY (id)
+);
+
+
+
+insert into profissao_npc(npc, profissao, negocio) values (1, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (2, (select id from profissao where nome = 'Garçom'), (select id from negocio where nome = 'Trattoria Dai Tosi'));
+insert into profissao_npc(npc, profissao, negocio) values (2, (select id from profissao where nome = 'Artista'), (select id from negocio where nome = 'San Polo – Galeria'));
+insert into profissao_npc(npc, profissao, negocio) values (3, (select id from profissao where nome = 'Turista'),null);
+insert into profissao_npc(npc, profissao, negocio) values (4, (select id from profissao where nome = 'Padre'), (select id from negocio where nome = 'Chiesa di San Simeone Piccolo'));
+insert into profissao_npc(npc, profissao, negocio) values (5, (select id from profissao where nome = 'Prostituta'), (select id from negocio where nome = 'Beco Cannaregio (Prostituição)'));
+insert into profissao_npc(npc, profissao, negocio) values (6, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (7, (select id from profissao where nome = 'Morador de rua'),null);
+insert into profissao_npc(npc, profissao, negocio) values (8, (select id from profissao where nome = 'Cozinheiro'), (select id from negocio where nome = 'Trattoria Dai Tosi'));
+insert into profissao_npc(npc, profissao, negocio) values (9, (select id from profissao where nome = 'Guia turístico'), (select id from negocio where nome = 'Parco Savorgnan'));
+insert into profissao_npc(npc, profissao, negocio) values (10, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (11, (select id from profissao where nome = 'Policial'),null);
+insert into profissao_npc(npc, profissao, negocio) values (12, (select id from profissao where nome = 'Turista'),null);
+insert into profissao_npc(npc, profissao, negocio) values (13, (select id from profissao where nome = 'Turista'),null);
+insert into profissao_npc(npc, profissao, negocio) values (14, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (15, (select id from profissao where nome = 'Piloto de Táxi'),null);
+insert into profissao_npc(npc, profissao, negocio) values (16, (select id from profissao where nome = 'Guia turístico'), (select id from negocio where nome = 'Venetur'));
+insert into profissao_npc(npc, profissao, negocio) values (17, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (18, (select id from profissao where nome = 'Barman'), (select id from negocio where nome = 'Inferno'));
+insert into profissao_npc(npc, profissao, negocio) values (19, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+--insert into profissao_npc(npc, profissao, negocio) values (20, (select id from profissao where nome = 'Criança'),null);
+insert into profissao_npc(npc, profissao, negocio) values (21, (select id from profissao where nome = 'Operador de Máquina'), (select id from negocio where nome = 'Sacca San Biagio'));
+insert into profissao_npc(npc, profissao, negocio) values (22, (select id from profissao where nome = 'Mecânico de barco'), (select id from negocio where nome = 'Loja de barcos'));
+insert into profissao_npc(npc, profissao, negocio) values (23, (select id from profissao where nome = 'Ourives'), (select id from negocio where nome = 'Gems of Venice'));
+insert into profissao_npc(npc, profissao, negocio) values (24, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (25, (select id from profissao where nome = 'Aposentado'),null);
+insert into profissao_npc(npc, profissao, negocio) values (26, (select id from profissao where nome = 'Ourives'), (select id from negocio where nome = 'Ohmyblue'));
+insert into profissao_npc(npc, profissao, negocio) values (27, (select id from profissao where nome = 'Funcionário de Supermercado'), (select id from negocio where nome = 'Castello – Coop'));
+insert into profissao_npc(npc, profissao, negocio) values (28, (select id from profissao where nome = 'Segurança'), (select id from negocio where nome = 'Inferno'));
+insert into profissao_npc(npc, profissao, negocio) values (29, (select id from profissao where nome = 'Motorista de Ônibus'), (select id from negocio where nome = 'Rodoviária'));
+insert into profissao_npc(npc, profissao, negocio) values (30, (select id from profissao where nome = 'Funcionário de Rodoviária'), (select id from negocio where nome = 'Rodoviária'));
+insert into profissao_npc(npc, profissao, negocio) values (31, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (32, (select id from profissao where nome = 'Professor'), (select id from negocio where nome = 'Escola de italiano'));
+insert into profissao_npc(npc, profissao, negocio) values (33, (select id from profissao where nome = 'Prostituta'), (select id from negocio where nome = 'Beco Santa Croce (Prostituição)'));
+insert into profissao_npc(npc, profissao, negocio) values (34, (select id from profissao where nome = 'Piloto de Barco'),null);
+insert into profissao_npc(npc, profissao, negocio) values (34, (select id from profissao where nome = 'Artista'), (select id from negocio where nome = 'Castello – Galeria'));
+insert into profissao_npc(npc, profissao, negocio) values (35, (select id from profissao where nome = 'Funcionário de Banco'), (select id from negocio where nome = 'Unicredit'));
+insert into profissao_npc(npc, profissao, negocio) values (36, (select id from profissao where nome = 'Padre'), (select id from negocio where nome = 'Chiesa di San Giacomo di Rialto'));
+insert into profissao_npc(npc, profissao, negocio) values (37, (select id from profissao where nome = 'Político'), (select id from negocio where nome = 'Prefeitura'));
+insert into profissao_npc(npc, profissao, negocio) values (38, (select id from profissao where nome = 'Vendedor'), (select id from negocio where nome = 'Givenchy'));
+insert into profissao_npc(npc, profissao, negocio) values (39, (select id from profissao where nome = 'Piloto de Táxi'),null);
+insert into profissao_npc(npc, profissao, negocio) values (39, (select id from profissao where nome = 'Estudante faculdade'), (select id from negocio where nome = 'Universidade'));
+insert into profissao_npc(npc, profissao, negocio) values (40, (select id from profissao where nome = 'Piloto de Barco'),null);
+insert into profissao_npc(npc, profissao, negocio) values (41, (select id from profissao where nome = 'Operador de Máquina'), (select id from negocio where nome = 'Sacca San Biagio'));
+insert into profissao_npc(npc, profissao, negocio) values (42, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (43, (select id from profissao where nome = 'Gerente de Hotel'), (select id from negocio where nome = 'Royal Hotel'));
+insert into profissao_npc(npc, profissao, negocio) values (44, (select id from profissao where nome = 'Piloto de Barco'), (select id from negocio where nome = 'Venetur'));
+insert into profissao_npc(npc, profissao, negocio) values (45, (select id from profissao where nome = 'Funcionário de Rodoviária'), (select id from negocio where nome = 'Rodoviária'));
+insert into profissao_npc(npc, profissao, negocio) values (46, (select id from profissao where nome = 'Turista'),null);
+insert into profissao_npc(npc, profissao, negocio) values (47, (select id from profissao where nome = 'Aposentado'),null);
+insert into profissao_npc(npc, profissao, negocio) values (48, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (49, (select id from profissao where nome = 'Bibliotecário'), (select id from negocio where nome = 'Oceanic'));
+--insert into profissao_npc(npc, profissao, negocio) values (50, (select id from profissao where nome = 'Criança'),null);
+insert into profissao_npc(npc, profissao, negocio) values (51, (select id from profissao where nome = 'Morador de rua'),null);
+insert into profissao_npc(npc, profissao, negocio) values (52, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (53, (select id from profissao where nome = 'Policial'),null);
+insert into profissao_npc(npc, profissao, negocio) values (54, (select id from profissao where nome = 'Diretor de Faculdade'), (select id from negocio where nome = 'Universidade'));
+insert into profissao_npc(npc, profissao, negocio) values (55, (select id from profissao where nome = 'Turista'),null);
+insert into profissao_npc(npc, profissao, negocio) values (56, (select id from profissao where nome = 'Professor'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (57, (select id from profissao where nome = 'Enfermeiro'), (select id from negocio where nome = 'Hospital'));
+insert into profissao_npc(npc, profissao, negocio) values (58, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+--insert into profissao_npc(npc, profissao, negocio) values (59, (select id from profissao where nome = 'Criança'),null);
+insert into profissao_npc(npc, profissao, negocio) values (60, (select id from profissao where nome = 'Camareira'), (select id from negocio where nome = 'Olive Tower'));
+insert into profissao_npc(npc, profissao, negocio) values (61, (select id from profissao where nome = 'Transporte de Drogas'),null);
+insert into profissao_npc(npc, profissao, negocio) values (62, (select id from profissao where nome = 'Morador de rua'),null);
+insert into profissao_npc(npc, profissao, negocio) values (63, (select id from profissao where nome = 'Esteticista'), (select id from negocio where nome = 'Salão de Beleza - Santa Croce'));
+insert into profissao_npc(npc, profissao, negocio) values (63, (select id from profissao where nome = 'Prostituta'), (select id from negocio where nome = 'Beco Dorsoduro (Prostituição)'));
+insert into profissao_npc(npc, profissao, negocio) values (64, (select id from profissao where nome = 'Vendedor'), (select id from negocio where nome = 'Castello'));
+insert into profissao_npc(npc, profissao, negocio) values (64, (select id from profissao where nome = 'Vendedor de Drogas'),null);
+insert into profissao_npc(npc, profissao, negocio) values (65, (select id from profissao where nome = 'Gerente de Hotel'), (select id from negocio where nome = 'The Prophecy'));
+insert into profissao_npc(npc, profissao, negocio) values (66, (select id from profissao where nome = 'Enfermeiro'), (select id from negocio where nome = 'Hospital'));
+insert into profissao_npc(npc, profissao, negocio) values (67, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (68, (select id from profissao where nome = 'Bombeiro'), (select id from negocio where nome = 'Corpo de Bombeiros'));
+insert into profissao_npc(npc, profissao, negocio) values (69, (select id from profissao where nome = 'Barman'), (select id from negocio where nome = 'Club Delirium'));
+insert into profissao_npc(npc, profissao, negocio) values (69, (select id from profissao where nome = 'Estudante faculdade'), (select id from negocio where nome = 'Universidade'));
+insert into profissao_npc(npc, profissao, negocio) values (70, (select id from profissao where nome = 'Transporte de Drogas'),null);
+--insert into profissao_npc(npc, profissao, negocio) values (71, (select id from profissao where nome = 'Criança'),null);
+insert into profissao_npc(npc, profissao, negocio) values (72, (select id from profissao where nome = 'Segurança'), (select id from negocio where nome = 'Club Delirium'));
+insert into profissao_npc(npc, profissao, negocio) values (72, (select id from profissao where nome = 'Guarda do Tráfico'),null);
+insert into profissao_npc(npc, profissao, negocio) values (73, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (74, (select id from profissao where nome = 'Guia turístico'), (select id from negocio where nome = 'Campo d''Arsenal'));
+insert into profissao_npc(npc, profissao, negocio) values (75, (select id from profissao where nome = 'Farmacêutico'), (select id from negocio where nome = 'Droga 24'));
+insert into profissao_npc(npc, profissao, negocio) values (76, (select id from profissao where nome = 'Professor'), (select id from negocio where nome = 'Escola de ensino médio'));
+insert into profissao_npc(npc, profissao, negocio) values (77, (select id from profissao where nome = 'Locatário'), (select id from negocio where nome = 'Santa Croce – Casa'));
+insert into profissao_npc(npc, profissao, negocio) values (78, (select id from profissao where nome = 'Vendedor'), (select id from negocio where nome = 'Dolce & Gabbana'));
+insert into profissao_npc(npc, profissao, negocio) values (79, (select id from profissao where nome = 'Prostituta'), (select id from negocio where nome = 'Beco Castello (Prostituição)'));
+insert into profissao_npc(npc, profissao, negocio) values (80, (select id from profissao where nome = 'Funcionário de Supermercado'), (select id from negocio where nome = 'Castello – Coop'));
+insert into profissao_npc(npc, profissao, negocio) values (81, (select id from profissao where nome = 'Esteticista'), (select id from negocio where nome = 'Salão de Beleza – Castello'));
+insert into profissao_npc(npc, profissao, negocio) values (82, (select id from profissao where nome = 'Frentista'), (select id from negocio where nome = 'Posto de gasolina para barco'));
+insert into profissao_npc(npc, profissao, negocio) values (83, (select id from profissao where nome = 'Médico'), (select id from negocio where nome = 'Hospital'));
+insert into profissao_npc(npc, profissao, negocio) values (84, (select id from profissao where nome = 'Guarda do Tráfico'),null);
+insert into profissao_npc(npc, profissao, negocio) values (85, (select id from profissao where nome = 'Faxineiro de rua'),null);
+insert into profissao_npc(npc, profissao, negocio) values (86, (select id from profissao where nome = 'Detetive'),null);
+insert into profissao_npc(npc, profissao, negocio) values (87, (select id from profissao where nome = 'Segurança'), (select id from negocio where nome = 'Unicredit'));
+insert into profissao_npc(npc, profissao, negocio) values (88, (select id from profissao where nome = 'Aposentado'),null);
+insert into profissao_npc(npc, profissao, negocio) values (89, (select id from profissao where nome = 'Morador de rua'),null);
+insert into profissao_npc(npc, profissao, negocio) values (90, (select id from profissao where nome = 'Guia turístico'), (select id from negocio where nome = 'Campo d''Arsenal'));
+insert into profissao_npc(npc, profissao, negocio) values (91, (select id from profissao where nome = 'Gerente de Hotel'), (select id from negocio where nome = 'Olive Tower'));
+insert into profissao_npc(npc, profissao, negocio) values (92, (select id from profissao where nome = 'Professor'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (93, (select id from profissao where nome = 'Funcionário de Museu'), (select id from negocio where nome = 'Museo Ebraico Di Venezia'));
+insert into profissao_npc(npc, profissao, negocio) values (94, (select id from profissao where nome = 'Farmacêutico'), (select id from negocio where nome = 'Vene++'));
+insert into profissao_npc(npc, profissao, negocio) values (95, (select id from profissao where nome = 'Professor'), (select id from negocio where nome = 'Universidade'));
+insert into profissao_npc(npc, profissao, negocio) values (96, (select id from profissao where nome = 'Segurança'), (select id from negocio where nome = 'Club Delirium'));
+insert into profissao_npc(npc, profissao, negocio) values (96, (select id from profissao where nome = 'Guarda do Tráfico'),null);
+insert into profissao_npc(npc, profissao, negocio) values (97, (select id from profissao where nome = 'Faxineiro de rua'),null);
+insert into profissao_npc(npc, profissao, negocio) values (98, (select id from profissao where nome = 'Funcionário de Banco'), (select id from negocio where nome = 'Banco San Marco'));
+insert into profissao_npc(npc, profissao, negocio) values (99, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (100, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (101, (select id from profissao where nome = 'Aposentado'),null);
+insert into profissao_npc(npc, profissao, negocio) values (102, (select id from profissao where nome = 'Aposentado'),null);
+insert into profissao_npc(npc, profissao, negocio) values (103, (select id from profissao where nome = 'Professor'), (select id from negocio where nome = 'Universidade'));
+insert into profissao_npc(npc, profissao, negocio) values (104, (select id from profissao where nome = 'Camareira'), (select id from negocio where nome = 'Obsidian Sanctum'));
+insert into profissao_npc(npc, profissao, negocio) values (104, (select id from profissao where nome = 'Estudante faculdade'), (select id from negocio where nome = 'Universidade'));
+insert into profissao_npc(npc, profissao, negocio) values (105, (select id from profissao where nome = 'Funcionário de Supermercado'), (select id from negocio where nome = 'Dorsoduro – Coop'));
+insert into profissao_npc(npc, profissao, negocio) values (106, (select id from profissao where nome = 'Mecânico de barco'), (select id from negocio where nome = 'Loja de barcos'));
+insert into profissao_npc(npc, profissao, negocio) values (107, (select id from profissao where nome = 'Segurança'), (select id from negocio where nome = 'Barbarian'));
+insert into profissao_npc(npc, profissao, negocio) values (108, (select id from profissao where nome = 'Guarda do Tráfico'),null);
+insert into profissao_npc(npc, profissao, negocio) values (109, (select id from profissao where nome = 'Faxineiro de rua'),null);
+insert into profissao_npc(npc, profissao, negocio) values (110, (select id from profissao where nome = 'Segurança'), (select id from negocio where nome = 'Barbarian'));
+insert into profissao_npc(npc, profissao, negocio) values (110, (select id from profissao where nome = 'Guarda do Tráfico'),null);
+insert into profissao_npc(npc, profissao, negocio) values (111, (select id from profissao where nome = 'Policial'),null);
+insert into profissao_npc(npc, profissao, negocio) values (112, (select id from profissao where nome = 'Funcionário de Rodoviária'), (select id from negocio where nome = 'Rodoviária'));
+insert into profissao_npc(npc, profissao, negocio) values (112, (select id from profissao where nome = 'Estudante faculdade'), (select id from negocio where nome = 'Universidade'));
+insert into profissao_npc(npc, profissao, negocio) values (113, (select id from profissao where nome = 'Segurança'), (select id from negocio where nome = 'Banco San Marco'));
+insert into profissao_npc(npc, profissao, negocio) values (114, (select id from profissao where nome = 'Vendedor'), (select id from negocio where nome = 'Gucci'));
+insert into profissao_npc(npc, profissao, negocio) values (115, (select id from profissao where nome = 'Enfermeiro'), (select id from negocio where nome = 'Hospital'));
+insert into profissao_npc(npc, profissao, negocio) values (116, (select id from profissao where nome = 'Vendedor'), (select id from negocio where nome = 'Lan House'));
+insert into profissao_npc(npc, profissao, negocio) values (117, (select id from profissao where nome = 'Garçom'), (select id from negocio where nome = 'Pizza al Volo'));
+insert into profissao_npc(npc, profissao, negocio) values (118, (select id from profissao where nome = 'Piloto de Barco'),null);
+insert into profissao_npc(npc, profissao, negocio) values (119, (select id from profissao where nome = 'Camareira'), (select id from negocio where nome = 'The Prophecy'));
+insert into profissao_npc(npc, profissao, negocio) values (119, (select id from profissao where nome = 'Prostituta'), (select id from negocio where nome = 'Rodoviária (Prostituição)'));
+insert into profissao_npc(npc, profissao, negocio) values (120, (select id from profissao where nome = 'Farmacêutico'), (select id from negocio where nome = 'Farmacia San Polo'));
+insert into profissao_npc(npc, profissao, negocio) values (121, (select id from profissao where nome = 'Turista'),null);
+insert into profissao_npc(npc, profissao, negocio) values (122, (select id from profissao where nome = 'Aposentado'),null);
+insert into profissao_npc(npc, profissao, negocio) values (123, (select id from profissao where nome = 'Barman'), (select id from negocio where nome = 'Barbarian'));
+insert into profissao_npc(npc, profissao, negocio) values (123, (select id from profissao where nome = 'Estudante faculdade'), (select id from negocio where nome = 'Universidade'));
+insert into profissao_npc(npc, profissao, negocio) values (124, (select id from profissao where nome = 'Turista'),null);
+insert into profissao_npc(npc, profissao, negocio) values (125, (select id from profissao where nome = 'Faxineiro de rua'),null);
+insert into profissao_npc(npc, profissao, negocio) values (126, (select id from profissao where nome = 'Tatuador'), (select id from negocio where nome = 'Tatoo Parlor'));
+insert into profissao_npc(npc, profissao, negocio) values (127, (select id from profissao where nome = 'Vendedor'), (select id from negocio where nome = 'Fendi'));
+insert into profissao_npc(npc, profissao, negocio) values (128, (select id from profissao where nome = 'Turista'),null);
+insert into profissao_npc(npc, profissao, negocio) values (129, (select id from profissao where nome = 'Cozinheiro'), (select id from negocio where nome = 'Pizza al Volo'));
+insert into profissao_npc(npc, profissao, negocio) values (130, (select id from profissao where nome = 'Padre'), (select id from negocio where nome = 'Chiesa di San Barnaba'));
+insert into profissao_npc(npc, profissao, negocio) values (131, (select id from profissao where nome = 'Operador de máquina'), (select id from negocio where nome = 'Sacca San Biagio'));
+insert into profissao_npc(npc, profissao, negocio) values (132, (select id from profissao where nome = 'Piloto de Táxi'),null);
+insert into profissao_npc(npc, profissao, negocio) values (133, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (134, (select id from profissao where nome = 'Estudante faculdade'), (select id from negocio where nome = 'Universidade'));
+insert into profissao_npc(npc, profissao, negocio) values (135, (select id from profissao where nome = 'Segurança'), (select id from negocio where nome = 'Inferno'));
+insert into profissao_npc(npc, profissao, negocio) values (135, (select id from profissao where nome = 'Funcionário de Rodoviária'), (select id from negocio where nome = 'Rodoviária'));
+insert into profissao_npc(npc, profissao, negocio) values (136, (select id from profissao where nome = 'Advogado'), (select id from negocio where nome = 'D''Alto Rampone'));
+insert into profissao_npc(npc, profissao, negocio) values (137, (select id from profissao where nome = 'Vendedor'), (select id from negocio where nome = 'Tabacaria'));
+insert into profissao_npc(npc, profissao, negocio) values (137, (select id from profissao where nome = 'Vendedor de Drogas'),null);
+insert into profissao_npc(npc, profissao, negocio) values (138, (select id from profissao where nome = 'Aposentado'),null);
+insert into profissao_npc(npc, profissao, negocio) values (139, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (140, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (141, (select id from profissao where nome = 'Gerente de Hotel'), (select id from negocio where nome = 'Obsidian Sanctum'));
+insert into profissao_npc(npc, profissao, negocio) values (142, (select id from profissao where nome = 'Bombeiro'), (select id from negocio where nome = 'Corpo de Bombeiros'));
+insert into profissao_npc(npc, profissao, negocio) values (143, (select id from profissao where nome = 'Artista'), (select id from negocio where nome = 'Dorsoduro – Galeria'));
+insert into profissao_npc(npc, profissao, negocio) values (144, (select id from profissao where nome = 'Guarda do Tráfico'),null);
+insert into profissao_npc(npc, profissao, negocio) values (145, (select id from profissao where nome = 'Padre'), (select id from negocio where nome = 'Basilica di San Marco'));
+insert into profissao_npc(npc, profissao, negocio) values (146, (select id from profissao where nome = 'Morador de rua'),null);
+insert into profissao_npc(npc, profissao, negocio) values (147, (select id from profissao where nome = 'Detetive'),null);
+insert into profissao_npc(npc, profissao, negocio) values (148, (select id from profissao where nome = 'Enfermeiro'), (select id from negocio where nome = 'Hospital'));
+insert into profissao_npc(npc, profissao, negocio) values (149, (select id from profissao where nome = 'Policial'),null);
+insert into profissao_npc(npc, profissao, negocio) values (150, (select id from profissao where nome = 'Guia turístico'), (select id from negocio where nome = 'Piazza San Marco'));
+insert into profissao_npc(npc, profissao, negocio) values (151, (select id from profissao where nome = 'Bibliotecário'), (select id from negocio where nome = 'Global'));
+insert into profissao_npc(npc, profissao, negocio) values (152, (select id from profissao where nome = 'Funcionário de Museu'), (select id from negocio where nome = 'Leonardo da Vinci Museum'));
+insert into profissao_npc(npc, profissao, negocio) values (153, (select id from profissao where nome = 'DJ'), (select id from negocio where nome = 'Barbarian'));
+insert into profissao_npc(npc, profissao, negocio) values (154, (select id from profissao where nome = 'Funcionário de Supermercado'), (select id from negocio where nome = 'Dorsoduro – Coop'));
+insert into profissao_npc(npc, profissao, negocio) values (154, (select id from profissao where nome = 'Transporte de Drogas'),null);
+insert into profissao_npc(npc, profissao, negocio) values (155, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (156, (select id from profissao where nome = 'Piloto de Táxi'),null);
+insert into profissao_npc(npc, profissao, negocio) values (157, (select id from profissao where nome = 'Turista'),null);
+insert into profissao_npc(npc, profissao, negocio) values (158, (select id from profissao where nome = 'Vendedor de Drogas'),null);
+insert into profissao_npc(npc, profissao, negocio) values (159, (select id from profissao where nome = 'Professor'), (select id from negocio where nome = 'Escola de ensino médio'));
+insert into profissao_npc(npc, profissao, negocio) values (160, (select id from profissao where nome = 'Camareira'), (select id from negocio where nome = 'Royal Hotel'));
+insert into profissao_npc(npc, profissao, negocio) values (161, (select id from profissao where nome = 'Policial'),null);
+insert into profissao_npc(npc, profissao, negocio) values (162, (select id from profissao where nome = 'Locatário'), (select id from negocio where nome = 'Dorsoduro – Casa 1'));
+insert into profissao_npc(npc, profissao, negocio) values (163, (select id from profissao where nome = 'Bombeiro'),null);
+insert into profissao_npc(npc, profissao, negocio) values (164, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (165, (select id from profissao where nome = 'Faxineiro de rua'),null);
+insert into profissao_npc(npc, profissao, negocio) values (166, (select id from profissao where nome = 'Piloto de Barco'), (select id from negocio where nome = 'Venetian Tur'));
+--insert into profissao_npc(npc, profissao, negocio) values (167, (select id from profissao where nome = 'Criança'),null);
+insert into profissao_npc(npc, profissao, negocio) values (168, (select id from profissao where nome = 'Ourives'), (select id from negocio where nome = 'Cartier'));
+insert into profissao_npc(npc, profissao, negocio) values (169, (select id from profissao where nome = 'Guia turístico'), (select id from negocio where nome = 'Venetian Tur'));
+insert into profissao_npc(npc, profissao, negocio) values (170, (select id from profissao where nome = 'Cozinheiro'), (select id from negocio where nome = 'Vino Vero'));
+insert into profissao_npc(npc, profissao, negocio) values (171, (select id from profissao where nome = 'Esteticista'), (select id from negocio where nome = 'Salão de Beleza - Dorsoduro'));
+insert into profissao_npc(npc, profissao, negocio) values (172, (select id from profissao where nome = 'DJ'), (select id from negocio where nome = 'Club Delirium'));
+insert into profissao_npc(npc, profissao, negocio) values (173, (select id from profissao where nome = 'Turista'),null);
+insert into profissao_npc(npc, profissao, negocio) values (174, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (175, (select id from profissao where nome = 'Vendedor'), (select id from negocio where nome = 'Prada'));
+insert into profissao_npc(npc, profissao, negocio) values (176, (select id from profissao where nome = 'Aposentado'),null);
+insert into profissao_npc(npc, profissao, negocio) values (177, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (178, (select id from profissao where nome = 'Político'), (select id from negocio where nome = 'Prefeitura'));
+insert into profissao_npc(npc, profissao, negocio) values (179, (select id from profissao where nome = 'Aposentado'),null);
+insert into profissao_npc(npc, profissao, negocio) values (180, (select id from profissao where nome = 'Vendedor'), (select id from negocio where nome = 'Versace'));
+insert into profissao_npc(npc, profissao, negocio) values (181, (select id from profissao where nome = 'Médico'), (select id from negocio where nome = 'Hospital'));
+insert into profissao_npc(npc, profissao, negocio) values (182, (select id from profissao where nome = 'Advogado'), (select id from negocio where nome = 'D''Alto Rampone'));
+insert into profissao_npc(npc, profissao, negocio) values (183, (select id from profissao where nome = 'Funcionário de Museu'), (select id from negocio where nome = 'Museo Correr'));
+insert into profissao_npc(npc, profissao, negocio) values (184, (select id from profissao where nome = 'Cozinheiro'), (select id from negocio where nome = 'Cantina do Spade'));
+insert into profissao_npc(npc, profissao, negocio) values (185, (select id from profissao where nome = 'Policial'),null);
+insert into profissao_npc(npc, profissao, negocio) values (186, (select id from profissao where nome = 'Guia turístico'), (select id from negocio where nome = 'Piazza San Marco'));
+insert into profissao_npc(npc, profissao, negocio) values (187, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (188, (select id from profissao where nome = 'DJ'), (select id from negocio where nome = 'Inferno'));
+insert into profissao_npc(npc, profissao, negocio) values (189, (select id from profissao where nome = 'Garçom'), (select id from negocio where nome = 'Vino Vero'));
+insert into profissao_npc(npc, profissao, negocio) values (190, (select id from profissao where nome = 'Garçom'), (select id from negocio where nome = 'Cantina do Spade'));
+insert into profissao_npc(npc, profissao, negocio) values (190, (select id from profissao where nome = 'Estudante faculdade'), (select id from negocio where nome = 'Universidade'));
+insert into profissao_npc(npc, profissao, negocio) values (191, (select id from profissao where nome = 'Estudante básico'), (select id from negocio where nome = 'Escola de primário'));
+insert into profissao_npc(npc, profissao, negocio) values (192, (select id from profissao where nome = 'Médico'), (select id from negocio where nome = 'Hospital'));
+insert into profissao_npc(npc, profissao, negocio) values (193, (select id from profissao where nome = 'Político'), (select id from negocio where nome = 'Prefeitura'));
+insert into profissao_npc(npc, profissao, negocio) values (194, (select id from profissao where nome = 'Locatário'), (select id from negocio where nome = 'Dorsoduro – Casa 2'));
+insert into profissao_npc(npc, profissao, negocio) values (195, (select id from profissao where nome = 'Piloto de Barco'),null);
+insert into profissao_npc(npc, profissao, negocio) values (196, (select id from profissao where nome = 'Bombeiro'), (select id from negocio where nome = 'Corpo de Bombeiros'));
+insert into profissao_npc(npc, profissao, negocio) values (197, (select id from profissao where nome = 'Enfermeiro'), (select id from negocio where nome = 'Hospital'));
+insert into profissao_npc(npc, profissao, negocio) values (197, (select id from profissao where nome = 'Estudante faculdade'), (select id from negocio where nome = 'Universidade'));
+insert into profissao_npc(npc, profissao, negocio) values (198, (select id from profissao where nome = 'Vendedor'), (select id from negocio where nome = 'Vino Veneza'));
+insert into profissao_npc(npc, profissao, negocio) values (199, (select id from profissao where nome = 'Guia turístico'), (select id from negocio where nome = 'Parco Savorgnan'));
+insert into profissao_npc(npc, profissao, negocio) values (200, (select id from profissao where nome = 'Faxineiro de rua'),null);

@@ -56,10 +56,38 @@ app.get("/location", (req, res, next) => {
 	client.connect()
 	client.query(
 		`
-		select n.id id, n.nome nome, tn.nome tipo, b.nome bairro
+		select n.id id, n.nome nome, tn.nome tipo, b.nome bairro, n1, n2, n3
 		from negocio n
 		join tipo_negocio tn on tn.id = n.tipo_negocio
 		join bairro b on b.id = n.bairro
+		`,
+		 (err, result) => {
+	  res.json(result.rows)
+	  client.end()
+	})
+});
+
+app.get("/professions", (req, res, next) => {
+	const client = new Client()
+	client.connect()
+	client.query(
+		`
+		select *
+		from profissao
+		`,
+		 (err, result) => {
+	  res.json(result.rows)
+	  client.end()
+	})
+});
+
+app.get("/professionsNpcs", (req, res, next) => {
+	const client = new Client()
+	client.connect()
+	client.query(
+		`
+		select *
+		from profissao_npc
 		`,
 		 (err, result) => {
 	  res.json(result.rows)
@@ -80,3 +108,18 @@ app.get("/preferencias", (req, res, next) => {
 	  client.end()
 	})
 });
+
+app.get("/clientesNegocio", (req, res, next) => {
+	const client = new Client()
+	client.connect()
+	client.query(
+		`
+		select *
+		from cliente_negocio 
+		`,
+		 (err, result) => {
+	  res.json(result.rows)
+	  client.end()
+	})
+});
+
