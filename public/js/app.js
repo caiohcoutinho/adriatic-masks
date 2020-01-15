@@ -119,9 +119,18 @@ app.controller("controller", function($scope, $http) {
 	}
 
 	const generateFinalLocation = function(npc, period){
+		let professions = _.filter($scope.professionsNpcs, (prof) => {
+			let location = _.find($scope.locations, (l) => {return l.id == prof.negocio});
+			return prof.npc == npc.id && location["n"+period];
+		});
+		if(!_.isEmpty(professions)){
+			let workingSeed = Math.random();
+			let isWorking = workingSeed > 0.95;
+
+		}
+
 		let locationSeed = Math.random();
 		let sum = 0;
-		let professions = _.filter($scope.professionsNpcs, (prof) => {return prof.npc == npc.id;});
 		let npcPrefsWithCorrections = _.map(
 			_.filter(
 				$scope.npcPreferences, 
@@ -201,6 +210,7 @@ app.controller("controller", function($scope, $http) {
 			npc.l1 = l1;
 			npc.l2 = l2;
 			npc.l3 = l3;
+			npc.trabalhando = true;
 		});
 	}
 

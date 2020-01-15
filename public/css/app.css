@@ -19,11 +19,11 @@ hr.lineBreak{
 	border-width: 1px;
 }
 
-div.nameCell{
+div.nameCell, div.locationCell{
 	color: #f54e4e;
 }
 
-div.nameCell:hover{
+div.nameCell:hover, span.locationNpcLink:hover{
 	color: #f54e4e;
 	text-decoration: underline;
 	cursor: pointer;
@@ -57,7 +57,6 @@ div.scrollableDiv{
 div.npcInfo{
 	max-height: 80vh;
 	max-width: 34vw;
-	overflow-y: scroll;
 }
 
 div.spacedRow{
@@ -123,9 +122,9 @@ svg.personFemaleHair{
 
 svg.personMaleHair{
 	position: absolute;	
-	left: 2.4vw;
-	top: 0;
-	width: 4.4vw;
+	left: 1.5vw;
+	top: 1.3vh;
+	width: 5.9vw;
 	height: auto;
 	stroke: black;
 }
@@ -137,4 +136,8 @@ svg.personHead{
 	width: 4vw;
 	height: auto;
 	stroke: black;
+}
+
+div.portrait{
+	height: 18vh;
 }
