@@ -501,6 +501,9 @@ create table npc(
 	seed_obrigacao numeric(100,10),
 	seed_natureza_obrigacao numeric(100,10),
 	notas varchar(1000),
+	recursos int,
+	saude int,
+	saude_max int,
  	PRIMARY KEY (id)
 );
 

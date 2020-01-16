@@ -58,6 +58,12 @@
 								<input type="number" class="form-control form-control-sm" ng-model="npcAgeLessFilter" placeholder="Idade menos que"/>
 							</div>
 							<div class="col">
+								<select class="form-control form-control-sm" ng-model="npcMoradiaFilter">
+									<option value="">Moradia</option>
+									<option value="{{moradia.id}}" ng-repeat="moradia in moradias track by moradia.id">{{moradia.nome}} - {{moradia.bairro}}</option>
+								</select>
+							</div>
+							<div class="col">
 								<select class="form-control form-control-sm" ng-model="npcBairroFilter">
 									<option value="">Bairro</option>
 									<option value="Cannaregio">Cannaregio</option>
@@ -80,7 +86,12 @@
 								#{{npc.id}} - {{npc.nome}} <span class="spanNick" ng-show="npc.apelido != null">- {{npc.apelido}}</span> (F{{npc.f}}/S{{npc.s}}/M{{npc.m}})
 							</div>
 							<div class="col-6">
-								{{npc.sexo}}, {{npc.idade}}, {{npc.nacionalidade}}. {{npc.bairro}}
+								<span ng-if="npc.sexo == 'M'">Masculino</span><span ng-if="npc.sexo == 'F'">Feminino</span>, {{npc.idade}}, {{npc.nacionalidade}}, {{npc.bairro}}, ${{npc.recursos}}
+							</div>
+						</div>
+						<div class="row">
+							<div class="col">
+								<img src="/img/blood.png" class="smallLifeIcon">{{npc.saude}}/{{npc.saude_max}}
 							</div>
 						</div>
 						<div class="row">
@@ -93,17 +104,22 @@
 								Instinto {{npc.instinto}}, obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}.
 							</div>
 						</div>
+						<div>
+							<div ng-repeat="profession in npc.professions track by $index">{{profession.profissao.nome}}<span ng-if="profession.negocio != null">&nbsp;em {{profession.negocio.nome}}, {{profession.negocio.bairro}}</span>.</div>
+						</div>			
+						<div ng-if="npc.l1 != null && npc.l1.sick">Doente.</div>
 						<div class="row" ng-if="npc.l1 != undefined">
 							<div class="col">
-								N1: {{npc.l1.nome}} em {{npc.l1.bairro}}
+								N1: <span ng-if="npc.l1.sleeping">Dormindo em </span><span ng-if="npc.l1.working && npc.l1.location != null">Trabalhando em {{npc.l1.location.nome}}, {{npc.l1.location.bairro}}</span><span ng-if="npc.l1.working && npc.l1.location == null">Trabalhando</span><span ng-if="!npc.l1.working">{{npc.l1.location.nome}}, {{npc.l1.location.bairro}}</span>.
 							</div>
 							<div class="col">
-								N2: {{npc.l2.nome}} em {{npc.l2.bairro}}
+								N2: <span ng-if="npc.l2.sleeping">Dormindo em </span><span ng-if="npc.l2.working && npc.l2.location != null">Trabalhando em {{npc.l2.location.nome}}, {{npc.l2.location.bairro}}</span><span ng-if="npc.l2.working && npc.l2.location == null">Trabalhando</span><span ng-if="!npc.l2.working">{{npc.l2.location.nome}}, {{npc.l2.location.bairro}}</span>.
 							</div>
 							<div class="col">
-								N3: {{npc.l3.nome}} em {{npc.l3.bairro}}
+								N3: <span ng-if="npc.l3.sleeping">Dormindo em </span><span ng-if="npc.l3.working && npc.l3.location != null">Trabalhando em {{npc.l3.location.nome}}, {{npc.l3.location.bairro}}</span><span ng-if="npc.l3.working && npc.l3.location == null">Trabalhando</span><span ng-if="!npc.l3.working">{{npc.l3.location.nome}}, {{npc.l3.location.bairro}}</span>.
 							</div>
 						</div>
+
 					</div>
 					<hr class="npcLineBreak lineBreak"/>
 				</div>		
@@ -166,32 +182,53 @@
 								<div class="row">
 									N1:&nbsp;<span ng-if="location.n1">Aberto</span><span ng-if="!location.n1">Fechado</span>
 								</div>
-								<div class="row" ng-repeat="npc in location.npcListN1 track by $index">
-									<span class="locationNpcLink" ng-click="selectNpc(npc)" ng-attr-title="#{{npc.id}} {{npc.apelido}} (F{{npc.f}}/S{{npc.s}}/M{{npc.m}}). {{npc.sexo}}, {{npc.idade}}, {{npc.nacionalidade}}, {{npc.bairro}}. Pele {{npc.pele}}, cabelo {{npc.cabelo}}, olhos {{npc.olhos}}. Mora em {{npc.moradia}}. Família {{npc.familia}}. Instinto {{npc.instinto}}, obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}.">{{npc.nome}} <span ng-if="npc.trabalhando">(Trabalhando)</span></span>
-								</div>
+								<table class="npcListTable">
+									<tr ng-repeat="npc in location.npcListN1 track by $index">
+										<td>
+											<span class="locationNpcLink" ng-click="selectNpcById(npc.id)" ng-attr-title="#{{npc.id}} {{npc.apelido}} (F{{npc.f}}/S{{npc.s}}/M{{npc.m}}). {{npc.sexo}}, {{npc.idade}}, {{npc.nacionalidade}}, {{npc.bairro}}. Pele {{npc.pele}}, cabelo {{npc.cabelo}}, olhos {{npc.olhos}}. Mora em {{npc.moradia}}. Família {{npc.familia}}. Instinto {{npc.instinto}}, obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}.">{{npc.nome}}</span>
+										</td>
+										<td>
+											<span ng-repeat="profession in npc.professions track by $index">{{profession.profissao.nome}}<span ng-if="!$last">/</span></span><span ng-if="npc.working">&nbsp;(Trabalhando)</span>
+										</td>
+									</tr>
+								</table>
 							</div>
 							<div class="col">
 								<div class="row">
 									N2:&nbsp;<span ng-if="location.n2">Aberto</span><span ng-if="!location.n2">Fechado</span>
 								</div>
-								<div class="row" ng-repeat="npc in location.npcListN2 track by $index">
-									<span class="locationNpcLink" ng-click="selectNpc(npc)" ng-attr-title="#{{npc.id}} {{npc.apelido}} (F{{npc.f}}/S{{npc.s}}/M{{npc.m}}). {{npc.sexo}}, {{npc.idade}}, {{npc.nacionalidade}}, {{npc.bairro}}. Pele {{npc.pele}}, cabelo {{npc.cabelo}}, olhos {{npc.olhos}}. Mora em {{npc.moradia}}. Família {{npc.familia}}. Instinto {{npc.instinto}}, obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}. (seed: {{npc.totalChance}})">{{npc.nome}} <span ng-if="npc.trabalhando">(Trabalhando)</span></span>
-								</div>
+								<table class="npcListTable">
+									<tr ng-repeat="npc in location.npcListN2 track by $index">
+										<td>
+											<span class="locationNpcLink" ng-click="selectNpcById(npc.id)" ng-attr-title="#{{npc.id}} {{npc.apelido}} (F{{npc.f}}/S{{npc.s}}/M{{npc.m}}). {{npc.sexo}}, {{npc.idade}}, {{npc.nacionalidade}}, {{npc.bairro}}. Pele {{npc.pele}}, cabelo {{npc.cabelo}}, olhos {{npc.olhos}}. Mora em {{npc.moradia}}. Família {{npc.familia}}. Instinto {{npc.instinto}}, obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}.">{{npc.nome}}</span>
+										</td>
+										<td>
+											<span ng-repeat="profession in npc.professions track by $index">{{profession.profissao.nome}}<span ng-if="!$last">/</span></span><span ng-if="npc.working">&nbsp;(Trabalhando)</span>
+										</td>
+									</tr>
+								</table>
 							</div>
 							<div class="col">
 								<div class="row">
 									N3:&nbsp;<span ng-if="location.n3">Aberto</span><span ng-if="!location.n3">Fechado</span>
 								</div>
-								<div class="row" ng-repeat="npc in location.npcListN3 track by $index">
-									<span class="locationNpcLink" ng-click="selectNpc(npc)" ng-attr-title="#{{npc.id}} {{npc.apelido}} (F{{npc.f}}/S{{npc.s}}/M{{npc.m}}). {{npc.sexo}}, {{npc.idade}}, {{npc.nacionalidade}}, {{npc.bairro}}. Pele {{npc.pele}}, cabelo {{npc.cabelo}}, olhos {{npc.olhos}}. Mora em {{npc.moradia}}. Família {{npc.familia}}. Instinto {{npc.instinto}}, obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}. (seed: {{npc.totalChance}})">{{npc.nome}} <span ng-if="npc.trabalhando">(Trabalhando)</span></span>
-								</div>
+								<table class="npcListTable">
+									<tr ng-repeat="npc in location.npcListN3 track by $index">
+										<td>
+											<span class="locationNpcLink" ng-click="selectNpcById(npc.id)" ng-attr-title="#{{npc.id}} {{npc.apelido}} (F{{npc.f}}/S{{npc.s}}/M{{npc.m}}). {{npc.sexo}}, {{npc.idade}}, {{npc.nacionalidade}}, {{npc.bairro}}. Pele {{npc.pele}}, cabelo {{npc.cabelo}}, olhos {{npc.olhos}}. Mora em {{npc.moradia}}. Família {{npc.familia}}. Instinto {{npc.instinto}}, obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}.">{{npc.nome}}</span>
+										</td>
+										<td>
+											<span ng-repeat="profession in npc.professions track by $index">{{profession.profissao.nome}}<span ng-if="!$last">/</span></span><span ng-if="npc.working">&nbsp;(Trabalhando)</span>
+										</td>
+									</tr>
+								</table>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 			<div class="col">
-				<div ng-show="selectedNpc != undefined" class="npcInfo">
+				<div ng-if="selectedNpc != undefined" class="npcInfo">
 					<div class="selectedNpcTitle">
 						#{{selectedNpc.id}} - {{selectedNpc.nome}} <span class="spanNick" ng-show="selectedNpc.apelido != null">- {{selectedNpc.apelido}}</span>
 					</div>
@@ -226,10 +263,10 @@
 						</div>
 						<div class="col">
 							<div>
-								(F{{selectedNpc.f}}/S{{selectedNpc.s}}/M{{selectedNpc.m}})
+								(F{{selectedNpc.f}}/S{{selectedNpc.s}}/M{{selectedNpc.m}})&nbsp;${{selectedNpc.recursos}}&nbsp;<img class="lifeIcon" src="/img/blood.png"/>{{selectedNpc.saude}}/{{selectedNpc.saude_max}}
 							</div>
 							<div>
-								{{selectedNpc.sexo}}, {{selectedNpc.idade}} anos, {{selectedNpc.nacionalidade}}. Mora em {{selectedNpc.moradia}} em {{selectedNpc.bairro}}.
+								<span ng-if="selectedNpc.sexo == 'M'">Masculino</span><span ng-if="selectedNpc.sexo == 'F'">Feminino</span>, {{selectedNpc.idade}} anos, {{selectedNpc.nacionalidade}}. Mora em {{selectedNpc.moradia}} em {{selectedNpc.bairro}}.
 							</div>
 							<div>
 								Pele {{selectedNpc.pele}}, cabelo {{selectedNpc.cabelo}}, olhos {{selectedNpc.olhos}}. <span ng-if="selectedNpc.familia != undefined">Família {{selectedNpc.familia}}</span><span ng-if="selectedNpc.familia == undefined">Sem família</span>.
@@ -237,19 +274,91 @@
 							<div>
 								Instinto {{selectedNpc.instinto}}, obrigação de natureza {{selectedNpc.natureza_obrigacao}} para com {{selectedNpc.obrigacao}}.
 							</div>
+							<div>
+								<div ng-repeat="profession in selectedNpc.professions track by $index">{{profession.profissao.nome}}<span ng-if="profession.negocio != null">&nbsp;em {{profession.negocio.nome}}, {{profession.negocio.bairro}}</span>.</div>
+							</div>
+							<div ng-if="selectedNpc.l1 != null && selectedNpc.l1.sick">Doente.</div>
 							<div ng-if="selectedNpc.l1 != null">
-								N1: {{selectedNpc.l1.nome}} em {{selectedNpc.l1.bairro}}
+								N1:  <span ng-if="selectedNpc.l1.sleeping">Dormindo em </span><span ng-if="selectedNpc.l1.working && selectedNpc.l1.location != null">Trabalhando em {{selectedNpc.l1.location.nome}}, {{selectedNpc.l1.location.bairro}}</span><span ng-if="selectedNpc.l1.working && selectedNpc.l1.location == null">Trabalhando</span><span ng-if="!selectedNpc.l1.working">{{selectedNpc.l1.location.nome}}, {{selectedNpc.l1.location.bairro}}</span>.
 							</div>
 							<div ng-if="selectedNpc.l2 != null">
-								N2: {{selectedNpc.l2.nome}} em {{selectedNpc.l2.bairro}}
+								N2:  <span ng-if="selectedNpc.l2.sleeping">Dormindo em </span><span ng-if="selectedNpc.l2.working && selectedNpc.l2.location != null">Trabalhando em {{selectedNpc.l2.location.nome}}, {{selectedNpc.l2.location.bairro}}</span><span ng-if="selectedNpc.l2.working && selectedNpc.l2.location == null">Trabalhando</span><span ng-if="!selectedNpc.l2.working">{{selectedNpc.l2.location.nome}}, {{selectedNpc.l2.location.bairro}}</span>.
 							</div>
 							<div ng-if="selectedNpc.l3 != null">
-								N3: {{selectedNpc.l3.nome}} em {{selectedNpc.l3.bairro}}
+								N3:  <span ng-if="selectedNpc.l3.sleeping">Dormindo em </span><span ng-if="selectedNpc.l3.working && selectedNpc.l3.location != null">Trabalhando em {{selectedNpc.l3.location.nome}}, {{selectedNpc.l3.location.bairro}}</span><span ng-if="selectedNpc.l3.working && selectedNpc.l3.location == null">Trabalhando</span><span ng-if="!selectedNpc.l3.working">{{selectedNpc.l3.location.nome}}, {{selectedNpc.l3.location.bairro}}</span>.
+							</div>
+							<div>
+								Saude: <input type="number" ng-model="selectedNpc.saude"><button ng-click="saveSelectedNpcHealth()">Salvar</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<hr class="familyLineBreak lineBreak"/>
+				<div ng-if="selectedNpc != undefined" class="npcInfo" ng-repeat="relative in selectedNpcRelatives() track by $index">
+					<div class="selectedNpcTitle">
+						#{{relative.id}} - {{relative.nome}} <span class="spanNick" ng-show="relative.apelido != null">- {{relative.apelido}}</span>
+					</div>
+					<div class="row">
+						<div class="col-3 portrait">
+							<svg class="personBody" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 472 231"><path d="M166.4 19C173.2 27.9 186.4 32.6 197 35.1 219.4 40.4 247.5 40.6 270 35.8 283.2 33 301.8 27.3 306 13 306 13 317 20.6 317 20.6 332.2 30.3 347.5 37.5 365 42.1 382.7 46.8 414.5 50.1 428 60.5 440.3 70 444.8 81.5 448.4 96 453.7 117.5 454 140 454 162 454 179 445 187.1 431 195.4 412.4 206.5 384.3 213.9 363 218.2 337.2 223.4 311.3 226.3 285 228.1 285 228.1 275 229 275 229 275 229 255 230 255 230 255 230 215 230 215 230 215 230 195 229 195 229 195 229 185 228.1 185 228.1 154.9 226 124.4 222.9 95 215.6 75 210.7 52.3 204.5 35 193 22.9 185 15.2 176 15 161 15 161 16 142 16 142 16 126.6 18.5 104.7 23 90 26.1 80.1 30.9 69.3 39 62.5 53.6 50.4 78.8 48.4 97 44.1 121.9 38.2 142.9 29.1 163 13 163 13 166.4 19 166.4 19Z"/></svg>
+
+							<svg class="personHead" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 257 284"><path d="M143 1.2C156.9 1.1 174.8 5.7 187 12.3 187 12.3 199 19.9 199 19.9 215.7 30.6 221.1 32.8 229.7 52 236.6 67.4 238.2 84.4 239.8 101 239.8 101 241.1 115 241.1 115 241.9 119.7 244.5 121 246.4 125 248.3 128.9 249 134.8 249 139 249.1 150.9 247.1 163.3 241.6 174 237.9 181.3 234.2 182.8 231.7 186.2 231.7 186.2 224.3 202 224.3 202 209.6 231.3 186.3 264 153 273.1 144.7 275.3 139.4 275.1 131 275 117.3 274.8 104.1 268.7 93 261 70.2 244.9 53.7 219.3 42.7 194 37 180.7 34.8 185.2 29.4 176 22.3 164.1 20.9 150.5 21 137 21.1 132 21.7 127.5 24.4 123.1 25.9 120.6 28 118.8 29.1 116 30.4 112.7 30 105.8 30 102 30.2 82.8 35.8 54.7 47.3 39 55.3 28 59.1 27 70 20.6 92.3 7.2 94.8 5.2 121 1.2 121 1.2 143 1.2 143 1.2Z" ng-style="{fill: skinColor(relative)}"/></svg>
+
+							<svg class="personEyesWhite" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 512"><path d="M659 325.3C635.1 313.3 609.2 295.4 589 278 589 278 568 259 568 259 566.2 257.2 562.2 253.7 562.2 251 562.2 248.3 566.2 244.8 568 243 568 243 587 225.6 587 225.6 608.9 206.9 636.2 188.2 662 175.3 662 175.3 681 167 681 167 684.5 165.6 687.2 164 691 165 684.8 169.7 680.9 174 675.9 180 650 211.2 642.6 255.4 658.4 293 663.1 304.1 669.4 314.9 677.3 324 677.3 324 692 339 692 339 683.7 337.1 667 329.3 659 325.3ZM873 180.1C895.6 192.7 917.4 207 937 223.9 937 223.9 958 243 958 243 959.8 244.8 963.8 248.3 963.8 251 963.8 253.7 959.8 257.2 958 259 958 259 937 278 937 278 917.4 294.9 890.2 313.7 867 325.3 859.4 329.1 843 336.8 835 338 835 338 844 329 844 329 849.9 322.8 858.2 311.6 862.5 304 879.6 271.2 880.5 231.9 862.5 199 858 190.4 850.8 180.1 844 173 844 173 835 164 835 164 844.9 165.6 864 175.1 873 180.1ZM152 326.3C128.1 314.3 102.2 296.4 82 279 82 279 61 260 61 260 59.2 258.2 55.2 254.7 55.2 252 55.2 249.3 59.2 245.8 61 244 61 244 80 226.6 80 226.6 101.9 207.9 129.2 189.2 155 176.3 155 176.3 174 168 174 168 177.5 166.6 180.2 165 184 166 177.8 170.7 173.9 175 168.9 181 143 212.2 135.6 256.4 151.4 294 156.1 305.1 162.4 315.9 170.3 325 170.3 325 185 340 185 340 176.7 338.1 160 330.3 152 326.3ZM366 181.1C388.6 193.7 410.4 208 430 224.9 430 224.9 451 244 451 244 452.8 245.8 456.8 249.3 456.8 252 456.8 254.7 452.8 258.2 451 260 451 260 430 279 430 279 410.4 295.9 383.2 314.7 360 326.3 352.4 330.1 336 337.8 328 339 328 339 337 330 337 330 342.9 323.8 351.2 312.6 355.5 305 372.6 272.2 373.5 232.9 355.5 200 351 191.4 343.8 181.1 337 174 337 174 328 165 328 165 337.9 166.6 357 176.1 366 181.1Z"/></svg>
+
+
+							<svg class="personEyesContour" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 512"><path d="M828 126.6C880 137 920.4 160.3 962 192.5 962 192.5 996.1 222.6 996.1 222.6 1002.3 228.4 1010.1 234.6 1009.9 244 1009.7 253.1 1004.1 258.1 998 264 998 264 965 292.9 965 292.9 911.9 337 849 366.8 779 366 779 366 769 365.1 769 365.1 705.8 360.8 649.1 331.6 601 291.4 601 291.4 582 274.9 582 274.9 582 274.9 571 264.3 571 264.3 564.4 258.5 556.9 251.8 558.3 242 559.7 232.8 565.9 228.8 572 223 572 223 603 194.8 603 194.8 635.5 168.5 677.5 143 718 131.7 732.1 127.8 746.5 125 761 123.3 761 123.3 775 122.4 775 122.4 788 120.9 814.8 124 828 126.6ZM294 128.6C346 139 386.4 162.3 428 194.5 428 194.5 462.1 224.6 462.1 224.6 468.3 230.4 476.1 236.6 475.9 246 475.7 255.1 470.1 260.1 464 266 464 266 431 294.9 431 294.9 377.9 339 315 368.8 245 368 245 368 235 367.1 235 367.1 171.8 362.8 115.1 333.6 67 293.4 67 293.4 48 276.9 48 276.9 48 276.9 37 266.3 37 266.3 30.4 260.5 22.9 253.8 24.3 244 25.7 234.8 31.9 230.8 38 225 38 225 69 196.8 69 196.8 101.5 170.5 143.5 145 184 133.7 198.1 129.8 212.5 127 227 125.3 227 125.3 241 124.4 241 124.4 254 122.9 280.8 126 294 128.6ZM743 162.3C714.4 176.6 693.1 207.6 693 240 693 255.5 693.5 264.3 699.5 279 711.8 309.4 744.6 334.6 778 335 796.2 335.2 808.3 334 825 325.6 836.3 320 844.5 313.3 853 304 859.9 296.4 864.8 287.5 868.6 278 883.8 240 872.2 197 840 171.7 820.8 156.5 797.1 151 773 153.3 762.2 154.9 752.8 157.4 743 162.3ZM209 164.3C180.4 178.6 159.1 209.6 159 242 159 257.5 159.5 266.3 165.5 281 177.8 311.4 210.6 336.6 244 337 262.2 337.2 274.3 336 291 327.6 302.3 322 310.5 315.3 319 306 325.9 298.4 330.8 289.5 334.6 280 349.8 242 338.2 199 306 173.7 286.8 158.5 263.1 153 239 155.3 228.2 156.9 218.8 159.4 209 164.3ZM712 156C712 156 713 157 713 157 713 157 713 156 713 156 713 156 712 156 712 156ZM855 156C855 156 856 157 856 157 856 157 856 156 856 156 856 156 855 156 855 156ZM677 171.7C653 184.1 630.7 199.8 610 217.1 610 217.1 589 236 589 236 587.2 237.8 583.2 241.3 583.2 244 583.2 246.9 588 251 590 252.8 590 252.8 610 270.8 610 270.8 632.3 289.5 659.4 309 686 320.9 694.2 324.5 702.2 328.9 711 331 703 319.8 694.4 316.7 683.3 295 665.3 260.1 667.5 219.6 687.5 186 697.4 169.2 704.3 166.4 711 157 699.6 160.1 687.4 166.4 677 171.7ZM887 318.3C913 305.2 935.8 289.6 958 270.7 958 270.7 978 252.7 978 252.7 980.1 250.9 984.8 246.9 984.8 244 984.8 241.3 980.8 237.8 979 236 979 236 960 218.8 960 218.8 939.1 201.3 907.8 178.8 883 167.6 883 167.6 865 159.8 865 159.8 861.7 158.5 859.6 157.1 856 158 881.5 177.3 897.8 214.2 897 246 896.7 259.6 892.9 275.5 887.6 288 878.5 309.2 871.2 315 856 331 865.6 329.3 878.2 322.6 887 318.3ZM178 158C178 158 179 159 179 159 179 159 179 158 179 158 179 158 178 158 178 158ZM321 158C321 158 322 159 322 159 322 159 322 158 322 158 322 158 321 158 321 158ZM143 173.7C119 186.1 96.7 201.8 76 219.1 76 219.1 55 238 55 238 53.2 239.8 49.2 243.3 49.2 246 49.2 248.9 54 253 56 254.8 56 254.8 76 272.8 76 272.8 98.3 291.5 125.4 311 152 322.9 160.2 326.5 168.2 330.9 177 333 169 321.8 160.4 318.7 149.3 297 131.3 262.1 133.5 221.6 153.5 188 163.4 171.2 170.3 168.4 177 159 165.6 162.1 153.4 168.4 143 173.7ZM353 320.3C379 307.2 401.8 291.6 424 272.7 424 272.7 444 254.7 444 254.7 446.1 252.9 450.8 248.9 450.8 246 450.8 243.3 446.8 239.8 445 238 445 238 426 220.8 426 220.8 405.1 203.3 373.8 180.8 349 169.6 349 169.6 331 161.8 331 161.8 327.7 160.5 325.6 159.1 322 160 347.5 179.3 363.8 216.2 363 248 362.7 261.6 358.9 277.5 353.6 290 344.5 311.2 337.2 317 322 333 331.6 331.3 344.2 324.6 353 320.3ZM797 210.9C814.2 220.2 817.7 246.2 803.9 259.9 796.4 267.4 790 268.1 780 268 745.5 267.6 741.3 216.3 774 208.5 781.1 207.5 790.5 207.4 797 210.9ZM263 212.9C280.2 222.2 283.7 248.2 269.9 261.9 262.4 269.4 256 270.1 246 270 211.5 269.6 207.3 218.3 240 210.5 247.1 209.5 256.5 209.4 263 212.9ZM855 331C855 331 856 332 856 332 856 332 856 331 856 331 856 331 855 331 855 331ZM321 333C321 333 322 334 322 334 322 334 322 333 322 333 322 333 321 333 321 333Z"/></svg>
+
+							<svg class="personEyesCenter" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 512"><path d="M848.8 179.2C881.3 211.6 884.6 266.7 854.7 302 846.3 311.9 837.5 319.2 826 325.2 808.9 334.2 795.8 335.2 777 335 769.3 334.9 762.3 333.1 755 330.7 729.6 322.2 709.5 303.9 699.5 279 693 263 693 255.7 693 239 693 229.3 694.6 223.1 697.7 214 708.9 180.7 736.8 159.1 771 153.4 799.3 149.9 828.5 158.8 848.8 179.2ZM314.8 181.2C347.3 213.6 350.6 268.7 320.7 304 312.3 313.9 303.5 321.2 292 327.2 274.9 336.2 261.8 337.2 243 337 235.3 336.9 228.3 335.1 221 332.7 195.6 324.2 175.5 305.9 165.5 281 159 265 159 257.7 159 241 159 231.3 160.6 225.1 163.7 216 174.9 182.7 202.8 161.1 237 155.4 265.3 151.9 294.5 160.8 314.8 181.2ZM752.8 229C747.6 247.3 760.4 267.8 780 268 787.2 268.1 791.7 268.1 798 264 818.3 251 816.6 221.2 795 210.4 789.1 207.4 781.5 207.6 775 208.3 764.9 210.8 755.7 218.8 752.8 229ZM218.8 231C213.6 249.3 226.4 269.8 246 270 253.2 270.1 257.7 270.1 264 266 284.3 253 282.6 223.2 261 212.4 255.1 209.4 247.5 209.6 241 210.3 230.9 212.8 221.7 220.8 218.8 231Z" ng-style="{fill: eyeColor(relative)}"/></svg>
+
+							<svg ng-style="{fill: hairColor(relative)}" ng-if="relative.sexo == 'M'" class="personMaleHair" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 170"><path d="M107 7c3.64-2.43 5.48-4.6 10-3l-4 6c11.98 2.37 9.22-3.92 16 0l-4 2c7.35 9.43 18.58 13.91 19 33l-3-1-4.15 40c-.61 5.03-.46 12.12-5.85 14 .16-7.52 2.89-21.61 1.66-28-1.86-9.68-8.57-8.11-8.66-21-.02-3.52.15-6.52-.68-10-.51-2.11-1.24-4.1-2.46-5.91-9.39-13.89-24.76-.97-34.86-1.22-8.15-.2-19.81-7.04-29-1.78-11.7 6.68-8.69 18.3-10.43 24.91-1.32 5.05-6.18 8.4-9.34 16-2.67 7.57-.87 17.13 0 25-6.02-4.82-6.77-12.84-7.25-20L29 65c-.06-5.79.99-20.39 2-26l-5 4c1.32-5.77 3.01-9.78 5.78-15C42.18 8.44 60.63 3.97 81 4c7.23.01 12 1.08 19 2l-3-6c5.57.64 7.53 1.9 10 7zM57.6 121c1.76 2.21 5.03 6.75 7.49 7.89 3.96 1.83 14.26-2.58 20.91-2.85 7.54-.3 11.28 1.8 18 4.68 2.88 1.23 6.8 3.47 9.79 1.58 2.37-1.5 4.7-6.72 5.95-9.3 4.49-9.26 4.63-16.66 13.26-23-1.4 17.22-5.94 34.93-17.87 47.91-4.36 4.74-8.73 9.5-15.13 11.09l1-5c-2.44 3.33-8.51 14.41-12.09 15.26-4.12.97-6.9-4.56-8.95-7.21-3.49-4.51-5.1-4.13-8.92-7.39L61 144v3c-4.77-3.58-13.09-13.53-15.47-19l-3.41-12c-3.07-7.38-6.35-10.53-7.12-19 8.6 2.53 16.93 16.91 22.6 24z"/></svg>
+
+							<svg ng-style="{fill: hairColor(relative)}" ng-if="relative.sexo == 'F'" class="personFemaleHair" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M214.1 498C214.1 498 215 487 215 487 215 487 213.2 457 213.2 457 212.1 447.9 209.7 435.1 203.7 428 203.7 428 180 408.6 180 408.6 167.4 398.5 155.5 387.6 145.3 375 138.2 366.3 130.3 353.7 131.3 342 132.2 331.8 139.2 323.9 146 317 150 313 156.4 307.3 155.5 301 154.3 292 137.6 280.6 131.3 273 119.9 259.3 117.7 246 116.7 229 116.7 229 116.7 221 116.7 221 118 197.6 124.5 178.5 133.2 157 133.2 157 145.3 128 145.3 128 145.3 128 150.4 99 150.4 99 150.4 99 154.4 79 154.4 79 161.7 46.5 177.8 0.5 218 0 218 0 227 0 227 0 235.2 0.1 246.5 3.1 254 6.3 257 7.6 266.5 12.3 269 12.2 269 12.2 287 4.7 287 4.7 304.2-1.5 323.4-2.9 338 10.2 347.7 18.9 352.7 31 357.1 43 364.5 63.8 366.9 87.2 369.7 109 369.7 109 372.9 133 372.9 133 375.6 145 381.1 150.3 386.2 161 393.6 176.5 396.6 188.9 394.8 206 393.6 218.4 386.1 230.5 379.8 241 375.9 247.6 370.5 256.1 371.2 264 371.7 270.6 375.8 276 378.2 282 383.1 294.1 387.8 306.8 388 320 388.2 339.7 384.2 352.1 370.8 367 370.8 367 344.4 393 344.4 393 335.8 403.9 341.5 409.5 332.3 424 321 441.8 304.9 455.7 289 469.3 281.2 475.9 265.7 488.5 257 493 259.3 487.5 263.5 483.1 266.6 478 270.9 470.9 276.5 458.2 277.7 450 279.1 440.4 276.4 433.2 275.3 424 273.6 410.3 273.3 396.4 277 383 279.8 372.9 284 364.9 291.4 357.3 298.3 350.4 304 349.8 304.4 345 304.6 341.7 297.1 326.7 295.3 323 288.8 310 282.8 293.5 287.6 279 291 268.6 301.4 262.4 310 256.7 322 248.6 342.6 232.9 351.5 222 357.1 215.2 361.8 208.2 361.7 199 361.5 188.9 352.7 180.9 345 175.7 341.1 173 335.8 170.3 333.6 166 331.7 162.4 329.7 149.6 328.9 145 326.8 132.2 324.1 116.7 318.7 105 314.9 96.8 308.1 87.2 298 87.2 292.1 87.2 283.8 91.7 279 95 276.5 96.8 272 101 269 101 265.3 101 261.6 96 255 94 242.7 90.2 231.9 101.9 225.8 111 216.7 124.4 216.4 133.1 212.6 148 209.4 160.9 203.3 179.1 195.9 190 194.3 192.5 191.9 195.5 189.7 197.5 185.4 201.3 173.3 205.3 176.8 218 181.1 233.4 202.3 249.4 215 258.3 215 258.3 227.7 266.8 227.7 266.8 230.8 270 228.1 272.8 226.3 276 224 280.2 221.4 286.1 222.4 291 223.6 297.1 228.6 300.6 232.4 305 239.1 312.9 248.7 326.2 247.8 337 246.6 351.9 228.5 358.3 227.1 374 226.5 380.9 230.2 390.2 232 397 233.8 403.8 234.4 412 234.9 419 235.3 424.2 234.6 426.2 233.9 431 233.9 431 233.9 439 233.9 439 232 453 228.9 466.4 225.4 480 225.4 480 218.3 502 218.3 502 217 505.9 216.3 509.5 213 512 214.4 504.1 213.6 504.8 214.1 498Z"/></svg>
+
+							<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" version="1.1" style="width:0;height:0;position:absolute;">
+							<defs>
+							<linearGradient id="eyeGradient" spreadMethod="pad" x1="0%" y1="0%" x2="100%" y2="0%">
+							<stop offset="0%" style="stop-color:rgb(106, 181, 103);stop-opacity:1;" />
+								<stop offset="69%" style="stop-color:rgb(82, 59, 59);stop-opacity:1;" />
+								<stop offset="100" style="stop-color:rgb(82, 59, 59);stop-opacity:1;" />
+							</linearGradient>
+							</defs>
+							<rect width="300" height="300" y="0" x="0" fill="url(#eyeGradient)"/>
+							</svg>
+
+						</div>
+						<div class="col">
+							<div>
+								(F{{relative.f}}/S{{relative.s}}/M{{relative.m}})&nbsp;${{relative.recursos}}&nbsp;<img class="lifeIcon" src="/img/blood.png"/>{{relative.saude}}/{{relative.saude_max}}
+							</div>
+							<div>
+								<span ng-if="relative.sexo == 'M'">Masculino</span><span ng-if="relative.sexo == 'F'">Feminino</span>, {{relative.idade}} anos, {{relative.nacionalidade}}. Mora em {{relative.moradia}} em {{relative.bairro}}.
+							</div>
+							<div>
+								Pele {{relative.pele}}, cabelo {{relative.cabelo}}, olhos {{relative.olhos}}. <span ng-if="relative.familia != undefined">Família {{relative.familia}}</span><span ng-if="relative.familia == undefined">Sem família</span>.
+							</div>
+							<div>
+								Instinto {{relative.instinto}}, obrigação de natureza {{relative.natureza_obrigacao}} para com {{relative.obrigacao}}.
+							</div>
+							<div>
+								<div ng-repeat="profession in relative.professions track by $index">{{profession.profissao.nome}}<span ng-if="profession.negocio != null">&nbsp;em {{profession.negocio.nome}}, {{profession.negocio.bairro}}</span>.</div>
+							</div>
+							<div ng-if="relative.l1 != null && relative.l1.sick">Doente.</div>
+							<div ng-if="relative.l1 != null">
+								N1:  <span ng-if="relative.l1.sleeping">Dormindo em </span><span ng-if="relative.l1.working && relative.l1.location != null">Trabalhando em {{relative.l1.location.nome}}, {{relative.l1.location.bairro}}</span><span ng-if="relative.l1.working && relative.l1.location == null">Trabalhando</span><span ng-if="!relative.l1.working">{{relative.l1.location.nome}}, {{relative.l1.location.bairro}}</span>.
+							</div>
+							<div ng-if="relative.l2 != null">
+								N2:  <span ng-if="relative.l2.sleeping">Dormindo em </span><span ng-if="relative.l2.working && relative.l2.location != null">Trabalhando em {{relative.l2.location.nome}}, {{relative.l2.location.bairro}}</span><span ng-if="relative.l2.working && relative.l2.location == null">Trabalhando</span><span ng-if="!relative.l2.working">{{relative.l2.location.nome}}, {{relative.l2.location.bairro}}</span>.
+							</div>
+							<div ng-if="relative.l3 != null">
+								N3:  <span ng-if="relative.l3.sleeping">Dormindo em </span><span ng-if="relative.l3.working && relative.l3.location != null">Trabalhando em {{relative.l3.location.nome}}, {{relative.l3.location.bairro}}</span><span ng-if="relative.l3.working && relative.l3.location == null">Trabalhando</span><span ng-if="!relative.l3.working">{{relative.l3.location.nome}}, {{relative.l3.location.bairro}}</span>.
 							</div>
 						</div>
 					</div>
 				</div>	
 			</div>
+		</div>
+		
 		</div>
 	</div>
 </body>

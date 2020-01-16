@@ -6,6 +6,16 @@ body{
 	background-size: auto;
 }
 
+img.lifeIcon{
+	width: auto;
+	height: 3vh;
+}
+
+img.smallLifeIcon{
+	width: auto;
+	height: 2vh;
+}
+
 span.spanNick{
 	font-style: italic;
 }
@@ -140,4 +150,8 @@ svg.personHead{
 
 div.portrait{
 	height: 18vh;
+}
+
+table.npcListTable td{
+	border-color: white;
 }

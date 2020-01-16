@@ -1,6 +1,13 @@
 var express = require("express");
 var { Client } = require('pg');
 var app = express();
+var bodyParser = require('body-parser');
+app.use( bodyParser.json() );       
+app.use(bodyParser.urlencoded({     
+  extended: true
+}));
+app.use(express.json());       // to support JSON-encoded bodies
+app.use(express.urlencoded()); // to support URL-encoded bodies
 
 app.use(express.static('public'))
 
@@ -21,7 +28,8 @@ app.get("/npc", (req, res, next) => {
 			npc.apelido apelido, 
 			cor_pele.cor pele, 
 			cor_olhos.cor olhos, 
-			cor_cabelo.cor cabelo, 
+			cor_cabelo.cor cabelo,
+			moradia.id moradiaId, 
 			moradia.nome moradia, 
 			bairro.nome bairro, 
 			npc.fisico F, 
@@ -30,7 +38,10 @@ app.get("/npc", (req, res, next) => {
 			familia.nome familia, 
 			instinto.nome instinto, 
 			obrigacao.nome obrigacao, 
-			natureza_obrigacao.nome natureza_obrigacao
+			natureza_obrigacao.nome natureza_obrigacao,
+			recursos recursos,
+			saude,
+			saude_max
 		from npc
 		join sexo on npc.sexo = sexo.id
 		join nacionalidade on nacionalidade.id = npc.nacionalidade
@@ -51,6 +62,26 @@ app.get("/npc", (req, res, next) => {
 	});
 });
 
+app.post("/saveResources", (req, res, next) => {
+	const client = new Client()
+	client.connect()
+	client.query("update npc set recursos = "+req.body.recursos+" where id = "+req.body.id,
+		 (err, result) => {
+	  res.json(result.rows)
+	  client.end()
+	});
+});
+
+app.post("/saveHealth", (req, res, next) => {
+	const client = new Client()
+	client.connect()
+	client.query("update npc set saude = "+req.body.saude+" where id = "+req.body.id,
+		 (err, result) => {
+	  res.json(result.rows)
+	  client.end()
+	});
+});
+
 app.get("/location", (req, res, next) => {
 	const client = new Client()
 	client.connect()
@@ -60,6 +91,21 @@ app.get("/location", (req, res, next) => {
 		from negocio n
 		join tipo_negocio tn on tn.id = n.tipo_negocio
 		join bairro b on b.id = n.bairro
+		`,
+		 (err, result) => {
+	  res.json(result.rows)
+	  client.end()
+	})
+});
+
+app.get("/moradias", (req, res, next) => {
+	const client = new Client()
+	client.connect()
+	client.query(
+		`
+		select m.id, m.nome, b.nome bairro
+		from moradia m
+		join bairro b on b.id = m.bairro
 		`,
 		 (err, result) => {
 	  res.json(result.rows)

@@ -1,28 +1,46 @@
 const app = angular.module("app", []);
 app.controller("controller", function($scope, $http) {  
-	$http.get('/npc').then(function(response, status){
-		$scope.npcs = response.data;
-		$scope.selectedNpc = $scope.npcs[0];
-	}, function(){
-		alert("error");
-	});
 	$http.get('/location').then(function(response, status){
 		$scope.locations = _.sortBy(response.data, (l) => {return l.id;});
-	}, function(){
-		alert("error");
-	});
-	$http.get('/professions').then(function(response, status){
-		$scope.professions = response.data;
-	}, function(){
-		alert("error");
-	});
-	$http.get('/professionsNpcs').then(function(response, status){
-		$scope.professionsNpcs = response.data;
+		$http.get('/professions').then(function(response, status){
+			$scope.professions = response.data;
+			$http.get('/professionsNpcs').then(function(response, status){
+				$scope.professionsNpcs = response.data;
+				$http.get('/npc').then(function(response, status){
+					$scope.npcs = response.data;
+					$scope.npcs = _.map($scope.npcs, (npc) => {
+						let jobs = _.filter($scope.professionsNpcs, (prof) => {
+							return prof.npc == npc.id;
+						});
+						let professions = _.map(jobs, (job) => {
+							return {
+								profissao: _.find($scope.professions, (profession) => {return profession.id == job.profissao;}),
+								negocio: _.find($scope.locations, (l) => {return l.id == job.negocio;})
+							}
+						});
+						return {...npc, professions: professions};
+					});
+					$scope.selectedNpc = $scope.npcs[0];
+					console.log("done");
+				}, function(){
+					alert("error");
+				});
+			}, function(){
+				alert("error");
+			});
+		}, function(){
+			alert("error");
+		});
 	}, function(){
 		alert("error");
 	});
 	$http.get('/clientesNegocio').then(function(response, status){
 		$scope.locationPreferences = response.data;
+	}, function(){
+		alert("error");
+	});
+	$http.get('/moradias').then(function(response, status){
+		$scope.moradias = response.data;
 	}, function(){
 		alert("error");
 	});
@@ -83,6 +101,10 @@ app.controller("controller", function($scope, $http) {
 		$scope.selectedNpc = npc;
 	}
 
+	$scope.selectNpcById = function(id){
+		$scope.selectedNpc = _.find($scope.npcs, (npc) => {return npc.id == id;});
+	}
+
 	const skin = {
 		"Branco": "#dec6c6",
 		"Marrom": "#58473c",
@@ -118,15 +140,76 @@ app.controller("controller", function($scope, $http) {
 		return hair[npc.cabelo];
 	}
 
-	const generateFinalLocation = function(npc, period){
+	const generateFinalLocation = function(npc, period, isSick){
 		let professions = _.filter($scope.professionsNpcs, (prof) => {
 			let location = _.find($scope.locations, (l) => {return l.id == prof.negocio});
-			return prof.npc == npc.id && location["n"+period];
+			return prof.npc == npc.id && (location == null || location["n"+period]);
 		});
+		if(npc.idade <= 6){
+			return {
+				location: {
+						nome: "Com os pais",
+						bairro: npc.bairro
+				},
+				working: false,
+				sleeping: false,
+				sick: isSick
+			}
+		}
 		if(!_.isEmpty(professions)){
 			let workingSeed = Math.random();
-			let isWorking = workingSeed > 0.95;
-
+			let isWorking = workingSeed < 0.95;
+			if(isWorking){
+				let jobSeed = Math.random();
+				let job;
+				if(_.size(professions) > 1){
+					if(jobSeed < 0.5){
+						job = professions[0];
+					} else{
+						job = professions[1];
+					}
+				} else{
+					job = professions[0];
+				}
+				if( 1==1
+					&& job.profissao != 2 // Aposentado
+					&& job.profissao != 9 // Detetive
+					&& job.profissao != 17 // Faxineiro de rua
+					&& job.profissao != 28 // Guarda do Tráfico
+					&& job.profissao != 33 // Morador de Rua
+					&& job.profissao != 24 // Piloto de Táxi
+					&& job.profissao != 37 // Policial
+					&& job.profissao != 42 // Transporte de Drogas
+					&& job.profissao != 43 // Turista
+					&& job.profissao != 46 // Vendedor de Drogas
+					){ 
+					let finalLocation = _.find($scope.locations, (l) => {return l.id == job.negocio;});
+					if(finalLocation != null){
+						finalLocation["npcListN"+period].push({...npc, working: true});
+					}
+					return {
+						location: finalLocation,
+						working: true,
+						sleeping: false,
+						sick: isSick
+					}
+				}
+			}
+		}
+		if(period == 3){
+			let sleepingSeed = Math.random();
+			let isSleeping = sleepingSeed < 0.95;
+			if(isSleeping){
+				return {
+					location: {
+						nome: npc.moradia,
+						bairro: npc.bairro
+					},
+					working: false,
+					sleeping: true,
+					sick: isSick
+				}
+			}
 		}
 
 		let locationSeed = Math.random();
@@ -147,7 +230,7 @@ app.controller("controller", function($scope, $http) {
 								&& ( _.isUndefined(locationPref.comprofissao) || _.isNull(locationPref.comprofissao) || false /* TODO */)
 								&& ( _.isUndefined(locationPref.semprofissao) || _.isNull(locationPref.semprofissao) || false /* TODO */)
 								&& ( _.isUndefined(locationPref.idademaior) || _.isNull(locationPref.idademaior) || npc.idade >= locationPref.idademaior)
-								&& ( _.isUndefined(locationPref.idademenor) || _.isNull(locationPref.idademenor) || npc.idade <= locationPref.idademaior)
+								&& ( _.isUndefined(locationPref.idademenor) || _.isNull(locationPref.idademenor) || npc.idade <= locationPref.idademenor)
 								&& ( _.isUndefined(locationPref.riquezamaior) || _.isNull(locationPref.riquezamaior) || false /* TODO */)
 								&& ( _.isUndefined(locationPref.riquezamenor) || _.isNull(locationPref.riquezamenor) || false /* TODO */)
 								&& ( _.isUndefined(locationPref.comsexo) || _.isNull(locationPref.comsexo) || npc.sexo == locationPref.comsexo)
@@ -174,8 +257,13 @@ app.controller("controller", function($scope, $http) {
 			return seed > 0 ? locationSeed < sum/totalChance : false;
 		}).negocio;
 		let finalLocation = _.find($scope.locations, (l) => {return l.id == locationId});
-		finalLocation["npcListN"+period].push({...npc, totalChance: totalChance});
-		return finalLocation;
+		finalLocation["npcListN"+period].push({...npc, working: false});
+		return {
+			location: finalLocation,
+			working: false,
+			sleeping: false,
+			sick: isSick
+		}
 	}
 
 	$scope.generateNight = function(){
@@ -198,19 +286,34 @@ app.controller("controller", function($scope, $http) {
 				let goesToDockor = doctorCheck < 0.5*_.find($scope.npcPreferences, (pref) => {
 				return pref.npc == npc.id && pref.negocio == hospital.id}).seed;
 				if(goesToDockor){
-					npc.l1 = hospital;
-					npc.l2 = hospital;
-					npc.l3 = hospital;
+					npc.l1 = {
+						location: hospital,
+						working: false,
+						sleeping: false,
+						sick: true,
+					};
+					npc.l2 = {
+						location: hospital,
+						working: false,
+						sleeping: false,
+						sick: true,
+					};
+					npc.l3 = {
+						location: hospital,
+						working: false,
+						sleeping: false,
+						sick: true,
+					};
 					return;
 				}
 			}
-			let l1 = generateFinalLocation(npc, 1);
-			let l2 = generateFinalLocation(npc, 2);
-			let l3 = generateFinalLocation(npc, 3);
+			let l1 = generateFinalLocation(npc, 1, isSick);
+			let l2 = generateFinalLocation(npc, 2, isSick);
+			let l3 = generateFinalLocation(npc, 3, isSick);
 			npc.l1 = l1;
 			npc.l2 = l2;
 			npc.l3 = l3;
-			npc.trabalhando = true;
+			
 		});
 	}
 
@@ -220,6 +323,7 @@ app.controller("controller", function($scope, $http) {
 		$scope.npcAgeMoreFilter = undefined;
 		$scope.npcAgeLessFilter = undefined;
 		$scope.npcBairroFilter = undefined;
+		$scope.npcMoradiaFilter = undefined;
 	}
 
 	$scope.matchFilter = function(npc){
@@ -245,6 +349,11 @@ app.controller("controller", function($scope, $http) {
 		}
 		if(!_.isUndefined($scope.npcBairroFilter) && !_.isEmpty($scope.npcBairroFilter)){
 			if(npc.bairro != $scope.npcBairroFilter){
+				return false;
+			}
+		}
+		if(!_.isUndefined($scope.npcMoradiaFilter)){
+			if(npc.moradiaid != parseInt($scope.npcMoradiaFilter)){
 				return false;
 			}
 		}
@@ -287,4 +396,31 @@ app.controller("controller", function($scope, $http) {
 		}
 		return true;
 	}
+
+	$scope.saveSelectedNpcResources = function(){
+		$http.post('/saveResources', {id: $scope.selectedNpc.id, recursos: $scope.selectedNpc.recursos}).then(function(response, status){
+
+		}, function(){
+			alert("error");
+		});
+	}
+
+	$scope.saveSelectedNpcHealth = function(){
+		$http.post('/saveHealth', {id: $scope.selectedNpc.id, saude: $scope.selectedNpc.saude}).then(function(response, status){
+
+		}, function(){
+			alert("error");
+		});
+	}
+
+	$scope.selectedNpcRelatives = function(){
+		if($scope.selectedNpc.familia == null){
+			return [];
+		}
+		let result = _.filter($scope.npcs, (npc) => {
+			return npc.familia == $scope.selectedNpc.familia && npc.id != $scope.selectedNpc.id
+		});
+		return result;
+	}
+
 });
