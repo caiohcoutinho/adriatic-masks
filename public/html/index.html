@@ -96,12 +96,17 @@
 						</div>
 						<div class="row">
 							<div class="col">
+								{{npc.descricao}}
+							</div>
+						</div>
+						<div class="row">
+							<div class="col">
 								Pele {{npc.pele}}, cabelo {{npc.cabelo}}, olhos {{npc.olhos}}. Mora em {{npc.moradia}}. <span ng-if="npc.familia != undefined">Família {{npc.familia}}</span><span ng-if="npc.familia == undefined">Sem família</span>.
 							</div>
 						</div>
 						<div class="row">
 							<div class="col">
-								Instinto {{npc.instinto}}, obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}.
+								<span ng-if="npc.ressonancia == 'NONE'">Sem ressonância.&nbsp;</span><span ng-if="npc.ressonancia == 'FLEETING'">Ressonância fraca (fleeting).&nbsp;</span><span ng-if="npc.ressonancia == 'INTENSE'">Ressonância intensa (intense).&nbsp;</span><span ng-if="npc.ressonancia == 'DYSCRASIA'"><b>DYSCRASIA</b>.&nbsp;</span>Instinto {{npc.instinto}} ({{npc.humor}}), obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}.
 							</div>
 						</div>
 						<div>
@@ -167,58 +172,86 @@
 							</div>
 						</div>
 					</form>
+					<form>
+						<div class="form-row">
+							<div class="col">
+								Mostrar N1: <input type="checkbox" ng-model="showN1">
+							</div>
+							<div class="col">
+								Mostrar N2: <input type="checkbox" ng-model="showN2">
+							</div>
+							<div class="col">
+								Mostrar N3: <input type="checkbox" ng-model="showN3">
+							</div>
+						</div>
+					</form>
 					<div ng-repeat="location in locations track by location.id" class="locationDiv" ng-if="matchLocationFilter(location)">
 						<hr class="locationLineBreak lineBreak"/>
 						<div class="spacedRow row">
-							<div class="col-6 locationCell">
+							<div class="col-4 locationCell">
 								#{{location.id}} - {{location.nome}}
 							</div>
-							<div class="col-6">
+							<div class="col-4">
+								<input type="text" ng-model="location.descricao"><button ng-click="saveLocationDescription(location)">Salvar</button>
+							</div>
+							<div class="col-4">
 								{{location.tipo}} em {{location.bairro}}
 							</div>
 						</div>
 						<div class="spacedRow row">
-							<div class="col">
+							<div class="col" ng-if="showN1">
 								<div class="row">
 									N1:&nbsp;<span ng-if="location.n1">Aberto</span><span ng-if="!location.n1">Fechado</span>
 								</div>
 								<table class="npcListTable">
-									<tr ng-repeat="npc in location.npcListN1 track by $index">
+									<tr ng-repeat="npc in location.npcListN1 track by $index" class="locationNpcLink" ng-click="selectNpcById(npc.id)">
 										<td>
-											<span class="locationNpcLink" ng-click="selectNpcById(npc.id)" ng-attr-title="#{{npc.id}} {{npc.apelido}} (F{{npc.f}}/S{{npc.s}}/M{{npc.m}}). {{npc.sexo}}, {{npc.idade}}, {{npc.nacionalidade}}, {{npc.bairro}}. Pele {{npc.pele}}, cabelo {{npc.cabelo}}, olhos {{npc.olhos}}. Mora em {{npc.moradia}}. Família {{npc.familia}}. Instinto {{npc.instinto}}, obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}.">{{npc.nome}}</span>
+											<span ng-attr-title="#{{npc.id}} {{npc.apelido}} (F{{npc.f}}/S{{npc.s}}/M{{npc.m}}). {{npc.sexo}}, {{npc.idade}}, {{npc.nacionalidade}}, {{npc.bairro}}. Pele {{npc.pele}}, cabelo {{npc.cabelo}}, olhos {{npc.olhos}}. Mora em {{npc.moradia}}. Família {{npc.familia}}. Instinto {{npc.instinto}}, obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}.">{{npc.nome}}</span>
 										</td>
 										<td>
 											<span ng-repeat="profession in npc.professions track by $index">{{profession.profissao.nome}}<span ng-if="!$last">/</span></span><span ng-if="npc.working">&nbsp;(Trabalhando)</span>
 										</td>
+										<td><span ng-if="npc.ressonancia == 'NONE'">None</span><span ng-if="npc.ressonancia == 'FLEETING'">Fraca</span><span ng-if="npc.ressonancia == 'INTENSE'">INTENSA</span><span ng-if="npc.ressonancia == 'DYSCRASIA'"><b>DYSCRASIA</b></span></td>
+										<td>
+											{{npc.instinto}}/{{npc.humor}}
+										</td>
 									</tr>
 								</table>
 							</div>
-							<div class="col">
+							<div class="col" ng-if="showN2">
 								<div class="row">
 									N2:&nbsp;<span ng-if="location.n2">Aberto</span><span ng-if="!location.n2">Fechado</span>
 								</div>
 								<table class="npcListTable">
-									<tr ng-repeat="npc in location.npcListN2 track by $index">
+									<tr ng-repeat="npc in location.npcListN2 track by $index" class="locationNpcLink" ng-click="selectNpcById(npc.id)">
 										<td>
-											<span class="locationNpcLink" ng-click="selectNpcById(npc.id)" ng-attr-title="#{{npc.id}} {{npc.apelido}} (F{{npc.f}}/S{{npc.s}}/M{{npc.m}}). {{npc.sexo}}, {{npc.idade}}, {{npc.nacionalidade}}, {{npc.bairro}}. Pele {{npc.pele}}, cabelo {{npc.cabelo}}, olhos {{npc.olhos}}. Mora em {{npc.moradia}}. Família {{npc.familia}}. Instinto {{npc.instinto}}, obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}.">{{npc.nome}}</span>
+											<span ng-attr-title="#{{npc.id}} {{npc.apelido}} (F{{npc.f}}/S{{npc.s}}/M{{npc.m}}). {{npc.sexo}}, {{npc.idade}}, {{npc.nacionalidade}}, {{npc.bairro}}. Pele {{npc.pele}}, cabelo {{npc.cabelo}}, olhos {{npc.olhos}}. Mora em {{npc.moradia}}. Família {{npc.familia}}. Instinto {{npc.instinto}}, obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}.">{{npc.nome}}</span>
 										</td>
 										<td>
 											<span ng-repeat="profession in npc.professions track by $index">{{profession.profissao.nome}}<span ng-if="!$last">/</span></span><span ng-if="npc.working">&nbsp;(Trabalhando)</span>
+										</td>
+										<td><span ng-if="npc.ressonancia == 'NONE'">None</span><span ng-if="npc.ressonancia == 'FLEETING'">Fraca</span><span ng-if="npc.ressonancia == 'INTENSE'">INTENSA</span><span ng-if="npc.ressonancia == 'DYSCRASIA'"><b>DYSCRASIA</b></span></td>
+										<td>
+											{{npc.instinto}}/{{npc.humor}}
 										</td>
 									</tr>
 								</table>
 							</div>
-							<div class="col">
+							<div class="col"  ng-if="showN3">
 								<div class="row">
 									N3:&nbsp;<span ng-if="location.n3">Aberto</span><span ng-if="!location.n3">Fechado</span>
 								</div>
 								<table class="npcListTable">
-									<tr ng-repeat="npc in location.npcListN3 track by $index">
+									<tr ng-repeat="npc in location.npcListN3 track by $index" class="locationNpcLink" ng-click="selectNpcById(npc.id)">
 										<td>
-											<span class="locationNpcLink" ng-click="selectNpcById(npc.id)" ng-attr-title="#{{npc.id}} {{npc.apelido}} (F{{npc.f}}/S{{npc.s}}/M{{npc.m}}). {{npc.sexo}}, {{npc.idade}}, {{npc.nacionalidade}}, {{npc.bairro}}. Pele {{npc.pele}}, cabelo {{npc.cabelo}}, olhos {{npc.olhos}}. Mora em {{npc.moradia}}. Família {{npc.familia}}. Instinto {{npc.instinto}}, obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}.">{{npc.nome}}</span>
+											<span ng-attr-title="#{{npc.id}} {{npc.apelido}} (F{{npc.f}}/S{{npc.s}}/M{{npc.m}}). {{npc.sexo}}, {{npc.idade}}, {{npc.nacionalidade}}, {{npc.bairro}}. Pele {{npc.pele}}, cabelo {{npc.cabelo}}, olhos {{npc.olhos}}. Mora em {{npc.moradia}}. Família {{npc.familia}}. Instinto {{npc.instinto}}, obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}.">{{npc.nome}}</span>
 										</td>
 										<td>
 											<span ng-repeat="profession in npc.professions track by $index">{{profession.profissao.nome}}<span ng-if="!$last">/</span></span><span ng-if="npc.working">&nbsp;(Trabalhando)</span>
+										</td>
+										<td><span ng-if="npc.ressonancia == 'NONE'">None</span><span ng-if="npc.ressonancia == 'FLEETING'">Fraca</span><span ng-if="npc.ressonancia == 'INTENSE'">INTENSA</span><span ng-if="npc.ressonancia == 'DYSCRASIA'"><b>DYSCRASIA</b></span></td>
+										<td>
+											{{npc.instinto}}/{{npc.humor}}
 										</td>
 									</tr>
 								</table>
@@ -269,10 +302,13 @@
 								<span ng-if="selectedNpc.sexo == 'M'">Masculino</span><span ng-if="selectedNpc.sexo == 'F'">Feminino</span>, {{selectedNpc.idade}} anos, {{selectedNpc.nacionalidade}}. Mora em {{selectedNpc.moradia}} em {{selectedNpc.bairro}}.
 							</div>
 							<div>
+								{{selectedNpc.descricao}}
+							</div>
+							<div>
 								Pele {{selectedNpc.pele}}, cabelo {{selectedNpc.cabelo}}, olhos {{selectedNpc.olhos}}. <span ng-if="selectedNpc.familia != undefined">Família {{selectedNpc.familia}}</span><span ng-if="selectedNpc.familia == undefined">Sem família</span>.
 							</div>
 							<div>
-								Instinto {{selectedNpc.instinto}}, obrigação de natureza {{selectedNpc.natureza_obrigacao}} para com {{selectedNpc.obrigacao}}.
+								<span ng-if="selectedNpc.ressonancia == 'NONE'">Sem ressonância.&nbsp;</span><span ng-if="selectedNpc.ressonancia == 'FLEETING'">Ressonância fraca (fleeting).&nbsp;</span><span ng-if="selectedNpc.ressonancia == 'INTENSE'">Ressonância intensa (intense).&nbsp;</span><span ng-if="selectedNpc.ressonancia == 'DYSCRASIA'"><b>DYSCRASIA</b>.&nbsp;</span>Instinto {{selectedNpc.instinto}} ({{selectedNpc.humor}}), obrigação de natureza {{selectedNpc.natureza_obrigacao}} para com {{selectedNpc.obrigacao}}.
 							</div>
 							<div>
 								<div ng-repeat="profession in selectedNpc.professions track by $index">{{profession.profissao.nome}}<span ng-if="profession.negocio != null">&nbsp;em {{profession.negocio.nome}}, {{profession.negocio.bairro}}</span>.</div>
@@ -289,6 +325,9 @@
 							</div>
 							<div>
 								Saude: <input type="number" ng-model="selectedNpc.saude"><button ng-click="saveSelectedNpcHealth()">Salvar</button>
+							</div>
+							<div>
+								Descrição: <input type="text" ng-model="selectedNpc.descricao"><button ng-click="saveSelectedNpcDescription()">Salvar</button>
 							</div>
 						</div>
 					</div>
@@ -335,10 +374,13 @@
 								<span ng-if="relative.sexo == 'M'">Masculino</span><span ng-if="relative.sexo == 'F'">Feminino</span>, {{relative.idade}} anos, {{relative.nacionalidade}}. Mora em {{relative.moradia}} em {{relative.bairro}}.
 							</div>
 							<div>
+								{{npc.descricao}}
+							</div>
+							<div>
 								Pele {{relative.pele}}, cabelo {{relative.cabelo}}, olhos {{relative.olhos}}. <span ng-if="relative.familia != undefined">Família {{relative.familia}}</span><span ng-if="relative.familia == undefined">Sem família</span>.
 							</div>
 							<div>
-								Instinto {{relative.instinto}}, obrigação de natureza {{relative.natureza_obrigacao}} para com {{relative.obrigacao}}.
+								<span ng-if="relative.ressonancia == 'NONE'">Sem ressonância.&nbsp;</span><span ng-if="relative.ressonancia == 'FLEETING'">Ressonância fraca (fleeting).&nbsp;</span><span ng-if="relative.ressonancia == 'INTENSE'">Ressonância intensa (intense).&nbsp;</span><span ng-if="relative.ressonancia == 'DYSCRASIA'"><b>DYSCRASIA</b>.&nbsp;</span>Instinto {{relative.instinto}} ({{relative.humor}}), obrigação de natureza {{relative.natureza_obrigacao}} para com {{relative.obrigacao}}.
 							</div>
 							<div>
 								<div ng-repeat="profession in relative.professions track by $index">{{profession.profissao.nome}}<span ng-if="profession.negocio != null">&nbsp;em {{profession.negocio.nome}}, {{profession.negocio.bairro}}</span>.</div>

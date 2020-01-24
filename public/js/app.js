@@ -77,25 +77,31 @@ app.controller("controller", function($scope, $http) {
 		$scope.night = _.sortBy($scope.night, "l3")
 	}
 
+	$scope.showN1 = true;
+
 	$scope.showNpc = function(){
 		$scope.showNpcTab = true;
 		$scope.showLocationTab = false;
-		$scope.showGeneratorTab = false;
 	}
 
 	$scope.showLocation = function(){
 		$scope.showNpcTab = false;
 		$scope.showLocationTab = true;
-		$scope.showGeneratorTab = false;
-	}
-
-	$scope.showGenerator = function(){
-		$scope.showNpcTab = false;
-		$scope.showLocationTab = false;
-		$scope.showGeneratorTab = true;
 	}
 
 	$scope.showNpc();
+
+	const NONE = "NONE";
+	const FLEETING = "FLEETING";
+	const INTENSE = "INTENSE";
+	const DYSCRASIA = "DYSCRASIA";
+
+	$scope.upToFleeting = 0.1;
+	$scope.downToNone = 0.25;
+	$scope.upToIntense = 0.1;
+	$scope.downToFleeting = 0.2;
+	$scope.upToDyscrasia = 0.1;
+	$scope.downToIntense = 0.4;
 
 	$scope.selectNpc = function(npc){
 		$scope.selectedNpc = npc;
@@ -279,6 +285,7 @@ app.controller("controller", function($scope, $http) {
 			location.npcListN3 = [];
 		});
 		_.each($scope.npcs, (npc) => {
+			updateRessonance(npc);
 			let sickSeed = Math.random();
 			let isSick = sickSeed < 0.05;
 			if(isSick){
@@ -313,8 +320,33 @@ app.controller("controller", function($scope, $http) {
 			npc.l1 = l1;
 			npc.l2 = l2;
 			npc.l3 = l3;
-			
 		});
+		saveRessonance();
+	}
+
+	const updateRessonance = function(npc){
+		let seed = Math.random();
+		if(npc.ressonancia == NONE){
+			if(seed > 1-$scope.upToFleeting){
+				npc.ressonancia = FLEETING;
+			}
+		} else if(npc.ressonancia == FLEETING){
+			if(seed > 1-$scope.upToIntense){
+				npc.ressonancia = INTENSE;
+			} else if(seed < $scope.downToNone){
+				npc.ressonancia = NONE;
+			}
+		} else if(npc.ressonancia == INTENSE){
+			if(seed > 1-$scope.upToDyscrasia){
+				npc.ressonancia = DYSCRASIA;
+			} else if(seed < $scope.downToFleeting){
+				npc.ressonancia = FLEETING;
+			}
+		} else if(npc.ressonancia == DYSCRASIA){
+			if(seed < $scope.downToIntense){
+				npc.ressonancia = INTENSE;
+			}
+		}
 	}
 
 	$scope.clearFilter = function(){
@@ -398,7 +430,29 @@ app.controller("controller", function($scope, $http) {
 	}
 
 	$scope.saveSelectedNpcResources = function(){
-		$http.post('/saveResources', {id: $scope.selectedNpc.id, recursos: $scope.selectedNpc.recursos}).then(function(response, status){
+		$http.post('/saveResources', {id: $scope.selectedNpc.id, recursos: $scope.selectedNpc.recursos})
+			.then(function(response, status){
+
+		}, function(){
+			alert("error");
+		});
+	}
+
+	$scope.saveLocationDescription = function(location){
+		$http.post('/saveLocationDescription', {id: location.id, descricao: location.descricao})
+			.then(function(response, status){
+
+		}, function(){
+			alert("error");
+		});	
+	}
+
+	const saveRessonance = function(){
+		$http.post('/saveRessonance', 
+			{npcs: _.map($scope.npcs, (npc) => ({
+				id: npc.id, ressonancia: npc.ressonancia
+			}))}
+		).then(function(response, status){
 
 		}, function(){
 			alert("error");
@@ -407,6 +461,14 @@ app.controller("controller", function($scope, $http) {
 
 	$scope.saveSelectedNpcHealth = function(){
 		$http.post('/saveHealth', {id: $scope.selectedNpc.id, saude: $scope.selectedNpc.saude}).then(function(response, status){
+
+		}, function(){
+			alert("error");
+		});
+	}
+
+	$scope.saveSelectedNpcHealth = function(){
+		$http.post('/saveDescription', {id: $scope.selectedNpc.id, descricao: $scope.selectedNpc.descricao}).then(function(response, status){
 
 		}, function(){
 			alert("error");

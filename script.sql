@@ -197,6 +197,7 @@ create sequence instinto_id_seq;
 
 create table instinto(
 	id int NOT NULL DEFAULT nextval('instinto_id_seq'), 
+	humor int references humor(id),
 	nome varchar(255),
 	PRIMARY KEY (id)
 );
@@ -335,6 +336,7 @@ create table negocio(
 	n1 boolean,
 	n2 boolean,
 	n3 boolean,
+	descricao varchar(1024),
  	PRIMARY KEY (id)
 );
 
@@ -467,12 +469,25 @@ insert into familia(id, nome) values(38, 'Valova');
 insert into familia(id, nome) values(39, 'Beldad');
 insert into familia(id, nome) values(40, 'Petrucci');
 
+create sequence ressonancia_id_seq;
+
+create table ressonancia(
+	id int NOT NULL DEFAULT nextval('ressonancia_id_seq'), 
+	nome varchar(255),
+	PRIMARY KEY (id)
+);
+
+insert into ressonancia(id, nome) values(1, 'NONE');
+insert into ressonancia(id, nome) values(2, 'FLEETING');
+insert into ressonancia(id, nome) values(3, 'INTENSE');
+insert into ressonancia(id, nome) values(4, 'DYSCRASIA');
 
 create sequence npc_id_seq;
 
 create table npc(
 	id int NOT NULL DEFAULT nextval('npc_id_seq'), 
 	nome varchar(255),
+	descricao varchar(1024),
 	sexo int references sexo(id),
 	nacionalidade int references nacionalidade(id),
 	idade int,
@@ -504,6 +519,7 @@ create table npc(
 	recursos int,
 	saude int,
 	saude_max int,
+	ressonancia int references ressonancia(id),
  	PRIMARY KEY (id)
 );
 
@@ -1436,3 +1452,16 @@ insert into profissao_npc(npc, profissao, negocio) values (197, (select id from 
 insert into profissao_npc(npc, profissao, negocio) values (198, (select id from profissao where nome = 'Vendedor'), (select id from negocio where nome = 'Vino Veneza'));
 insert into profissao_npc(npc, profissao, negocio) values (199, (select id from profissao where nome = 'Guia turístico'), (select id from negocio where nome = 'Parco Savorgnan'));
 insert into profissao_npc(npc, profissao, negocio) values (200, (select id from profissao where nome = 'Faxineiro de rua'),null);
+
+create sequence humor_id_seq;
+
+create table humor(
+	id int NOT NULL DEFAULT nextval('humor_id_seq'), 
+	nome varchar(255),
+ 	PRIMARY KEY (id)
+);
+
+insert into humor(id, nome) values (1, 'Choleric');
+insert into humor(id, nome) values (2, 'Melancholy');
+insert into humor(id, nome) values (3, 'Phlegmatic');
+insert into humor(id, nome) values (4, 'Sanguine');

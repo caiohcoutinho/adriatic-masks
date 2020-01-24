@@ -33,7 +33,7 @@ div.nameCell, div.locationCell{
 	color: #f54e4e;
 }
 
-div.nameCell:hover, span.locationNpcLink:hover{
+div.nameCell:hover, tr.locationNpcLink:hover{
 	color: #f54e4e;
 	text-decoration: underline;
 	cursor: pointer;
