@@ -64,7 +64,11 @@ app.get("/npc", (req, res, next) => {
 		order by npc.id
 		`,
 		 (err, result) => {
-	  res.json(result.rows)
+		if(err){
+		  res.json({error: "Error"});
+		} else{
+		  res.json(result.rows)
+		}
 	  client.end()
 	});
 });
@@ -74,7 +78,11 @@ app.post("/saveResources", (req, res, next) => {
 	client.connect()
 	client.query("update npc set recursos = "+req.body.recursos+" where id = "+req.body.id,
 		 (err, result) => {
-	  res.json(result.rows)
+	  if(err){
+		  res.json({error: "Error"});
+		} else{
+		  res.json(result.rows)
+		}
 	  client.end()
 	});
 });
@@ -84,7 +92,11 @@ app.post("/saveLocationDescription", (req, res, next) => {
 	client.connect()
 	client.query("update negocio set descricao = '"+req.body.descricao+"' where id = "+req.body.id,
 		 (err, result) => {
-	  res.json(result.rows)
+	  if(err){
+		  res.json({error: "Error"});
+		} else{
+		  res.json(result.rows)
+		}
 	  client.end()
 	});
 });
@@ -100,7 +112,9 @@ const runUpdates = function(){
 	client.connect();
 	client.query("update npc set ressonancia = (select id from ressonancia where nome = '"+update.ressonancia+"') where id = "+update.id,
 		 (err, result) => {
-		 	if(err) console.log(err);
+	 	if(err){
+		  res.json({error: "Error"});
+		}
 	  client.end();
 	  runUpdates();
 	});
@@ -117,7 +131,11 @@ app.post("/saveHealth", (req, res, next) => {
 	client.connect()
 	client.query("update npc set saude = "+req.body.saude+" where id = "+req.body.id,
 		 (err, result) => {
-	  res.json(result.rows)
+	  if(err){
+		  res.json({error: "Error"});
+		} else{
+		  res.json(result.rows)
+		}
 	  client.end()
 	});
 });
@@ -127,7 +145,11 @@ app.post("/saveDescription", (req, res, next) => {
 	client.connect()
 	client.query("update npc set descricao = "+req.body.descricao+" where id = "+req.body.id,
 		 (err, result) => {
-	  res.json(result.rows)
+	  if(err){
+		  res.json({error: "Error"});
+		} else{
+		  res.json(result.rows)
+		}
 	  client.end()
 	});
 });
@@ -143,7 +165,11 @@ app.get("/location", (req, res, next) => {
 		join bairro b on b.id = n.bairro
 		`,
 		 (err, result) => {
-	  res.json(result.rows)
+	  if(err){
+		  res.json({error: "Error"});
+		} else{
+		  res.json(result.rows)
+		}
 	  client.end()
 	})
 });
@@ -158,7 +184,11 @@ app.get("/moradias", (req, res, next) => {
 		join bairro b on b.id = m.bairro
 		`,
 		 (err, result) => {
-	  res.json(result.rows)
+	  if(err){
+		  res.json({error: "Error"});
+		} else{
+		  res.json(result.rows)
+		}
 	  client.end()
 	})
 });
@@ -172,7 +202,11 @@ app.get("/professions", (req, res, next) => {
 		from profissao
 		`,
 		 (err, result) => {
-	  res.json(result.rows)
+	  if(err){
+		  res.json({error: "Error"});
+		} else{
+		  res.json(result.rows)
+		}
 	  client.end()
 	})
 });
@@ -186,7 +220,11 @@ app.get("/professionsNpcs", (req, res, next) => {
 		from profissao_npc
 		`,
 		 (err, result) => {
-	  res.json(result.rows)
+	  if(err){
+		  res.json({error: "Error"});
+		} else{
+		  res.json(result.rows)
+		}
 	  client.end()
 	})
 });
@@ -200,7 +238,11 @@ app.get("/preferencias", (req, res, next) => {
 		from preferencias_npcs 
 		`,
 		 (err, result) => {
-	  res.json(result.rows)
+	  if(err){
+		  res.json({error: "Error"});
+		} else{
+		  res.json(result.rows)
+		}
 	  client.end()
 	})
 });
@@ -214,7 +256,11 @@ app.get("/clientesNegocio", (req, res, next) => {
 		from cliente_negocio 
 		`,
 		 (err, result) => {
-	  res.json(result.rows)
+	  if(err){
+		  res.json({error: "Error"});
+		} else{
+		  res.json(result.rows)
+		}
 	  client.end()
 	})
 });
