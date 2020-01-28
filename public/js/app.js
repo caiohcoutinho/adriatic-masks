@@ -252,7 +252,7 @@ app.controller("controller", function($scope, $http) {
 					id: pref.id,
 					npc: pref.npc,
 					negocio: pref.negocio,
-					seed: pref.seed * locationPrefModifier * (location["n"+period] ? 1 : 0.05)
+					seed: Math.pow(pref.seed, 4) * locationPrefModifier * (location["n"+period] ? 1 : 0.05)
 				}
 			}
 		);
