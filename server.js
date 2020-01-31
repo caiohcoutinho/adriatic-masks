@@ -60,7 +60,7 @@ app.get("/npc", (req, res, next) => {
 		join humor h on h.id = instinto.humor
 		join natureza_obrigacao on natureza_obrigacao.id = npc.natureza_obrigacao
 		join moradia on moradia.id = npc.moradia
-		join ressonancia r on r.id = npc.ressonancia
+		left join ressonancia r on r.id = npc.ressonancia
 		order by npc.id
 		`,
 		 (err, result) => {
