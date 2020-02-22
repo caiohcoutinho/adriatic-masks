@@ -73,7 +73,7 @@ app.get("/npc", (req, res, next) => {
 		 (err, result) => {
 		 	done()
 			if(err){
-			  res.json({error: "Error"})
+			  res.json({error: "Error:"+err});
 			} else{
 			  res.json(result.rows)
 			}
@@ -89,7 +89,7 @@ app.post("/saveResources", (req, res, next) => {
 			 (err, result) => {
 	 		done()
 		  if(err){
-			  res.json({error: "Error"});
+			  res.json({error: "Error:"+err});
 			} else{
 			  res.json(result.rows)
 			}
@@ -105,7 +105,7 @@ app.post("/saveLocationDescription", (req, res, next) => {
 			 (err, result) => {
 		 	done()
 		  if(err){
-			  res.json({error: "Error"});
+			  res.json({error: "Error:"+err});
 			} else{
 			  res.json(result.rows)
 			}
@@ -127,7 +127,7 @@ const runUpdates = function(){
 			 (err, result) => {
 		 	done()
 		 	if(err){
-			  res.json({error: "Error"});
+			  res.json({error: "Error:"+err});
 			}
 		  client.end();
 		  runUpdates();
@@ -148,7 +148,7 @@ app.post("/saveHealth", (req, res, next) => {
 			 (err, result) => {
 			 	done()
 		  if(err){
-			  res.json({error: "Error"});
+			  res.json({error: "Error:"+err});
 			} else{
 			  res.json(result.rows)
 			}
@@ -164,7 +164,7 @@ app.post("/saveDescription", (req, res, next) => {
 			 (err, result) => {
 	 		done()
 		  if(err){
-			  res.json({error: "Error"});
+			  res.json({error: "Error:"+err});
 			} else{
 			  res.json(result.rows)
 			}
@@ -186,7 +186,7 @@ app.get("/location", (req, res, next) => {
 			 (err, result) => {
 		 	done()
 		  if(err){
-			  res.json({error: "Error"});
+			  res.json({error: "Error:"+err});
 			} else{
 			  res.json(result.rows)
 			}
@@ -207,7 +207,7 @@ app.get("/moradias", (req, res, next) => {
 			 (err, result) => {
 		 	done()
 		  if(err){
-			  res.json({error: "Error"});
+			  res.json({error: "Error:"+err});
 			} else{
 			  res.json(result.rows)
 			}
@@ -227,7 +227,7 @@ app.get("/professions", (req, res, next) => {
 			 (err, result) => {
 	 		done()
 		  if(err){
-			  res.json({error: "Error"});
+			  res.json({error: "Error:"+err});
 			} else{
 			  res.json(result.rows)
 			}
@@ -247,7 +247,7 @@ app.get("/professionsNpcs", (req, res, next) => {
 			 (err, result) => {
 			 	done()
 		  if(err){
-			  res.json({error: "Error"});
+			  res.json({error: "Error:"+err});
 			} else{
 			  res.json(result.rows)
 			}
@@ -287,7 +287,7 @@ app.get("/clientesNegocio", (req, res, next) => {
 			 (err, result) => {
 		 	done()
 		  if(err){
-			  res.json({error: "Error"});
+			  res.json({error: "Error:"+err});
 			} else{
 			  res.json(result.rows)
 			}

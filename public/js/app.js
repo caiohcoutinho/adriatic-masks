@@ -1,4 +1,7 @@
 const app = angular.module("app", []);
+const error = function(text){
+	console.log("ERROR: "+text);
+}
 app.controller("controller", function($scope, $http) {  
 	$http.get('/location').then(function(response, status){
 		$scope.locations = _.sortBy(response.data, (l) => {return l.id;});
@@ -23,26 +26,26 @@ app.controller("controller", function($scope, $http) {
 					$scope.selectedNpc = $scope.npcs[0];
 					console.log("done");
 				}, function(){
-					alert("error");
+					error()
 				});
 			}, function(){
-				alert("error");
+				error()
 			});
 		}, function(){
-			alert("error");
+			error()
 		});
 	}, function(){
-		alert("error");
+		error()
 	});
 	$http.get('/clientesNegocio').then(function(response, status){
 		$scope.locationPreferences = response.data;
 	}, function(){
-		alert("error");
+		error()
 	});
 	$http.get('/moradias').then(function(response, status){
 		$scope.moradias = response.data;
 	}, function(){
-		alert("error");
+		error()
 	});
 	$http.get('/preferencias').then(function(response, status){
 		$scope.npcPreferences = _.map(response.data, (d) => ({
@@ -51,7 +54,7 @@ app.controller("controller", function($scope, $http) {
 			seed: parseFloat(d.seed)
 		}));
 	}, function(){
-		alert("error");
+		error()
 	});
 	$scope.sortNightByNpc = function(){
 		$scope.night = _.sortBy($scope.night, "npc")
@@ -434,7 +437,7 @@ app.controller("controller", function($scope, $http) {
 			.then(function(response, status){
 
 		}, function(){
-			alert("error");
+			error()
 		});
 	}
 
@@ -443,7 +446,7 @@ app.controller("controller", function($scope, $http) {
 			.then(function(response, status){
 
 		}, function(){
-			alert("error");
+			error()
 		});	
 	}
 
@@ -455,7 +458,7 @@ app.controller("controller", function($scope, $http) {
 		).then(function(response, status){
 
 		}, function(){
-			alert("error");
+			error()
 		});
 	}
 
@@ -463,7 +466,7 @@ app.controller("controller", function($scope, $http) {
 		$http.post('/saveHealth', {id: $scope.selectedNpc.id, saude: $scope.selectedNpc.saude}).then(function(response, status){
 
 		}, function(){
-			alert("error");
+			error()
 		});
 	}
 
@@ -471,7 +474,7 @@ app.controller("controller", function($scope, $http) {
 		$http.post('/saveDescription', {id: $scope.selectedNpc.id, descricao: $scope.selectedNpc.descricao}).then(function(response, status){
 
 		}, function(){
-			alert("error");
+			error()
 		});
 	}
 
