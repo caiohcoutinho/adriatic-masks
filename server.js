@@ -1,5 +1,5 @@
 var express = require("express");
-var { Client } = require('pg');
+var { Pool } = require('pg');
 var app = express();
 var bodyParser = require('body-parser');
 var _ = require('underscore');
@@ -14,14 +14,21 @@ app.use(express.static('public'))
 
 const PORT = process.env.PORT;
 
+const pool = new Pool()
+
+pool.on('error', (err, client) => {
+  console.error('Unexpected error on idle client', err)
+  process.exit(-1)
+})
+
 app.listen(PORT, () => {
 	console.log("Server running on port "+PORT);
 });
 
 app.get("/npc", (req, res, next) => {
-	const client = new Client()
-	client.connect()
-	client.query(
+	pool.connect((err, client, done) => {
+		if(err) throw err
+		client.query(
 		`
 		select  npc.id id,
 			npc.nome nome, 
@@ -64,40 +71,46 @@ app.get("/npc", (req, res, next) => {
 		order by npc.id
 		`,
 		 (err, result) => {
-		if(err){
-		  res.json({error: "Error"});
-		} else{
-		  res.json(result.rows)
-		}
-	  client.end()
+		 	done()
+			if(err){
+			  res.json({error: "Error"})
+			} else{
+			  res.json(result.rows)
+			}
+		  	client.end()
+		});
 	});
 });
 
 app.post("/saveResources", (req, res, next) => {
-	const client = new Client()
-	client.connect()
-	client.query("update npc set recursos = "+req.body.recursos+" where id = "+req.body.id,
-		 (err, result) => {
-	  if(err){
-		  res.json({error: "Error"});
-		} else{
-		  res.json(result.rows)
-		}
-	  client.end()
+	pool.connect((err, client, done) => {
+		if(err) throw err
+		client.query("update npc set recursos = "+req.body.recursos+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+		  if(err){
+			  res.json({error: "Error"});
+			} else{
+			  res.json(result.rows)
+			}
+		  client.end()
+		});
 	});
 });
 
 app.post("/saveLocationDescription", (req, res, next) => {
-	const client = new Client()
-	client.connect()
-	client.query("update negocio set descricao = '"+req.body.descricao+"' where id = "+req.body.id,
-		 (err, result) => {
-	  if(err){
-		  res.json({error: "Error"});
-		} else{
-		  res.json(result.rows)
-		}
-	  client.end()
+	pool.connect((err, client, done) => {
+		if(err) throw err
+		client.query("update negocio set descricao = '"+req.body.descricao+"' where id = "+req.body.id,
+			 (err, result) => {
+		 	done()
+		  if(err){
+			  res.json({error: "Error"});
+			} else{
+			  res.json(result.rows)
+			}
+		  client.end()
+		});
 	});
 });
 
@@ -108,15 +121,17 @@ const runUpdates = function(){
 		return;
 	}
 	let update = updateList.shift();
-	const client = new Client();
-	client.connect();
-	client.query("update npc set ressonancia = (select id from ressonancia where nome = '"+update.ressonancia+"') where id = "+update.id,
-		 (err, result) => {
-	 	if(err){
-		  res.json({error: "Error"});
-		}
-	  client.end();
-	  runUpdates();
+	pool.connect((err, client, done) => {
+		if(err) throw err
+		client.query("update npc set ressonancia = (select id from ressonancia where nome = '"+update.ressonancia+"') where id = "+update.id,
+			 (err, result) => {
+		 	done()
+		 	if(err){
+			  res.json({error: "Error"});
+			}
+		  client.end();
+		  runUpdates();
+		});
 	});
 }
 
@@ -127,141 +142,157 @@ app.post("/saveRessonance", (req, res, next) => {
 });
 
 app.post("/saveHealth", (req, res, next) => {
-	const client = new Client()
-	client.connect()
-	client.query("update npc set saude = "+req.body.saude+" where id = "+req.body.id,
-		 (err, result) => {
-	  if(err){
-		  res.json({error: "Error"});
-		} else{
-		  res.json(result.rows)
-		}
-	  client.end()
+	pool.connect((err, client, done) => {
+		if(err) throw err
+		client.query("update npc set saude = "+req.body.saude+" where id = "+req.body.id,
+			 (err, result) => {
+			 	done()
+		  if(err){
+			  res.json({error: "Error"});
+			} else{
+			  res.json(result.rows)
+			}
+		  client.end()
+		});
 	});
 });
 
 app.post("/saveDescription", (req, res, next) => {
-	const client = new Client()
-	client.connect()
-	client.query("update npc set descricao = "+req.body.descricao+" where id = "+req.body.id,
-		 (err, result) => {
-	  if(err){
-		  res.json({error: "Error"});
-		} else{
-		  res.json(result.rows)
-		}
-	  client.end()
+	pool.connect((err, client, done) => {
+		if(err) throw err
+		client.query("update npc set descricao = "+req.body.descricao+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+		  if(err){
+			  res.json({error: "Error"});
+			} else{
+			  res.json(result.rows)
+			}
+		  client.end()
+		});
 	});
 });
 
 app.get("/location", (req, res, next) => {
-	const client = new Client()
-	client.connect()
-	client.query(
-		`
-		select n.id id, n.nome nome, tn.nome tipo, b.nome bairro, n1, n2, n3, descricao
-		from negocio n
-		join tipo_negocio tn on tn.id = n.tipo_negocio
-		join bairro b on b.id = n.bairro
-		`,
-		 (err, result) => {
-	  if(err){
-		  res.json({error: "Error"});
-		} else{
-		  res.json(result.rows)
-		}
-	  client.end()
-	})
+	pool.connect((err, client, done) => {
+		if(err) throw err
+		client.query(
+			`
+			select n.id id, n.nome nome, tn.nome tipo, b.nome bairro, n1, n2, n3, descricao
+			from negocio n
+			join tipo_negocio tn on tn.id = n.tipo_negocio
+			join bairro b on b.id = n.bairro
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+			  res.json({error: "Error"});
+			} else{
+			  res.json(result.rows)
+			}
+		  client.end()
+		})
+	});
 });
 
 app.get("/moradias", (req, res, next) => {
-	const client = new Client()
-	client.connect()
-	client.query(
-		`
-		select m.id, m.nome, b.nome bairro
-		from moradia m
-		join bairro b on b.id = m.bairro
-		`,
-		 (err, result) => {
-	  if(err){
-		  res.json({error: "Error"});
-		} else{
-		  res.json(result.rows)
-		}
-	  client.end()
-	})
+	pool.connect((err, client, done) => {
+		if(err) throw err
+		client.query(
+			`
+			select m.id, m.nome, b.nome bairro
+			from moradia m
+			join bairro b on b.id = m.bairro
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+			  res.json({error: "Error"});
+			} else{
+			  res.json(result.rows)
+			}
+		  client.end()
+		})
+	});
 });
 
 app.get("/professions", (req, res, next) => {
-	const client = new Client()
-	client.connect()
-	client.query(
-		`
-		select *
-		from profissao
-		`,
-		 (err, result) => {
-	  if(err){
-		  res.json({error: "Error"});
-		} else{
-		  res.json(result.rows)
-		}
-	  client.end()
-	})
+	pool.connect((err, client, done) => {
+		if(err) throw err
+		client.query(
+			`
+			select *
+			from profissao
+			`,
+			 (err, result) => {
+	 		done()
+		  if(err){
+			  res.json({error: "Error"});
+			} else{
+			  res.json(result.rows)
+			}
+		  client.end()
+		})
+	});
 });
 
 app.get("/professionsNpcs", (req, res, next) => {
-	const client = new Client()
-	client.connect()
-	client.query(
-		`
-		select *
-		from profissao_npc
-		`,
-		 (err, result) => {
-	  if(err){
-		  res.json({error: "Error"});
-		} else{
-		  res.json(result.rows)
-		}
-	  client.end()
-	})
+	pool.connect((err, client, done) => {
+		if(err) throw err
+		client.query(
+			`
+			select *
+			from profissao_npc
+			`,
+			 (err, result) => {
+			 	done()
+		  if(err){
+			  res.json({error: "Error"});
+			} else{
+			  res.json(result.rows)
+			}
+		  client.end()
+		})
+	});
 });
 
 app.get("/preferencias", (req, res, next) => {
-	const client = new Client()
-	client.connect()
-	client.query(
-		`
-		select npc, negocio, seed
-		from preferencias_npcs 
-		`,
-		 (err, result) => {
-	  if(err){
-		  res.json({error: "Error:"+err});
-		} else{
-		  res.json(result.rows)
-		}
-	  client.end()
-	})
+	pool.connect((err, client, done) => {
+		if(err) throw err
+		client.query(
+			`
+			select npc, negocio, seed
+			from preferencias_npcs 
+			`,
+			 (err, result) => {
+			 	done()
+		  if(err){
+			  res.json({error: "Error:"+err});
+			} else{
+			  res.json(result.rows)
+			}
+		  client.end()
+		})
+	});
 });
 
 app.get("/clientesNegocio", (req, res, next) => {
-	const client = new Client()
-	client.connect()
-	client.query(
-		`
-		select *
-		from cliente_negocio 
-		`,
-		 (err, result) => {
-	  if(err){
-		  res.json({error: "Error"});
-		} else{
-		  res.json(result.rows)
-		}
-	  client.end()
-	})
+	pool.connect((err, client, done) => {
+		if(err) throw err
+		client.query(
+			`
+			select *
+			from cliente_negocio 
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+			  res.json({error: "Error"});
+			} else{
+			  res.json(result.rows)
+			}
+		  client.end()
+		})
+	});
 });
 
