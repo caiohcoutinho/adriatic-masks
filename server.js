@@ -27,7 +27,10 @@ app.listen(PORT, () => {
 
 app.get("/npc", (req, res, next) => {
 	pool.connect((err, client, done) => {
-		if(err) throw err
+		if(err){
+			res.json({error: "Error:"+err});
+			return;
+		}
 		client.query(
 		`
 		select  npc.id id,
@@ -85,7 +88,10 @@ app.get("/npc", (req, res, next) => {
 
 app.post("/saveResources", (req, res, next) => {
 	pool.connect((err, client, done) => {
-		if(err) throw err
+		if(err){
+			res.json({error: "Error:"+err});
+			return;
+		}
 		client.query("update npc set recursos = "+req.body.recursos+" where id = "+req.body.id,
 			 (err, result) => {
 	 		done()
@@ -101,7 +107,10 @@ app.post("/saveResources", (req, res, next) => {
 
 app.post("/saveLocationDescription", (req, res, next) => {
 	pool.connect((err, client, done) => {
-		if(err) throw err
+		if(err){
+			res.json({error: "Error:"+err});
+			return;
+		}
 		client.query("update negocio set descricao = '"+req.body.descricao+"' where id = "+req.body.id,
 			 (err, result) => {
 		 	done()
@@ -123,7 +132,10 @@ const runUpdates = function(){
 	}
 	let update = updateList.shift();
 	pool.connect((err, client, done) => {
-		if(err) throw err
+		if(err){
+			res.json({error: "Error:"+err});
+			return;
+		}
 		client.query("update npc set ressonancia = (select id from ressonancia where nome = '"+update.ressonancia+"') where id = "+update.id,
 			 (err, result) => {
 		 	done();
@@ -144,7 +156,10 @@ app.post("/saveRessonance", (req, res, next) => {
 
 app.post("/saveHealth", (req, res, next) => {
 	pool.connect((err, client, done) => {
-		if(err) throw err
+		if(err){
+			res.json({error: "Error:"+err});
+			return;
+		}
 		client.query("update npc set saude = "+req.body.saude+" where id = "+req.body.id,
 			 (err, result) => {
 			 	done()
@@ -160,7 +175,10 @@ app.post("/saveHealth", (req, res, next) => {
 
 app.post("/saveDescription", (req, res, next) => {
 	pool.connect((err, client, done) => {
-		if(err) throw err
+		if(err){
+			res.json({error: "Error:"+err});
+			return;
+		}
 		client.query("update npc set descricao = "+req.body.descricao+" where id = "+req.body.id,
 			 (err, result) => {
 	 		done()
@@ -176,7 +194,10 @@ app.post("/saveDescription", (req, res, next) => {
 
 app.get("/location", (req, res, next) => {
 	pool.connect((err, client, done) => {
-		if(err) throw err
+		if(err){
+			res.json({error: "Error:"+err});
+			return;
+		}
 		client.query(
 			`
 			select n.id id, n.nome nome, tn.nome tipo, b.nome bairro, n1, n2, n3, descricao
@@ -198,7 +219,10 @@ app.get("/location", (req, res, next) => {
 
 app.get("/moradias", (req, res, next) => {
 	pool.connect((err, client, done) => {
-		if(err) throw err
+		if(err){
+			res.json({error: "Error:"+err});
+			return;
+		}
 		client.query(
 			`
 			select m.id, m.nome, b.nome bairro
@@ -219,7 +243,10 @@ app.get("/moradias", (req, res, next) => {
 
 app.get("/professions", (req, res, next) => {
 	pool.connect((err, client, done) => {
-		if(err) throw err
+		if(err){
+			res.json({error: "Error:"+err});
+			return;
+		}
 		client.query(
 			`
 			select *
@@ -239,7 +266,10 @@ app.get("/professions", (req, res, next) => {
 
 app.get("/professionsNpcs", (req, res, next) => {
 	pool.connect((err, client, done) => {
-		if(err) throw err
+		if(err){
+			res.json({error: "Error:"+err});
+			return;
+		}
 		client.query(
 			`
 			select *
@@ -259,7 +289,10 @@ app.get("/professionsNpcs", (req, res, next) => {
 
 app.get("/preferencias", (req, res, next) => {
 	pool.connect((err, client, done) => {
-		if(err) throw err
+		if(err){
+			res.json({error: "Error:"+err});
+			return;
+		}
 		client.query(
 			`
 			select npc, negocio, seed
@@ -279,7 +312,10 @@ app.get("/preferencias", (req, res, next) => {
 
 app.get("/clientesNegocio", (req, res, next) => {
 	pool.connect((err, client, done) => {
-		if(err) throw err
+		if(err){
+			res.json({error: "Error:"+err});
+			return;
+		}
 		client.query(
 			`
 			select *
