@@ -77,7 +77,7 @@ app.get("/npc", (req, res, next) => {
 			} else{
 			  res.json(result.rows)
 			}
-		  	client.end()
+		  	
 		});
 	});
 });
@@ -93,7 +93,7 @@ app.post("/saveResources", (req, res, next) => {
 			} else{
 			  res.json(result.rows)
 			}
-		  client.end()
+		  
 		});
 	});
 });
@@ -109,7 +109,7 @@ app.post("/saveLocationDescription", (req, res, next) => {
 			} else{
 			  res.json(result.rows)
 			}
-		  client.end()
+		  
 		});
 	});
 });
@@ -125,11 +125,11 @@ const runUpdates = function(){
 		if(err) throw err
 		client.query("update npc set ressonancia = (select id from ressonancia where nome = '"+update.ressonancia+"') where id = "+update.id,
 			 (err, result) => {
-		 	done()
+		 	done();
 		 	if(err){
 			  res.json({error: "Error:"+err});
 			}
-		  client.end();
+		  ;
 		  runUpdates();
 		});
 	});
@@ -152,7 +152,7 @@ app.post("/saveHealth", (req, res, next) => {
 			} else{
 			  res.json(result.rows)
 			}
-		  client.end()
+		  
 		});
 	});
 });
@@ -168,7 +168,7 @@ app.post("/saveDescription", (req, res, next) => {
 			} else{
 			  res.json(result.rows)
 			}
-		  client.end()
+		  
 		});
 	});
 });
@@ -190,7 +190,7 @@ app.get("/location", (req, res, next) => {
 			} else{
 			  res.json(result.rows)
 			}
-		  client.end()
+		  
 		})
 	});
 });
@@ -211,7 +211,7 @@ app.get("/moradias", (req, res, next) => {
 			} else{
 			  res.json(result.rows)
 			}
-		  client.end()
+		  
 		})
 	});
 });
@@ -231,7 +231,7 @@ app.get("/professions", (req, res, next) => {
 			} else{
 			  res.json(result.rows)
 			}
-		  client.end()
+		  
 		})
 	});
 });
@@ -251,7 +251,7 @@ app.get("/professionsNpcs", (req, res, next) => {
 			} else{
 			  res.json(result.rows)
 			}
-		  client.end()
+		  
 		})
 	});
 });
@@ -271,7 +271,7 @@ app.get("/preferencias", (req, res, next) => {
 			} else{
 			  res.json(result.rows)
 			}
-		  client.end()
+		  
 		})
 	});
 });
@@ -291,7 +291,7 @@ app.get("/clientesNegocio", (req, res, next) => {
 			} else{
 			  res.json(result.rows)
 			}
-		  client.end()
+		  
 		})
 	});
 });
