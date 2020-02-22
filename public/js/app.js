@@ -479,6 +479,9 @@ app.controller("controller", function($scope, $http) {
 	}
 
 	$scope.selectedNpcRelatives = function(){
+		if(_.isUndefined($scope.selectedNpc)){
+			return [];
+		}
 		if($scope.selectedNpc.familia == null){
 			return [];
 		}
