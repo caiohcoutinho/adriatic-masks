@@ -239,7 +239,7 @@ app.get("/preferencias", (req, res, next) => {
 		`,
 		 (err, result) => {
 	  if(err){
-		  res.json({error: "Error"});
+		  res.json({error: "Error:"+err});
 		} else{
 		  res.json(result.rows)
 		}
