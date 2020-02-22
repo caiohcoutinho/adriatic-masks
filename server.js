@@ -53,7 +53,8 @@ app.get("/npc", (req, res, next) => {
 			saude,
 			saude_max,
 			r.nome ressonancia,
-			h.nome humor
+			h.nome humor,
+			npc.descricao descricao
 		from npc
 		join sexo on npc.sexo = sexo.id
 		join nacionalidade on nacionalidade.id = npc.nacionalidade
