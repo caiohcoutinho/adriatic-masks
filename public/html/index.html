@@ -83,7 +83,7 @@
 						<hr class="npcLineBreak lineBreak"/>
 						<div class="row">
 							<div class="col-6 nameCell" ng-click="selectNpc(npc)">
-								#{{npc.id}} - {{npc.nome}} <span class="spanNick" ng-show="npc.apelido != null">- {{npc.apelido}}</span> (F{{npc.f}}/S{{npc.s}}/M{{npc.m}})
+								#{{npc.id}} - {{npc.nome}} <span class="spanNick" ng-show="npc.apelido != null">- {{npc.apelido}}</span> (F{{npc.f}}/S{{npc.s}}/M{{npc.m}}<span ng-if="npc.clan != undefined">/{{npc.clan}}/{{npc.geracao}}ª/{{npc.predator_type}}</span>)
 							</div>
 							<div class="col-6">
 								<span ng-if="npc.sexo == 'M'">Masculino</span><span ng-if="npc.sexo == 'F'">Feminino</span>, {{npc.idade}}, {{npc.nacionalidade}}, {{npc.bairro}}, ${{npc.recursos}}
@@ -206,7 +206,7 @@
 								<table class="npcListTable">
 									<tr ng-repeat="npc in location.npcListN1 track by $index" class="locationNpcLink" ng-click="selectNpcById(npc.id)">
 										<td>
-											<span ng-attr-title="#{{npc.id}} {{npc.apelido}} (F{{npc.f}}/S{{npc.s}}/M{{npc.m}}). {{npc.sexo}}, {{npc.idade}}, {{npc.nacionalidade}}, {{npc.bairro}}. Pele {{npc.pele}}, cabelo {{npc.cabelo}}, olhos {{npc.olhos}}. Mora em {{npc.moradia}}. Família {{npc.familia}}. Instinto {{npc.instinto}}, obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}.">{{npc.nome}}</span>
+											<span ng-attr-title="#{{npc.id}} {{npc.apelido}} (F{{npc.f}}/S{{npc.s}}/M{{npc.m}}). {{npc.sexo}}, {{npc.idade}}, {{npc.nacionalidade}}, {{npc.bairro}}. Pele {{npc.pele}}, cabelo {{npc.cabelo}}, olhos {{npc.olhos}}. Mora em {{npc.moradia}}. Família {{npc.familia}}. Instinto {{npc.instinto}}, obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}.">{{npc.nome}}<span ng-if="npc.clan != undefined">/{{npc.clan}}</span></span>
 										</td>
 										<td>
 											<span ng-repeat="profession in npc.professions track by $index">{{profession.profissao.nome}}<span ng-if="!$last">/</span></span><span ng-if="npc.working">&nbsp;(Trabalhando)</span>
@@ -225,7 +225,7 @@
 								<table class="npcListTable">
 									<tr ng-repeat="npc in location.npcListN2 track by $index" class="locationNpcLink" ng-click="selectNpcById(npc.id)">
 										<td>
-											<span ng-attr-title="#{{npc.id}} {{npc.apelido}} (F{{npc.f}}/S{{npc.s}}/M{{npc.m}}). {{npc.sexo}}, {{npc.idade}}, {{npc.nacionalidade}}, {{npc.bairro}}. Pele {{npc.pele}}, cabelo {{npc.cabelo}}, olhos {{npc.olhos}}. Mora em {{npc.moradia}}. Família {{npc.familia}}. Instinto {{npc.instinto}}, obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}.">{{npc.nome}}</span>
+											<span ng-attr-title="#{{npc.id}} {{npc.apelido}} (F{{npc.f}}/S{{npc.s}}/M{{npc.m}}). {{npc.sexo}}, {{npc.idade}}, {{npc.nacionalidade}}, {{npc.bairro}}. Pele {{npc.pele}}, cabelo {{npc.cabelo}}, olhos {{npc.olhos}}. Mora em {{npc.moradia}}. Família {{npc.familia}}. Instinto {{npc.instinto}}, obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}.">{{npc.nome}}<span ng-if="npc.clan != undefined">/{{npc.clan}}</span></span>
 										</td>
 										<td>
 											<span ng-repeat="profession in npc.professions track by $index">{{profession.profissao.nome}}<span ng-if="!$last">/</span></span><span ng-if="npc.working">&nbsp;(Trabalhando)</span>
@@ -244,7 +244,7 @@
 								<table class="npcListTable">
 									<tr ng-repeat="npc in location.npcListN3 track by $index" class="locationNpcLink" ng-click="selectNpcById(npc.id)">
 										<td>
-											<span ng-attr-title="#{{npc.id}} {{npc.apelido}} (F{{npc.f}}/S{{npc.s}}/M{{npc.m}}). {{npc.sexo}}, {{npc.idade}}, {{npc.nacionalidade}}, {{npc.bairro}}. Pele {{npc.pele}}, cabelo {{npc.cabelo}}, olhos {{npc.olhos}}. Mora em {{npc.moradia}}. Família {{npc.familia}}. Instinto {{npc.instinto}}, obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}.">{{npc.nome}}</span>
+											<span ng-attr-title="#{{npc.id}} {{npc.apelido}} (F{{npc.f}}/S{{npc.s}}/M{{npc.m}}). {{npc.sexo}}, {{npc.idade}}, {{npc.nacionalidade}}, {{npc.bairro}}. Pele {{npc.pele}}, cabelo {{npc.cabelo}}, olhos {{npc.olhos}}. Mora em {{npc.moradia}}. Família {{npc.familia}}. Instinto {{npc.instinto}}, obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}.">{{npc.nome}}<span ng-if="npc.clan != undefined">/{{npc.clan}}</span></span>
 										</td>
 										<td>
 											<span ng-repeat="profession in npc.professions track by $index">{{profession.profissao.nome}}<span ng-if="!$last">/</span></span><span ng-if="npc.working">&nbsp;(Trabalhando)</span>
@@ -296,7 +296,7 @@
 						</div>
 						<div class="col">
 							<div>
-								(F{{selectedNpc.f}}/S{{selectedNpc.s}}/M{{selectedNpc.m}})&nbsp;${{selectedNpc.recursos}}&nbsp;<img class="lifeIcon" src="/img/blood.png"/>{{selectedNpc.saude}}/{{selectedNpc.saude_max}}
+								(F{{selectedNpc.f}}/S{{selectedNpc.s}}/M{{selectedNpc.m}}<span ng-if="selectedNpc.clan != undefined">/{{selectedNpc.clan}}/{{selectedNpc.geracao}}ª/{{selectedNpc.predator_type}}</span>)&nbsp;${{selectedNpc.recursos}}&nbsp;<img class="lifeIcon" src="/img/blood.png"/>{{selectedNpc.saude}}/{{selectedNpc.saude_max}}
 							</div>
 							<div>
 								<span ng-if="selectedNpc.sexo == 'M'">Masculino</span><span ng-if="selectedNpc.sexo == 'F'">Feminino</span>, {{selectedNpc.idade}} anos, {{selectedNpc.nacionalidade}}. Mora em {{selectedNpc.moradia}} em {{selectedNpc.bairro}}.
@@ -368,7 +368,7 @@
 						</div>
 						<div class="col">
 							<div>
-								(F{{relative.f}}/S{{relative.s}}/M{{relative.m}})&nbsp;${{relative.recursos}}&nbsp;<img class="lifeIcon" src="/img/blood.png"/>{{relative.saude}}/{{relative.saude_max}}
+								(F{{relative.f}}/S{{relative.s}}/M{{relative.m}}<span ng-if="relative.clan != undefined">/{{relative.clan}}/{{relative.geracao}}ª/{{relative.predator_type}}</span>)&nbsp;${{relative.recursos}}&nbsp;<img class="lifeIcon" src="/img/blood.png"/>{{relative.saude}}/{{relative.saude_max}}
 							</div>
 							<div>
 								<span ng-if="relative.sexo == 'M'">Masculino</span><span ng-if="relative.sexo == 'F'">Feminino</span>, {{relative.idade}} anos, {{relative.nacionalidade}}. Mora em {{relative.moradia}} em {{relative.bairro}}.
