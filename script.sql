@@ -30,6 +30,7 @@ insert into Nacionalidade(id, nome) values(9, 'França');
 insert into Nacionalidade(id, nome) values(10, 'Grécia');
 insert into Nacionalidade(id, nome) values(11, 'Sérvia');
 insert into Nacionalidade(id, nome) values(12, 'Suíça');
+insert into Nacionalidade(id, nome) values(13, 'Alemanha');
 
 create sequence cor_olhos_id_seq;
 
@@ -59,6 +60,7 @@ insert into cor_cabelo(id, cor) values(2, 'Preto');
 insert into cor_cabelo(id, cor) values(3, 'Loiro');
 insert into cor_cabelo(id, cor) values(4, 'Marrom');
 insert into cor_cabelo(id, cor) values(5, 'Vermelho');
+insert into cor_cabelo(id, cor) values(6, 'Sem cabelo');
 
 create sequence cor_pele_id_seq;
 
@@ -71,6 +73,7 @@ create table cor_pele(
 insert into cor_pele(id, cor) values(1, 'Branco');
 insert into cor_pele(id, cor) values(2, 'Marrom');
 insert into cor_pele(id, cor) values(3, 'Mediterrâneo');
+insert into cor_pele(id, cor) values(4, 'Cinza');
 
 create sequence bairro_id_seq;
 
@@ -1465,3 +1468,51 @@ insert into humor(id, nome) values (1, 'Choleric');
 insert into humor(id, nome) values (2, 'Melancholy');
 insert into humor(id, nome) values (3, 'Phlegmatic');
 insert into humor(id, nome) values (4, 'Sanguine');
+
+create sequence predator_type_id_seq;
+
+create table predator_type(
+	id int NOT NULL DEFAULT nextval('predator_type_id_seq'), 
+	nome varchar(255),
+ 	PRIMARY KEY (id)
+);
+
+insert into predator_type(id, nome) values (1, 'Scene Queen');
+insert into predator_type(id, nome) values (2, 'Sandman');
+insert into predator_type(id, nome) values (3, 'Farmer');
+insert into predator_type(id, nome) values (4, 'Osiris');
+insert into predator_type(id, nome) values (5, 'Cleaver');
+insert into predator_type(id, nome) values (6, 'Bagger');
+insert into predator_type(id, nome) values (7, 'Alleycat');
+insert into predator_type(id, nome) values (8, 'Consensualist');
+insert into predator_type(id, nome) values (9, 'Siren');
+
+create sequence clan_id_seq;
+
+create table clan(
+	id int NOT NULL DEFAULT nextval('clan_id_seq'), 
+	nome varchar(255),
+ 	PRIMARY KEY (id)
+);
+
+insert into clan(id, nome) values (1, 'Capadoccio');
+insert into clan(id, nome) values (2, 'Toreador');
+insert into clan(id, nome) values (3, 'Brujah');
+insert into clan(id, nome) values (4, 'Nosferatu');
+insert into clan(id, nome) values (5, 'Assamita');
+insert into clan(id, nome) values (6, 'Giovanni');
+insert into clan(id, nome) values (7, 'Gangrel');
+insert into clan(id, nome) values (8, 'Ventrue');
+insert into clan(id, nome) values (10, 'Caitiff');
+insert into clan(id, nome) values (11, 'Malkavian');
+
+
+create sequence vampiro_id_seq;
+
+create table vampiro(
+	id int NOT NULL DEFAULT nextval('vampiro_id_seq') references npc(id), 
+	geracao int NOT NULL,
+	clan int NOT NULL references clan(id),
+	predator_type int NOT NULL references predator_type(id),
+ 	PRIMARY KEY (id)
+);

@@ -117,7 +117,8 @@ app.controller("controller", function($scope, $http) {
 	const skin = {
 		"Branco": "#dec6c6",
 		"Marrom": "#58473c",
-		"Mediterrâneo": "#a77e63"
+		"Mediterrâneo": "#a77e63",
+		"Cinza": "#737070"
 	};
 
 	const eyes = {
@@ -134,7 +135,8 @@ app.controller("controller", function($scope, $http) {
 		"Preto": "#171616",
 		"Loiro": "#e5f19b",
 		"Marrom": "#271d00",
-		"Vermelho": "#652525"
+		"Vermelho": "#652525",
+		"Sem cabelo": "#737070"
 	}
 
 	$scope.eyeColor = function(npc){

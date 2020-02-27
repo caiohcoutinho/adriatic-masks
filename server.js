@@ -57,7 +57,10 @@ app.get("/npc", (req, res, next) => {
 			saude_max,
 			r.nome ressonancia,
 			h.nome humor,
-			npc.descricao descricao
+			npc.descricao descricao,
+			v.geracao geracao,
+			clan.nome clan,
+			pt.nome predator_type
 		from npc
 		join sexo on npc.sexo = sexo.id
 		join nacionalidade on nacionalidade.id = npc.nacionalidade
@@ -72,6 +75,9 @@ app.get("/npc", (req, res, next) => {
 		join natureza_obrigacao on natureza_obrigacao.id = npc.natureza_obrigacao
 		join moradia on moradia.id = npc.moradia
 		left join ressonancia r on r.id = npc.ressonancia
+		left join vampiro v on v.id = npc.id
+		left join clan on clan.id = v.clan
+		left join predator_type pt on pt.id = v.predator_type
 		order by npc.id
 		`,
 		 (err, result) => {
