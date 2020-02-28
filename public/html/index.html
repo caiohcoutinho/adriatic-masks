@@ -37,7 +37,7 @@
 		</ul>
 
 		<div class="row">
-			<div class="col">
+			<div class="col-10">
 				<div ng-show="showNpcTab" class="scrollableDiv">
 					<form>
 						<div class="form-row">
@@ -260,8 +260,8 @@
 					</div>
 				</div>
 			</div>
-			<div class="col">
-				<div ng-if="selectedNpc != undefined" class="npcInfo">
+			<div class="col-2 npcInfo">
+				<div ng-if="selectedNpc != undefined">
 					<div class="selectedNpcTitle">
 						#{{selectedNpc.id}} - {{selectedNpc.nome}} <span class="spanNick" ng-show="selectedNpc.apelido != null">- {{selectedNpc.apelido}}</span>
 					</div>
@@ -333,7 +333,7 @@
 					</div>
 				</div>
 				<hr class="familyLineBreak lineBreak"/>
-				<div ng-if="selectedNpc != undefined" class="npcInfo" ng-repeat="relative in selectedNpcRelatives() track by $index">
+				<div ng-if="selectedNpc != undefined" ng-repeat="relative in selectedNpcRelatives() track by $index">
 					<div class="selectedNpcTitle">
 						#{{relative.id}} - {{relative.nome}} <span class="spanNick" ng-show="relative.apelido != null">- {{relative.apelido}}</span>
 					</div>
