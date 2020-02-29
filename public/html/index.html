@@ -79,54 +79,30 @@
 							</div>
 						</div>
 					</form>
-					<div ng-repeat="npc in npcs track by npc.id" class="npcDiv" ng-if="matchFilter(npc)">
-						<hr class="npcLineBreak lineBreak"/>
-						<div class="row">
-							<div class="col-6 nameCell" ng-click="selectNpc(npc)">
-								#{{npc.id}} - {{npc.nome}} <span class="spanNick" ng-show="npc.apelido != null">- {{npc.apelido}}</span> (F{{npc.f}}/S{{npc.s}}/M{{npc.m}}<span ng-if="npc.clan != undefined">/{{npc.clan}}/{{npc.geracao}}ª/{{npc.predator_type}}</span>)
-							</div>
-							<div class="col-6">
-								<span ng-if="npc.sexo == 'M'">Masculino</span><span ng-if="npc.sexo == 'F'">Feminino</span>, {{npc.idade}}, {{npc.nacionalidade}}, {{npc.bairro}}, ${{npc.recursos}}
-							</div>
-						</div>
-						<div class="row">
-							<div class="col">
-								<img src="/img/blood.png" class="smallLifeIcon">{{npc.saude}}/{{npc.saude_max}}
-							</div>
-						</div>
-						<div class="row">
-							<div class="col">
-								{{npc.descricao}}
-							</div>
-						</div>
-						<div class="row">
-							<div class="col">
-								Pele {{npc.pele}}, cabelo {{npc.cabelo}}, olhos {{npc.olhos}}. Mora em {{npc.moradia}}. <span ng-if="npc.familia != undefined">Família {{npc.familia}}</span><span ng-if="npc.familia == undefined">Sem família</span>.
-							</div>
-						</div>
-						<div class="row">
-							<div class="col">
-								<span ng-if="npc.ressonancia == 'NONE'">Sem ressonância.&nbsp;</span><span ng-if="npc.ressonancia == 'FLEETING'">Ressonância fraca (fleeting).&nbsp;</span><span ng-if="npc.ressonancia == 'INTENSE'">Ressonância intensa (intense).&nbsp;</span><span ng-if="npc.ressonancia == 'DYSCRASIA'"><b>DYSCRASIA</b>.&nbsp;</span>Instinto {{npc.instinto}} ({{npc.humor}}), obrigação de natureza {{npc.natureza_obrigacao}} para com {{npc.obrigacao}}.
-							</div>
-						</div>
-						<div>
-							<div ng-repeat="profession in npc.professions track by $index">{{profession.profissao.nome}}<span ng-if="profession.negocio != null">&nbsp;em {{profession.negocio.nome}}, {{profession.negocio.bairro}}</span>.</div>
-						</div>			
-						<div ng-if="npc.l1 != null && npc.l1.sick">Doente.</div>
-						<div class="row" ng-if="npc.l1 != undefined">
-							<div class="col">
-								N1: <span ng-if="npc.l1.sleeping">Dormindo em </span><span ng-if="npc.l1.working && npc.l1.location != null">Trabalhando em {{npc.l1.location.nome}}, {{npc.l1.location.bairro}}</span><span ng-if="npc.l1.working && npc.l1.location == null">Trabalhando</span><span ng-if="!npc.l1.working">{{npc.l1.location.nome}}, {{npc.l1.location.bairro}}</span>.
-							</div>
-							<div class="col">
-								N2: <span ng-if="npc.l2.sleeping">Dormindo em </span><span ng-if="npc.l2.working && npc.l2.location != null">Trabalhando em {{npc.l2.location.nome}}, {{npc.l2.location.bairro}}</span><span ng-if="npc.l2.working && npc.l2.location == null">Trabalhando</span><span ng-if="!npc.l2.working">{{npc.l2.location.nome}}, {{npc.l2.location.bairro}}</span>.
-							</div>
-							<div class="col">
-								N3: <span ng-if="npc.l3.sleeping">Dormindo em </span><span ng-if="npc.l3.working && npc.l3.location != null">Trabalhando em {{npc.l3.location.nome}}, {{npc.l3.location.bairro}}</span><span ng-if="npc.l3.working && npc.l3.location == null">Trabalhando</span><span ng-if="!npc.l3.working">{{npc.l3.location.nome}}, {{npc.l3.location.bairro}}</span>.
-							</div>
-						</div>
-
-					</div>
-					<hr class="npcLineBreak lineBreak"/>
+					<table class="whiteTable">
+						<tr>
+							<th>#</th>
+							<th>Nome</th>
+							<th>Sexo</th>
+							<th>Idade</th>
+							<th>Saúde</th>
+							<th>Ressonância</th>
+							<th>N1</th>
+							<th>N2</th>
+							<th>N3</th>
+						</tr>
+						<tr ng-repeat="npc in npcs track by npc.id" class="npcDiv" ng-if="matchFilter(npc)">
+							<td>{{npc.id}}</td>
+							<td class="nameCell" ng-click="selectNpc(npc)">{{npc.nome}}</td>
+							<td>{{npc.sexo}}</td>
+							<td>{{npc.idade}}</td>
+							<td>{{npc.saude}}/{{npc.saude_max}}</td>
+							<td><span ng-if="npc.ressonancia == 'FLEETING'">Fleeting</span><span ng-if="npc.ressonancia == 'INTENSE'">Intense</span><span ng-if="npc.ressonancia == 'DYSCRASIA'"><b>DYSCRASIA</b></span></td>
+							<td><span ng-if="npc.l1.sleeping">(zZzZ) </span><span ng-if="npc.l1.working && npc.l1.location != null">(work) {{npc.l1.location.nome}}, {{npc.l1.location.bairro}}</span><span ng-if="npc.l1.working && npc.l1.location == null">(work)</span><span ng-if="!npc.l1.working">{{npc.l1.location.nome}}, {{npc.l1.location.bairro}}</span></td>
+							<td><span ng-if="npc.l2.sleeping">(zZzZ) </span><span ng-if="npc.l2.working && npc.l2.location != null">(work) {{npc.l2.location.nome}}, {{npc.l2.location.bairro}}</span><span ng-if="npc.l2.working && npc.l2.location == null">(work)</span><span ng-if="!npc.l2.working">{{npc.l2.location.nome}}, {{npc.l2.location.bairro}}</span></td>
+							<td><span ng-if="npc.l3.sleeping">(zZzZ) </span><span ng-if="npc.l3.working && npc.l3.location != null">(work) {{npc.l3.location.nome}}, {{npc.l3.location.bairro}}</span><span ng-if="npc.l3.working && npc.l3.location == null">(work)</span><span ng-if="!npc.l3.working">{{npc.l3.location.nome}}, {{npc.l3.location.bairro}}</span></td>
+						</tr>
+					</table>
 				</div>		
 
 				<div ng-show="showLocationTab" class="scrollableDiv">
@@ -266,7 +242,7 @@
 						#{{selectedNpc.id}} - {{selectedNpc.nome}} <span class="spanNick" ng-show="selectedNpc.apelido != null">- {{selectedNpc.apelido}}</span>
 					</div>
 					<div class="row">
-						<div class="col-3 portrait">
+						<div class="col portrait">
 							<svg class="personBody" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 472 231"><path d="M166.4 19C173.2 27.9 186.4 32.6 197 35.1 219.4 40.4 247.5 40.6 270 35.8 283.2 33 301.8 27.3 306 13 306 13 317 20.6 317 20.6 332.2 30.3 347.5 37.5 365 42.1 382.7 46.8 414.5 50.1 428 60.5 440.3 70 444.8 81.5 448.4 96 453.7 117.5 454 140 454 162 454 179 445 187.1 431 195.4 412.4 206.5 384.3 213.9 363 218.2 337.2 223.4 311.3 226.3 285 228.1 285 228.1 275 229 275 229 275 229 255 230 255 230 255 230 215 230 215 230 215 230 195 229 195 229 195 229 185 228.1 185 228.1 154.9 226 124.4 222.9 95 215.6 75 210.7 52.3 204.5 35 193 22.9 185 15.2 176 15 161 15 161 16 142 16 142 16 126.6 18.5 104.7 23 90 26.1 80.1 30.9 69.3 39 62.5 53.6 50.4 78.8 48.4 97 44.1 121.9 38.2 142.9 29.1 163 13 163 13 166.4 19 166.4 19Z"/></svg>
 
 							<svg class="personHead" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 257 284"><path d="M143 1.2C156.9 1.1 174.8 5.7 187 12.3 187 12.3 199 19.9 199 19.9 215.7 30.6 221.1 32.8 229.7 52 236.6 67.4 238.2 84.4 239.8 101 239.8 101 241.1 115 241.1 115 241.9 119.7 244.5 121 246.4 125 248.3 128.9 249 134.8 249 139 249.1 150.9 247.1 163.3 241.6 174 237.9 181.3 234.2 182.8 231.7 186.2 231.7 186.2 224.3 202 224.3 202 209.6 231.3 186.3 264 153 273.1 144.7 275.3 139.4 275.1 131 275 117.3 274.8 104.1 268.7 93 261 70.2 244.9 53.7 219.3 42.7 194 37 180.7 34.8 185.2 29.4 176 22.3 164.1 20.9 150.5 21 137 21.1 132 21.7 127.5 24.4 123.1 25.9 120.6 28 118.8 29.1 116 30.4 112.7 30 105.8 30 102 30.2 82.8 35.8 54.7 47.3 39 55.3 28 59.1 27 70 20.6 92.3 7.2 94.8 5.2 121 1.2 121 1.2 143 1.2 143 1.2Z" ng-style="{fill: skinColor(selectedNpc)}"/></svg>
@@ -292,44 +268,41 @@
 							</defs>
 							<rect width="300" height="300" y="0" x="0" fill="url(#eyeGradient)"/>
 							</svg>
-
 						</div>
-						<div class="col">
-							<div>
-								(F{{selectedNpc.f}}/S{{selectedNpc.s}}/M{{selectedNpc.m}}<span ng-if="selectedNpc.clan != undefined">/{{selectedNpc.clan}}/{{selectedNpc.geracao}}ª/{{selectedNpc.predator_type}}</span>)&nbsp;${{selectedNpc.recursos}}&nbsp;<img class="lifeIcon" src="/img/blood.png"/>{{selectedNpc.saude}}/{{selectedNpc.saude_max}}
-							</div>
-							<div>
-								<span ng-if="selectedNpc.sexo == 'M'">Masculino</span><span ng-if="selectedNpc.sexo == 'F'">Feminino</span>, {{selectedNpc.idade}} anos, {{selectedNpc.nacionalidade}}. Mora em {{selectedNpc.moradia}} em {{selectedNpc.bairro}}.
-							</div>
-							<div>
-								{{selectedNpc.descricao}}
-							</div>
-							<div>
-								Pele {{selectedNpc.pele}}, cabelo {{selectedNpc.cabelo}}, olhos {{selectedNpc.olhos}}. <span ng-if="selectedNpc.familia != undefined">Família {{selectedNpc.familia}}</span><span ng-if="selectedNpc.familia == undefined">Sem família</span>.
-							</div>
-							<div>
-								<span ng-if="selectedNpc.ressonancia == 'NONE'">Sem ressonância.&nbsp;</span><span ng-if="selectedNpc.ressonancia == 'FLEETING'">Ressonância fraca (fleeting).&nbsp;</span><span ng-if="selectedNpc.ressonancia == 'INTENSE'">Ressonância intensa (intense).&nbsp;</span><span ng-if="selectedNpc.ressonancia == 'DYSCRASIA'"><b>DYSCRASIA</b>.&nbsp;</span>Instinto {{selectedNpc.instinto}} ({{selectedNpc.humor}}), obrigação de natureza {{selectedNpc.natureza_obrigacao}} para com {{selectedNpc.obrigacao}}.
-							</div>
-							<div>
-								<div ng-repeat="profession in selectedNpc.professions track by $index">{{profession.profissao.nome}}<span ng-if="profession.negocio != null">&nbsp;em {{profession.negocio.nome}}, {{profession.negocio.bairro}}</span>.</div>
-							</div>
-							<div ng-if="selectedNpc.l1 != null && selectedNpc.l1.sick">Doente.</div>
-							<div ng-if="selectedNpc.l1 != null">
-								N1:  <span ng-if="selectedNpc.l1.sleeping">Dormindo em </span><span ng-if="selectedNpc.l1.working && selectedNpc.l1.location != null">Trabalhando em {{selectedNpc.l1.location.nome}}, {{selectedNpc.l1.location.bairro}}</span><span ng-if="selectedNpc.l1.working && selectedNpc.l1.location == null">Trabalhando</span><span ng-if="!selectedNpc.l1.working">{{selectedNpc.l1.location.nome}}, {{selectedNpc.l1.location.bairro}}</span>.
-							</div>
-							<div ng-if="selectedNpc.l2 != null">
-								N2:  <span ng-if="selectedNpc.l2.sleeping">Dormindo em </span><span ng-if="selectedNpc.l2.working && selectedNpc.l2.location != null">Trabalhando em {{selectedNpc.l2.location.nome}}, {{selectedNpc.l2.location.bairro}}</span><span ng-if="selectedNpc.l2.working && selectedNpc.l2.location == null">Trabalhando</span><span ng-if="!selectedNpc.l2.working">{{selectedNpc.l2.location.nome}}, {{selectedNpc.l2.location.bairro}}</span>.
-							</div>
-							<div ng-if="selectedNpc.l3 != null">
-								N3:  <span ng-if="selectedNpc.l3.sleeping">Dormindo em </span><span ng-if="selectedNpc.l3.working && selectedNpc.l3.location != null">Trabalhando em {{selectedNpc.l3.location.nome}}, {{selectedNpc.l3.location.bairro}}</span><span ng-if="selectedNpc.l3.working && selectedNpc.l3.location == null">Trabalhando</span><span ng-if="!selectedNpc.l3.working">{{selectedNpc.l3.location.nome}}, {{selectedNpc.l3.location.bairro}}</span>.
-							</div>
-							<div>
-								Saude: <input type="number" ng-model="selectedNpc.saude"><button ng-click="saveSelectedNpcHealth()">Salvar</button>
-							</div>
-							<div>
-								Descrição: <input type="text" ng-model="selectedNpc.descricao"><button ng-click="saveSelectedNpcDescription()">Salvar</button>
-							</div>
-						</div>
+					</div>
+						
+					<div class="row">
+						<table class="whiteTable">
+							<tbody ng-if="selectedNpc.clan != undefined">
+								<tr><td>Clã</td><td>{{selectedNpc.clan}}</td></tr>
+								<tr><td>Geração</td><td>{{selectedNpc.geracao}}</td></tr>
+								<tr><td>Predator Type</td><td>{{selectedNpc.predator_type}}</td></tr>
+							</tbody>
+							<tr><td>Sexo</td><td>{{selectedNpc.sexo}}</td></tr>
+							<tr><td>Idade</td><td>{{selectedNpc.idade}}</td></tr>
+							<tr><td>Família</td><td>{{selectedNpc.familia}}</td></tr>
+							<tr><td>Nacionalidade</td><td>{{selectedNpc.nacionalidade}}</td></tr>
+							<tr><td>Físico</td><td>{{selectedNpc.f}}</td></tr>
+							<tr><td>Social</td><td>{{selectedNpc.s}}</td></tr>
+							<tr><td>Mental</td><td>{{selectedNpc.m}}</td></tr>
+							<tr><td>Pele</td><td>{{selectedNpc.pele}}</td></tr>
+							<tr><td>Cabelo</td><td>{{selectedNpc.cabelo}}</td></tr>
+							<tr><td>Olhos</td><td>{{selectedNpc.olhos}}</td></tr>
+							<tr><td>Saúde</td><td>{{selectedNpc.saude}}/{{selectedNpc.saude_max}}</td></tr>
+							<tr><td>Bairro</td><td>{{selectedNpc.bairro}}</td></tr>
+							<tr><td>Moradia</td><td>{{selectedNpc.moradia}}</td></tr>
+							<tr><td>Profissão</td><td><div ng-repeat="profession in npc.professions track by $index">{{profession.profissao.nome}}<span ng-if="profession.negocio != null">&nbsp;em {{profession.negocio.nome}}, {{profession.negocio.bairro}}</span>.</div></td></tr>
+							<tr><td>Descrição</td><td>{{selectedNpc.descricao}}</td></tr>
+							<tr><td>Ressonância</td><td><span ng-if="selectedNpc.ressonancia == 'NONE'">Sem ressonância.</span><span ng-if="selectedNpc.ressonancia == 'FLEETING'">Ressonância fraca (fleeting).</span><span ng-if="selectedNpc.ressonancia == 'INTENSE'">Ressonância intensa (intense).</span><span ng-if="selectedNpc.ressonancia == 'DYSCRASIA'"><b>DYSCRASIA</b>.</span></td></tr>
+							<tr><td>Instinto</td><td>{{selectedNpc.instinto}}</td></tr>
+							<tr><td>Humor</td><td>{{selectedNpc.humor}}</td></tr>
+							<tr><td>Natureza</td><td>{{selectedNpc.natureza_obrigacao}}</td></tr>
+							<tr><td>Obrigacao</td><td>{{selectedNpc.obrigacao}}</td></tr>
+							<tr><td>N1</td><td><span ng-if="selectedNpc.l1.sleeping">Dormindo em </span><span ng-if="selectedNpc.l1.working && selectedNpc.l1.location != null">Trabalhando em {{selectedNpc.l1.location.nome}}, {{selectedNpc.l1.location.bairro}}</span><span ng-if="selectedNpc.l1.working && selectedNpc.l1.location == null">Trabalhando</span><span ng-if="!selectedNpc.l1.working">{{selectedNpc.l1.location.nome}}, {{selectedNpc.l1.location.bairro}}</span>.</td></tr>
+							<tr><td>N2</td><td><span ng-if="selectedNpc.l2.sleeping">Dormindo em </span><span ng-if="selectedNpc.l2.working && selectedNpc.l2.location != null">Trabalhando em {{selectedNpc.l2.location.nome}}, {{selectedNpc.l2.location.bairro}}</span><span ng-if="selectedNpc.l2.working && selectedNpc.l2.location == null">Trabalhando</span><span ng-if="!selectedNpc.l2.working">{{selectedNpc.l2.location.nome}}, {{selectedNpc.l2.location.bairro}}</span>.</td></tr>
+							<tr><td>N3</td><td><span ng-if="selectedNpc.l3.sleeping">Dormindo em </span><span ng-if="selectedNpc.l3.working && selectedNpc.l3.location != null">Trabalhando em {{selectedNpc.l3.location.nome}}, {{selectedNpc.l3.location.bairro}}</span><span ng-if="selectedNpc.l3.working && selectedNpc.l3.location == null">Trabalhando</span><span ng-if="!selectedNpc.l3.working">{{selectedNpc.l3.location.nome}}, {{selectedNpc.l3.location.bairro}}</span>.</td></tr>
+							
+						</table>
 					</div>
 				</div>
 				<hr class="familyLineBreak lineBreak"/>
@@ -338,7 +311,7 @@
 						#{{relative.id}} - {{relative.nome}} <span class="spanNick" ng-show="relative.apelido != null">- {{relative.apelido}}</span>
 					</div>
 					<div class="row">
-						<div class="col-3 portrait">
+						<div class="col portrait">
 							<svg class="personBody" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 472 231"><path d="M166.4 19C173.2 27.9 186.4 32.6 197 35.1 219.4 40.4 247.5 40.6 270 35.8 283.2 33 301.8 27.3 306 13 306 13 317 20.6 317 20.6 332.2 30.3 347.5 37.5 365 42.1 382.7 46.8 414.5 50.1 428 60.5 440.3 70 444.8 81.5 448.4 96 453.7 117.5 454 140 454 162 454 179 445 187.1 431 195.4 412.4 206.5 384.3 213.9 363 218.2 337.2 223.4 311.3 226.3 285 228.1 285 228.1 275 229 275 229 275 229 255 230 255 230 255 230 215 230 215 230 215 230 195 229 195 229 195 229 185 228.1 185 228.1 154.9 226 124.4 222.9 95 215.6 75 210.7 52.3 204.5 35 193 22.9 185 15.2 176 15 161 15 161 16 142 16 142 16 126.6 18.5 104.7 23 90 26.1 80.1 30.9 69.3 39 62.5 53.6 50.4 78.8 48.4 97 44.1 121.9 38.2 142.9 29.1 163 13 163 13 166.4 19 166.4 19Z"/></svg>
 
 							<svg class="personHead" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 257 284"><path d="M143 1.2C156.9 1.1 174.8 5.7 187 12.3 187 12.3 199 19.9 199 19.9 215.7 30.6 221.1 32.8 229.7 52 236.6 67.4 238.2 84.4 239.8 101 239.8 101 241.1 115 241.1 115 241.9 119.7 244.5 121 246.4 125 248.3 128.9 249 134.8 249 139 249.1 150.9 247.1 163.3 241.6 174 237.9 181.3 234.2 182.8 231.7 186.2 231.7 186.2 224.3 202 224.3 202 209.6 231.3 186.3 264 153 273.1 144.7 275.3 139.4 275.1 131 275 117.3 274.8 104.1 268.7 93 261 70.2 244.9 53.7 219.3 42.7 194 37 180.7 34.8 185.2 29.4 176 22.3 164.1 20.9 150.5 21 137 21.1 132 21.7 127.5 24.4 123.1 25.9 120.6 28 118.8 29.1 116 30.4 112.7 30 105.8 30 102 30.2 82.8 35.8 54.7 47.3 39 55.3 28 59.1 27 70 20.6 92.3 7.2 94.8 5.2 121 1.2 121 1.2 143 1.2 143 1.2Z" ng-style="{fill: skinColor(relative)}"/></svg>
@@ -366,36 +339,39 @@
 							</svg>
 
 						</div>
-						<div class="col">
-							<div>
-								(F{{relative.f}}/S{{relative.s}}/M{{relative.m}}<span ng-if="relative.clan != undefined">/{{relative.clan}}/{{relative.geracao}}ª/{{relative.predator_type}}</span>)&nbsp;${{relative.recursos}}&nbsp;<img class="lifeIcon" src="/img/blood.png"/>{{relative.saude}}/{{relative.saude_max}}
-							</div>
-							<div>
-								<span ng-if="relative.sexo == 'M'">Masculino</span><span ng-if="relative.sexo == 'F'">Feminino</span>, {{relative.idade}} anos, {{relative.nacionalidade}}. Mora em {{relative.moradia}} em {{relative.bairro}}.
-							</div>
-							<div>
-								{{npc.descricao}}
-							</div>
-							<div>
-								Pele {{relative.pele}}, cabelo {{relative.cabelo}}, olhos {{relative.olhos}}. <span ng-if="relative.familia != undefined">Família {{relative.familia}}</span><span ng-if="relative.familia == undefined">Sem família</span>.
-							</div>
-							<div>
-								<span ng-if="relative.ressonancia == 'NONE'">Sem ressonância.&nbsp;</span><span ng-if="relative.ressonancia == 'FLEETING'">Ressonância fraca (fleeting).&nbsp;</span><span ng-if="relative.ressonancia == 'INTENSE'">Ressonância intensa (intense).&nbsp;</span><span ng-if="relative.ressonancia == 'DYSCRASIA'"><b>DYSCRASIA</b>.&nbsp;</span>Instinto {{relative.instinto}} ({{relative.humor}}), obrigação de natureza {{relative.natureza_obrigacao}} para com {{relative.obrigacao}}.
-							</div>
-							<div>
-								<div ng-repeat="profession in relative.professions track by $index">{{profession.profissao.nome}}<span ng-if="profession.negocio != null">&nbsp;em {{profession.negocio.nome}}, {{profession.negocio.bairro}}</span>.</div>
-							</div>
-							<div ng-if="relative.l1 != null && relative.l1.sick">Doente.</div>
-							<div ng-if="relative.l1 != null">
-								N1:  <span ng-if="relative.l1.sleeping">Dormindo em </span><span ng-if="relative.l1.working && relative.l1.location != null">Trabalhando em {{relative.l1.location.nome}}, {{relative.l1.location.bairro}}</span><span ng-if="relative.l1.working && relative.l1.location == null">Trabalhando</span><span ng-if="!relative.l1.working">{{relative.l1.location.nome}}, {{relative.l1.location.bairro}}</span>.
-							</div>
-							<div ng-if="relative.l2 != null">
-								N2:  <span ng-if="relative.l2.sleeping">Dormindo em </span><span ng-if="relative.l2.working && relative.l2.location != null">Trabalhando em {{relative.l2.location.nome}}, {{relative.l2.location.bairro}}</span><span ng-if="relative.l2.working && relative.l2.location == null">Trabalhando</span><span ng-if="!relative.l2.working">{{relative.l2.location.nome}}, {{relative.l2.location.bairro}}</span>.
-							</div>
-							<div ng-if="relative.l3 != null">
-								N3:  <span ng-if="relative.l3.sleeping">Dormindo em </span><span ng-if="relative.l3.working && relative.l3.location != null">Trabalhando em {{relative.l3.location.nome}}, {{relative.l3.location.bairro}}</span><span ng-if="relative.l3.working && relative.l3.location == null">Trabalhando</span><span ng-if="!relative.l3.working">{{relative.l3.location.nome}}, {{relative.l3.location.bairro}}</span>.
-							</div>
-						</div>
+					</div>
+					<div class="row">
+						<table class="whiteTable">
+							<tbody ng-if="relative.clan != undefined">
+								<tr><td>Clã</td><td>{{relative.clan}}</td></tr>
+								<tr><td>Geração</td><td>{{relative.geracao}}</td></tr>
+								<tr><td>Predator Type</td><td>{{relative.predator_type}}</td></tr>
+							</tbody>
+							<tr><td>Sexo</td><td>{{relative.sexo}}</td></tr>
+							<tr><td>Idade</td><td>{{relative.idade}}</td></tr>
+							<tr><td>Família</td><td>{{relative.familia}}</td></tr>
+							<tr><td>Nacionalidade</td><td>{{relative.nacionalidade}}</td></tr>
+							<tr><td>Físico</td><td>{{relative.f}}</td></tr>
+							<tr><td>Social</td><td>{{relative.s}}</td></tr>
+							<tr><td>Mental</td><td>{{relative.m}}</td></tr>
+							<tr><td>Pele</td><td>{{relative.pele}}</td></tr>
+							<tr><td>Cabelo</td><td>{{relative.cabelo}}</td></tr>
+							<tr><td>Olhos</td><td>{{relative.olhos}}</td></tr>
+							<tr><td>Saúde</td><td>{{relative.saude}}/{{relative.saude_max}}</td></tr>
+							<tr><td>Bairro</td><td>{{relative.bairro}}</td></tr>
+							<tr><td>Moradia</td><td>{{relative.moradia}}</td></tr>
+							<tr><td>Profissão</td><td><div ng-repeat="profession in relative.professions track by $index">{{profession.profissao.nome}}<span ng-if="profession.negocio != null">&nbsp;em {{profession.negocio.nome}}, {{profession.negocio.bairro}}</span>.</div></td></tr>
+							<tr><td>Descrição</td><td>{{relative.descricao}}</td></tr>
+							<tr><td>Ressonância</td><td><span ng-if="relative.ressonancia == 'NONE'">Sem ressonância.</span><span ng-if="relative.ressonancia == 'FLEETING'">Ressonância fraca (fleeting).</span><span ng-if="relative.ressonancia == 'INTENSE'">Ressonância intensa (intense).</span><span ng-if="relative.ressonancia == 'DYSCRASIA'"><b>DYSCRASIA</b>.</span></td></tr>
+							<tr><td>Instinto</td><td>{{relative.instinto}}</td></tr>
+							<tr><td>Humor</td><td>{{relative.humor}}</td></tr>
+							<tr><td>Natureza</td><td>{{relative.natureza_obrigacao}}</td></tr>
+							<tr><td>Obrigacao</td><td>{{relative.obrigacao}}</td></tr>
+							<tr><td>N1</td><td><span ng-if="relative.l1.sleeping">Dormindo em </span><span ng-if="relative.l1.working && relative.l1.location != null">Trabalhando em {{relative.l1.location.nome}}, {{relative.l1.location.bairro}}</span><span ng-if="relative.l1.working && relative.l1.location == null">Trabalhando</span><span ng-if="!relative.l1.working">{{relative.l1.location.nome}}, {{relative.l1.location.bairro}}</span>.</td></tr>
+							<tr><td>N2</td><td><span ng-if="relative.l2.sleeping">Dormindo em </span><span ng-if="relative.l2.working && relative.l2.location != null">Trabalhando em {{relative.l2.location.nome}}, {{relative.l2.location.bairro}}</span><span ng-if="relative.l2.working && relative.l2.location == null">Trabalhando</span><span ng-if="!relative.l2.working">{{relative.l2.location.nome}}, {{relative.l2.location.bairro}}</span>.</td></tr>
+							<tr><td>N3</td><td><span ng-if="relative.l3.sleeping">Dormindo em </span><span ng-if="relative.l3.working && relative.l3.location != null">Trabalhando em {{relative.l3.location.nome}}, {{relative.l3.location.bairro}}</span><span ng-if="relative.l3.working && relative.l3.location == null">Trabalhando</span><span ng-if="!relative.l3.working">{{relative.l3.location.nome}}, {{relative.l3.location.bairro}}</span>.</td></tr>
+							
+						</table>
 					</div>
 				</div>	
 			</div>

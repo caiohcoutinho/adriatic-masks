@@ -24,7 +24,27 @@ app.controller("controller", function($scope, $http) {
 						return {...npc, professions: professions};
 					});
 					$scope.selectedNpc = $scope.npcs[0];
-					console.log("done");
+
+					$http.get('/clientesNegocio').then(function(response, status){
+						$scope.locationPreferences = response.data;
+						$http.get('/moradias').then(function(response, status){
+							$scope.moradias = response.data;
+							$http.get('/preferencias').then(function(response, status){
+								$scope.npcPreferences = _.map(response.data, (d) => ({
+									npc: d.npc,
+									negocio: d.negocio,
+									seed: parseFloat(d.seed)
+								}));
+								console.log("done");
+							}, function(){
+								error()
+							});
+						}, function(){
+							error()
+						});
+					}, function(){
+						error()
+					});
 				}, function(){
 					error()
 				});
@@ -34,25 +54,6 @@ app.controller("controller", function($scope, $http) {
 		}, function(){
 			error()
 		});
-	}, function(){
-		error()
-	});
-	$http.get('/clientesNegocio').then(function(response, status){
-		$scope.locationPreferences = response.data;
-	}, function(){
-		error()
-	});
-	$http.get('/moradias').then(function(response, status){
-		$scope.moradias = response.data;
-	}, function(){
-		error()
-	});
-	$http.get('/preferencias').then(function(response, status){
-		$scope.npcPreferences = _.map(response.data, (d) => ({
-			npc: d.npc,
-			negocio: d.negocio,
-			seed: parseFloat(d.seed)
-		}));
 	}, function(){
 		error()
 	});
@@ -225,11 +226,12 @@ app.controller("controller", function($scope, $http) {
 
 		let locationSeed = Math.random();
 		let sum = 0;
+		let npcPrefs = _.filter(
+			$scope.npcPreferences, 
+			(pref) => {return pref.npc == npc.id}
+		);
 		let npcPrefsWithCorrections = _.map(
-			_.filter(
-				$scope.npcPreferences, 
-				(pref) => {return pref.npc == npc.id}
-			), 
+			npcPrefs, 
 			(pref) => {
 				let location = _.find($scope.locations, (l) => {return l.id == pref.negocio});
 				let locationPrefModifier = _.reduce(

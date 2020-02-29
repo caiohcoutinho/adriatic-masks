@@ -29,11 +29,11 @@ hr.lineBreak{
 	border-width: 1px;
 }
 
-div.nameCell, div.locationCell{
+td.nameCell, div.locationCell{
 	color: #f54e4e;
 }
 
-div.nameCell:hover, tr.locationNpcLink:hover{
+td.nameCell:hover, tr.locationNpcLink:hover{
 	color: #f54e4e;
 	text-decoration: underline;
 	cursor: pointer;
@@ -153,5 +153,9 @@ div.portrait{
 }
 
 table.npcListTable td{
+	border-color: white;
+}
+
+table.whiteTable td, table.whiteTable th{
 	border-color: white;
 }
