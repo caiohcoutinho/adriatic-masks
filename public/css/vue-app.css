@@ -1,0 +1,309 @@
+div.logoBlock{
+	margin-bottom: 70px;
+}
+
+div.leftBarMenuLinkBlock{
+	margin-bottom: 18px;
+}
+
+div.leftBarMenuLinkBlock:hover h1{
+	text-decoration: underline;
+}
+
+img.logoImg{
+	height: 80px;
+}
+
+img.leftBarMenuLinkImg{
+	height: 50px;
+}
+
+body{
+	font-family: 'Alegreya Sans SC';
+}
+
+h1.logoText{
+	font-size: x-large;
+}
+
+h1.leftBarMenuLinkImg{
+	font-size: x-small;
+}
+
+.leftBarMenuItem{
+	margin-left: auto;
+	margin-right: auto;
+}
+
+div.leftBarMenu{
+	height: 100%;
+	position: fixed;
+	z-index: 1;
+	top: 0;
+	overflow-x: hidden;
+	padding-top: 20px;
+	color: white;
+	background-color: #4C0813;
+	text-align: center;
+	left: 0;
+	width: 160px;
+}
+
+div.mainArea{
+	height: 100%;
+	position: fixed;
+	z-index: 1;
+	top: 0;
+	left: 165px;
+}
+
+div.npcDetails{
+	position: fixed;
+	z-index: 1;
+	top: 0;
+	right: 0;
+	width: 400px;
+	padding-top: 20px;
+	color: #4C0813;
+	overflow-y: auto;
+	height: 700px;
+}
+
+div.mainAreaNpc{
+	height: 100%;
+	width: 100%;
+}
+
+div.mainAreaNpcFilterForm{
+	padding-top: 100px;
+	width: 200px;
+	height: 100%;
+	color: #4C0813;
+	background-color: white;
+	border-right-color: #4C0813;
+	border-right-style: solid;
+	border-right-width: 3px;
+}
+
+div.mainAreaNpcListSection{
+	left: 375px;
+	position: fixed;
+	top: 0;
+	padding-top: 40px;
+	width: 800px;
+	height: 100%;
+	color: #4C0813;
+	background-color: white;
+	border-right-color: #4C0813;
+	border-right-style: solid;
+	border-right-width: 3px;
+}
+
+div.mainAreaConfig{
+	padding-left: 40px;
+	padding-top: 20px;
+	color: #4C0813;
+}
+
+span.badge{
+	padding-left: 40px;
+	position: absolute;
+	font-size: larger;
+	border-radius: 1.25rem;
+}
+
+span.clearWarningsButton{
+	color: #4C0813;
+}
+
+span.clearWarningsButton:hover{
+	text-decoration: underline;
+}
+
+.npcFilterInput{
+	width: 97%;
+}
+
+table.npcTable{
+	table-layout: fixed;
+	width: 95%;
+	border-collapse: separate;
+	border-spacing: 0px;
+}
+
+table.npcTable tr.npcTableDataRow{
+	line-height: 30px;
+}
+
+table.npcTable tr.npcTableDataRow:hover{
+	font-weight: bold;
+	cursor:	pointer;
+}
+
+table.npcTable tr.npcTableHeaderRow th{
+	border-bottom-style: solid;
+	border-bottom-width: 3px;
+	border-color: #4C0813;
+	background-color: white;
+	position: sticky;
+	top: 0;
+}
+
+table.npcTable tr.npcTableHeaderRow th.clickable{
+	cursor:	pointer;
+}
+
+.npcTableColumnAge, 
+.npcTableColumnHealth, 
+.npcTableColumnGender, 
+.npcTableColumnRessonance, 
+.npcTableColumnN1, 
+.npcTableColumnN2, 
+.npcTableColumnN3,
+.npcTableColumnNationality
+.npcTableColumnNeighbourhood{
+	text-align: center;
+}
+
+.npcTableColumn{
+	width: 100px;
+}
+
+.npcTableColumnId{
+	width: 30px;
+}
+
+.npcTableColumnName{
+	width: 200px;
+}
+
+.npcTableColumnNationality{
+	width: 60px;	
+}
+
+.npcTableColumnGender, 
+.npcTableColumnAge, 
+.npcTableColumnHealth,
+.npcTableColumnNeighbourhood{
+	width: 30px;
+}
+
+td.npcTableColumn{
+
+}
+
+th.npcTableColumm{
+
+}
+
+div.npcTableContainer{
+	overflow-y: auto;
+	height: 700px;
+}
+
+table.npcTable .npcTableDataRowEven{
+	background-color: #ffaeae;
+}
+
+table.npcTable .npcTableDataRowOdd{
+	
+}
+
+svg.personBody{
+	position: absolute;
+	left: 1vw;
+	top: 9.6vh;
+	height: auto;
+	width: 7vw;
+	stroke: black;
+	fill: #504d4d;
+}
+
+svg.personEyesCenter{
+	position: absolute;	
+	left: 3vw;
+	top: 5.4vh;
+	height: auto;
+	width: 3vw;
+	stroke: black;
+}
+
+svg.personEyesWhite{
+	position: absolute;	
+	left: 3vw;
+	top: 5.4vh;
+	height: auto;
+	width: 3vw;
+	stroke: black;
+	fill: white;
+}
+
+svg.personEyesContour{
+	position: absolute;	
+	left: 3vw;
+	top: 5.4vh;
+	height: auto;
+	width: 3vw;
+	stroke: black;
+}
+
+svg.personFemaleHair{
+	position: absolute;	
+	left: -0.7vw;
+	top: 0;
+	width: 10vw;
+	height: auto;
+	stroke: black;
+}
+
+svg.personMaleHair{
+	position: absolute;	
+	left: 1.5vw;
+	top: 1.3vh;
+	width: 5.9vw;
+	height: auto;
+	stroke: black;
+}
+
+svg.personHead{
+	position: absolute;	
+	left: 2.4vw;
+	top: 2.7vh;
+	width: 4vw;
+	height: auto;
+	stroke: black;
+}
+
+div.portrait{
+	height: 18vh;
+}
+
+div.npcDetailsPortrait{
+	top: 6vh;
+    position: absolute;
+    border-color: #4C0813;
+    border-style: solid;
+    border-width: 3px;
+    width: 18vh;
+    margin-top: 20px;
+}
+
+div.npcDetailsInformation{
+	margin-top: 21vh;
+}
+
+table.npcInformationTable{
+
+}
+
+table.npcInformationTable td{
+    border-color: #4C0813;
+    border-width: 2px;
+    border-style: solid;
+}
+
+div.npcInformationTableArea{
+	height: 400px;
+    overflow-y: auto;
+}
+

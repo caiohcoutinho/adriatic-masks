@@ -28,54 +28,58 @@ app.listen(PORT, () => {
 app.get("/npc", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){
-			res.json({error: "Error:"+err});
+			console.log(err);
+			res.status(500);
+			res.json(err);
 			return;
 		}
 		client.query(
 		`
 		select  npc.id id,
-			npc.nome nome, 
-			sexo.sigla sexo, 
-			nacionalidade.nome nacionalidade, 
-			npc.idade idade, 
-			npc.apelido apelido, 
-			cor_pele.cor pele, 
-			cor_olhos.cor olhos, 
-			cor_cabelo.cor cabelo,
-			moradia.id moradiaId, 
-			moradia.nome moradia, 
-			bairro.nome bairro, 
-			npc.fisico F, 
+			npc.name, 
+			gender.symbol gender, 
+			nationality.id nationalityId, 
+			nationality.name nationality, 
+			npc.age, 
+			npc.nickname, 
+			skin_color.color skin, 
+			eye_color.color eyes, 
+			hair_color.color hair,
+			home.id homeId, 
+			home.name home, 
+			neighbourhood.name neighbourhood, 
+			neighbourhood.id neighbourhoodId, 
+			npc.physical F, 
 			npc.social S, 
-			npc.mental M, 
-			familia.nome familia, 
-			instinto.nome instinto, 
-			obrigacao.nome obrigacao, 
-			natureza_obrigacao.nome natureza_obrigacao,
-			recursos recursos,
-			saude,
-			saude_max,
-			r.nome ressonancia,
-			h.nome humor,
-			npc.descricao descricao,
-			v.geracao geracao,
-			clan.nome clan,
-			pt.nome predator_type
+			npc.mental M,
+			family.name family_name, 
+			instinct.name instinct, 
+			oath.name oath, 
+			oath_nature.name oath_nature,
+			wealth,
+			health,
+			max_health,
+			r.name ressonance,
+			h.name humor,
+			npc.description,
+			v.generation,
+			clan.name clan,
+			pt.name predator_type
 		from npc
-		join sexo on npc.sexo = sexo.id
-		join nacionalidade on nacionalidade.id = npc.nacionalidade
-		join cor_pele on cor_pele.id = npc.pele
-		join cor_olhos on cor_olhos.id = npc.olhos
-		join cor_cabelo on cor_cabelo.id = npc.cabelo
-		join bairro on bairro.id = npc.bairro
-		left join familia on familia.id = npc.familia
-		join obrigacao on obrigacao.id = npc.obrigacao
-		join instinto on instinto.id = npc.instinto
-		join humor h on h.id = instinto.humor
-		join natureza_obrigacao on natureza_obrigacao.id = npc.natureza_obrigacao
-		join moradia on moradia.id = npc.moradia
-		left join ressonancia r on r.id = npc.ressonancia
-		left join vampiro v on v.id = npc.id
+		join gender on npc.gender = gender.id
+		join nationality on nationality.id = npc.nationality
+		join skin_color on skin_color.id = npc.skin
+		join eye_color on eye_color.id = npc.eyes
+		join hair_color on hair_color.id = npc.hair
+		join neighbourhood on neighbourhood.id = npc.neighbourhood
+		left join family on family.id = npc.family
+		join oath on oath.id = npc.oath
+		join instinct on instinct.id = npc.instinct
+		join humor h on h.id = instinct.humor
+		join oath_nature on oath_nature.id = npc.oath_nature
+		join home on home.id = npc.home
+		left join ressonance r on r.id = npc.ressonance
+		left join vampire v on v.id = npc.id
 		left join clan on clan.id = v.clan
 		left join predator_type pt on pt.id = v.predator_type
 		order by npc.id
@@ -83,7 +87,9 @@ app.get("/npc", (req, res, next) => {
 		 (err, result) => {
 		 	done()
 			if(err){
-			  res.json({error: "Error:"+err});
+			  console.log(err);
+			  res.status(500);
+			  res.json(err);
 			} else{
 			  res.json(result.rows)
 			}
@@ -95,14 +101,16 @@ app.get("/npc", (req, res, next) => {
 app.post("/saveResources", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){
-			res.json({error: "Error:"+err});
+			res.json(err);
 			return;
 		}
 		client.query("update npc set recursos = "+req.body.recursos+" where id = "+req.body.id,
 			 (err, result) => {
 	 		done()
 		  if(err){
-			  res.json({error: "Error:"+err});
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
 			} else{
 			  res.json(result.rows)
 			}
@@ -114,14 +122,16 @@ app.post("/saveResources", (req, res, next) => {
 app.post("/saveLocationDescription", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){
-			res.json({error: "Error:"+err});
+			res.json(err);
 			return;
 		}
 		client.query("update negocio set descricao = '"+req.body.descricao+"' where id = "+req.body.id,
 			 (err, result) => {
 		 	done()
 		  if(err){
-			  res.json({error: "Error:"+err});
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
 			} else{
 			  res.json(result.rows)
 			}
@@ -139,14 +149,16 @@ const runUpdates = function(){
 	let update = updateList.shift();
 	pool.connect((err, client, done) => {
 		if(err){
-			res.json({error: "Error:"+err});
+			res.json(err);
 			return;
 		}
 		client.query("update npc set ressonancia = (select id from ressonancia where nome = '"+update.ressonancia+"') where id = "+update.id,
 			 (err, result) => {
 		 	done();
 		 	if(err){
-			  res.json({error: "Error:"+err});
+		 	  console.log(err);
+		 	  res.status(500);
+			  res.json(err);
 			}
 		  ;
 		  runUpdates();
@@ -163,14 +175,16 @@ app.post("/saveRessonance", (req, res, next) => {
 app.post("/saveHealth", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){
-			res.json({error: "Error:"+err});
+			res.json(err);
 			return;
 		}
 		client.query("update npc set saude = "+req.body.saude+" where id = "+req.body.id,
 			 (err, result) => {
 			 	done()
 		  if(err){
-			  res.json({error: "Error:"+err});
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
 			} else{
 			  res.json(result.rows)
 			}
@@ -182,14 +196,16 @@ app.post("/saveHealth", (req, res, next) => {
 app.post("/saveDescription", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){
-			res.json({error: "Error:"+err});
+			res.json(err);
 			return;
 		}
 		client.query("update npc set descricao = "+req.body.descricao+" where id = "+req.body.id,
 			 (err, result) => {
 	 		done()
 		  if(err){
-			  res.json({error: "Error:"+err});
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
 			} else{
 			  res.json(result.rows)
 			}
@@ -198,23 +214,34 @@ app.post("/saveDescription", (req, res, next) => {
 	});
 });
 
-app.get("/location", (req, res, next) => {
+app.get("/business", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){
-			res.json({error: "Error:"+err});
+			console.log(err);
+			res.status(500);
+			res.json(err);
 			return;
 		}
 		client.query(
 			`
-			select n.id id, n.nome nome, tn.nome tipo, b.nome bairro, n1, n2, n3, descricao
-			from negocio n
-			join tipo_negocio tn on tn.id = n.tipo_negocio
-			join bairro b on b.id = n.bairro
+			select b.id id, 
+				   b.name nome, 
+				   bt.name tipo, 
+				   n.name bairro, 
+				   n1, 
+				   n2, 
+				   n3, 
+				   description
+			from business b
+			join business_type bt on bt.id = b.business_type
+			join neighbourhood n on n.id = b.neighbourhood
 			`,
 			 (err, result) => {
 		 	done()
 		  if(err){
-			  res.json({error: "Error:"+err});
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
 			} else{
 			  res.json(result.rows)
 			}
@@ -223,22 +250,24 @@ app.get("/location", (req, res, next) => {
 	});
 });
 
-app.get("/moradias", (req, res, next) => {
+app.get("/home", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){
-			res.json({error: "Error:"+err});
+			res.json(err);
 			return;
 		}
 		client.query(
 			`
-			select m.id, m.nome, b.nome bairro
-			from moradia m
-			join bairro b on b.id = m.bairro
+			select h.id, h.name, n.name neighbourhood
+			from home h
+			join neighbourhood n on n.id = h.neighbourhood
 			`,
 			 (err, result) => {
 		 	done()
 		  if(err){
-			  res.json({error: "Error:"+err});
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
 			} else{
 			  res.json(result.rows)
 			}
@@ -247,21 +276,23 @@ app.get("/moradias", (req, res, next) => {
 	});
 });
 
-app.get("/professions", (req, res, next) => {
+app.get("/profession", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){
-			res.json({error: "Error:"+err});
+			res.json(err);
 			return;
 		}
 		client.query(
 			`
 			select *
-			from profissao
+			from profession
 			`,
 			 (err, result) => {
 	 		done()
 		  if(err){
-			  res.json({error: "Error:"+err});
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
 			} else{
 			  res.json(result.rows)
 			}
@@ -270,21 +301,23 @@ app.get("/professions", (req, res, next) => {
 	});
 });
 
-app.get("/professionsNpcs", (req, res, next) => {
+app.get("/npcProfession", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){
-			res.json({error: "Error:"+err});
+			res.json(err);
 			return;
 		}
 		client.query(
 			`
 			select *
-			from profissao_npc
+			from npc_profession
 			`,
 			 (err, result) => {
 			 	done()
 		  if(err){
-			  res.json({error: "Error:"+err});
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
 			} else{
 			  res.json(result.rows)
 			}
@@ -293,21 +326,23 @@ app.get("/professionsNpcs", (req, res, next) => {
 	});
 });
 
-app.get("/preferencias", (req, res, next) => {
+app.get("/npcPreferences", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){
-			res.json({error: "Error:"+err});
+			res.json(err);
 			return;
 		}
 		client.query(
 			`
-			select npc, negocio, seed
-			from preferencias_npcs 
+			select npc, business, seed
+			from npc_preferences 
 			`,
 			 (err, result) => {
 			 	done()
 		  if(err){
-			  res.json({error: "Error:"+err});
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
 			} else{
 			  res.json(result.rows)
 			}
@@ -316,21 +351,23 @@ app.get("/preferencias", (req, res, next) => {
 	});
 });
 
-app.get("/clientesNegocio", (req, res, next) => {
+app.get("/businessRules", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){
-			res.json({error: "Error:"+err});
+			res.json(err);
 			return;
 		}
 		client.query(
 			`
 			select *
-			from cliente_negocio 
+			from business_rules 
 			`,
 			 (err, result) => {
 		 	done()
 		  if(err){
-			  res.json({error: "Error:"+err});
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
 			} else{
 			  res.json(result.rows)
 			}
@@ -339,3 +376,27 @@ app.get("/clientesNegocio", (req, res, next) => {
 	});
 });
 
+app.get("/neighbourhood", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query(
+			`
+			select *
+			from neighbourhood 
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows)
+			}
+		  
+		})
+	});
+});
