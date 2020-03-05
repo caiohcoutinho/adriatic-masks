@@ -36,7 +36,8 @@
 			v-on:clear-warnings="clearWarnings">
 		</main-area>
 		<npc-details
-			v-bind:npc="selectedNpc">
+			v-bind:npc="selectedNpc"
+			v-on:click-family="selectFamily">
 		</npc-details>
 	</div>
 
@@ -167,7 +168,9 @@
 				<portrait v-bind:npc="npc"/>
 			</div>
 			<div class="npcDetailsInformation">
-				<npc-information v-bind:npc="npc"/>
+				<npc-information 
+					v-on:click-family="clickFamily"
+					v-bind:npc="npc"/>
 			</div>
 		</div>
 	</script>	
@@ -189,7 +192,7 @@
 				<tr><td>Físico</td><td>{{npc.f}}</td></tr>
 				<tr><td>Mental</td><td>{{npc.m}}</td></tr>
 				<tr><td>Social</td><td>{{npc.s}}</td></tr>
-				<tr><td>Família</td><td>{{npc.family_name}}</td></tr>
+				<tr><td>Família</td><td><span v-on:click="clickFamily(npc.family_id)" class="clickableLink">{{npc.family_name}}</span></td></tr>
 				<tr><td>Instinto</td><td>{{npc.instinct}}</td></tr>
 				<tr><td>Obrigacação</td><td>{{npc.oath}}</td></tr>
 				<tr><td>Natureza</td><td>{{npc.oath_nature}}</td></tr>

@@ -225,7 +225,12 @@ Vue.component('main-area-config', {
 
 Vue.component('npc-details', {
 	props: ['npc'],
-	template: '#npcDetailsTemplate'
+	template: '#npcDetailsTemplate',
+	methods: {
+		clickFamily: function(familyId){
+			this.$emit('click-family', familyId);
+		}
+	}
 });
 
 Vue.component('neighbourhood-icon', {
@@ -235,7 +240,12 @@ Vue.component('neighbourhood-icon', {
 
 Vue.component('npc-information', {
 	props: ['npc'],
-	template: '#npcInformationTemplate'
+	template: '#npcInformationTemplate',
+	methods: {
+		clickFamily: function(familyId){
+			this.$emit('click-family', familyId);
+		}
+	}
 });
 
 var app = new Vue({
@@ -246,7 +256,8 @@ var app = new Vue({
 		warningList: [],
 		selectedNpc: null,
 		neighbourhoodList: [],
-		familyList: []
+		familyList: [],
+		selectedFamily: null,
 	},
 	methods: {
 		showMainArea: function(mainArea){
@@ -257,6 +268,9 @@ var app = new Vue({
 		},
 		selectNpc: function(npc){
 			this.selectedNpc = npc;
+		},
+		selectFamily: function(familyId){
+			this.selectedFamily = familyId;	
 		}
 	},
 	mounted: function() {
