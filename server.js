@@ -12,7 +12,7 @@ app.use(express.urlencoded()); // to support URL-encoded bodies
 
 app.use(express.static('public'))
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT | 3000;
 
 const pool = new Pool()
 
@@ -52,6 +52,7 @@ app.get("/npc", (req, res, next) => {
 			npc.physical F, 
 			npc.social S, 
 			npc.mental M,
+			family.id family_id,
 			family.name family_name, 
 			instinct.name instinct, 
 			oath.name oath, 
@@ -386,6 +387,31 @@ app.get("/neighbourhood", (req, res, next) => {
 			`
 			select *
 			from neighbourhood 
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows)
+			}
+		  
+		})
+	});
+});
+
+app.get("/family", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query(
+			`
+			select *
+			from family 
 			`,
 			 (err, result) => {
 		 	done()

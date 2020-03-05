@@ -31,6 +31,7 @@
 			v-bind:warning-list="warningList"
 			v-bind:main-area="mainArea"
 			v-bind:npc-list="npcList"
+			v-bind:family-list="familyList"
 			v-bind:neighbourhood-list="neighbourhoodList"
 			v-on:clear-warnings="clearWarnings">
 		</main-area>
@@ -70,6 +71,7 @@
 		<div class="mainArea" v-if="mainArea != null">
 			<main-area-npc 
 				v-if="showNpc"
+				v-bind:family-list="familyList"
 				v-bind:neighbourhood-list="neighbourhoodList"
 				v-on:click-npc="clickNpc"
 				v-bind:npc-list="npcList"/>
@@ -88,11 +90,16 @@
 				Nome: <input class="npcFilterInput" type="text" v-model="nameFilter"/>
 				Idade mínima: <input class="npcFilterInput" type="number" v-model="minimunAgeFilter"/>
 				Idade máxima: <input class="npcFilterInput" type="number" v-model="maximunAgeFilter"/>
-				Bairro: 
-				<select class="npcFilterInput" v-model="neighborhoodFilter">
-					<option disabled value="">Bairro</option>
+				<select class="npcFilterInput" v-model="neighbourhoodFilter">
+					<option value="">Bairro</option>
 					<option v-for="neighbourhood in neighbourhoodList" v-bind:value="neighbourhood.id">
 						{{neighbourhood.name}} <span v-html="neighbourhood.symbol"></span>
+					</option>
+				</select>
+				<select class="npcFilterInput" v-model="familyFilter">
+					<option value="">Família</option>
+					<option v-for="family in familyList" v-bind:value="family.id">
+						{{family.name}}
 					</option>
 				</select>
 			</div>

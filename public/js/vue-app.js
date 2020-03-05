@@ -35,7 +35,7 @@ Vue.component('left-bar-menu', {
 
 Vue.component('main-area', {
 	template: '#mainAreaTemplate',
-	props: ['mainArea', 'warningList', 'npc-list', 'neighbourhoodList'],
+	props: ['mainArea', 'warningList', 'npc-list', 'neighbourhoodList', 'familyList'],
 	computed: {
 		showNpc: function(){
 			return this.mainArea == NPC;
@@ -62,13 +62,14 @@ Vue.component('main-area', {
 
 Vue.component('main-area-npc', {
 	template: '#mainAreaNpcTemplate',
-	props: ['npcList', 'neighbourhoodList'],
+	props: ['npcList', 'neighbourhoodList', 'familyList'],
 	data: function(){
 		return {
 			'nameFilter': null,
 			'minimunAgeFilter': null,
 			'maximunAgeFilter': null,
-			'neighborhoodFilter': "",
+			'neighbourhoodFilter': "",
+			'familyFilter': "",
 			'orderById': null,
 			'orderByName': null,
 			'orderByGender': null,
@@ -76,7 +77,7 @@ Vue.component('main-area-npc', {
 			'orderByNationality': null,
 			'orderByAge': null,
 			'orderByHealth': null,
-			'orderByRessonance': null,
+			'orderByRessonance': null
 		}
 	},
 	computed: {
@@ -88,9 +89,14 @@ Vue.component('main-area-npc', {
 			if(!isNullOrUndefinedOrEmpty(this.maximunAgeFilter)){
 				list = _.filter(list, (npc) => {return npc.age <= parseInt(this.maximunAgeFilter);});
 			}
-			if(!isNullOrUndefinedOrEmpty(this.neighborhoodFilter)){
+			if(!isNullOrUndefinedOrEmpty(this.neighbourhoodFilter)){
 				list = _.filter(list, (npc) => {
-					return npc.neighbourhoodid == this.neighborhoodFilter;
+					return npc.neighbourhoodid == this.neighbourhoodFilter;
+				});
+			}
+			if(!isNullOrUndefinedOrEmpty(this.familyFilter)){
+				list = _.filter(list, (npc) => {
+					return npc.family_id == this.familyFilter;
 				});
 			}
 			if(!isNullOrUndefinedOrEmpty(this.nameFilter)){
@@ -239,7 +245,8 @@ var app = new Vue({
 		npcList: null,
 		warningList: [],
 		selectedNpc: null,
-		neighbourhoodList: []
+		neighbourhoodList: [],
+		familyList: []
 	},
 	methods: {
 		showMainArea: function(mainArea){
@@ -272,6 +279,9 @@ var app = new Vue({
 						self.npcList = npcResponse.data;
 						this.axios.get('/neighbourhood').catch(errorHandler).then(function(neighbourhoodResponse){
 							self.neighbourhoodList = neighbourhoodResponse.data;
+							this.axios.get('/family').catch(errorHandler).then(function(familyResponse){
+								self.familyList = familyResponse.data;
+							});
 						});
 					});
 				});
