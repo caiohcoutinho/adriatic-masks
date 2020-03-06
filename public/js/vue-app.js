@@ -35,9 +35,9 @@ Vue.component('left-bar-menu', {
 
 Vue.component('main-area', {
 	template: '#mainAreaTemplate',
-	props: ['mainArea', 'warningList', 
+	props: ['mainArea', 'warningList', 'npcProfessionList', 'professionList',
 			'npc-list', 'neighbourhoodList', 'familyList',
-			'selectedFamily', 'businessList', 'lastUpdate'],
+			'selectedFamily', 'businessList', 'lastUpdate', 'lastUpdateDetails'],
 	computed: {
 		showNpc: function(){
 			return this.mainArea == NPC;
@@ -64,7 +64,8 @@ Vue.component('main-area', {
 
 Vue.component('main-area-npc', {
 	template: '#mainAreaNpcTemplate',
-	props: ['npcList', 'neighbourhoodList', 'familyList', 'familyFilter'],
+	props: ['npcList', 'professionList', 'npcProfessionList', 'professionList',
+	'businessList', 'neighbourhoodList', 'familyList', 'familyFilter'],
 	data: function(){
 		return {
 			'nameFilter': null,
@@ -142,7 +143,7 @@ Vue.component('main-area-npc', {
 				}
 			}
 			return list;
-		}
+		},
 	},
 	methods: {
 		orderBy: function(term){
@@ -174,6 +175,15 @@ Vue.component('main-area-npc', {
 			this.orderByAge = null;
 			this.orderByHealth = null;
 			this.orderByRessonance = null;
+		},
+		findNpcProfessions: function(npc){
+			return _.map(
+				_.filter(this.npcProfessionList, (npcProfession) => {return npcProfession.npc == npc.id}),
+				(profession) => ({
+					profession: _.find(this.professionList, (p) => {return p.id == profession.profession}),
+					business: _.find(this.businessList, (b) => {return b.id == profession.business})
+				})
+			);
 		}
 	}
 });
@@ -350,9 +360,12 @@ Vue.component('npc-information', {
 var app = new Vue({
 	el: '#app',
 	data: {
+		lastUpdateDetails: new Date().toString(),
 		lastUpdate: new Date().toString(),
 		mainArea: BUSINESS,
 		npcList: null,
+		professionList: [],
+		npcProfessionList: [],
 		businessList: [],
 		warningList: [],
 		selectedNpc: null,
@@ -375,6 +388,7 @@ var app = new Vue({
 		},
 		selectNpc: function(npc){
 			this.selectedNpc = npc;
+			this.lastUpdateDetails = new Date().toString();
 		},
 		selectFamily: function(familyId){
 			this.selectedFamily = familyId;	

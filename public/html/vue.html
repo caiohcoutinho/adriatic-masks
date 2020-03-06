@@ -32,6 +32,8 @@
 			v-bind:warning-list="warningList"
 			v-bind:main-area="mainArea"
 			v-bind:npc-list="npcList"
+			v-bind:profession-list="professionList"
+			v-bind:npc-profession-list="npcProfessionList"
 			v-bind:business-list="businessList"
 			v-bind:selected-family="selectedFamily"
 			v-bind:family-list="familyList"
@@ -40,6 +42,7 @@
 		</main-area>
 		<npc-details
 			v-bind:npc="selectedNpc"
+			v-bind:key="lastUpdateDetails"
 			v-on:click-family="selectFamily">
 		</npc-details>
 	</div>
@@ -77,6 +80,9 @@
 				v-if="showNpc"
 				v-bind:family-filter="selectedFamily"
 				v-bind:family-list="familyList"
+				v-bind:npc-profession-list="npcProfessionList"
+				v-bind:business-list="businessList"
+				v-bind:profession-list="professionList"
 				v-bind:neighbourhood-list="neighbourhoodList"
 				v-on:click-npc="clickNpc"
 				v-bind:npc-list="npcList"/>
@@ -123,6 +129,7 @@
 							<th v-on:click="orderBy('Gender')" class="npcTableColumn clickable npcTableColumnGender">&#9893;<sorting-arrow v-bind:condition="orderByGender"></sorting-arrow></th>
 							<th v-on:click="orderBy('Neighbourhood')" class="npcTableColumn clickable npcTableColumnNeighbourhood">&#127968;<sorting-arrow v-bind:condition="orderByNeighbourhood"></sorting-arrow></th>
 							<th v-on:click="orderBy('Age')" class="npcTableColumn clickable npcTableColumnAge">&#x23F0;<sorting-arrow v-bind:condition="orderByAge"></sorting-arrow></th>
+							<th class="npcTableColumn npcTableColumnProfession">&#128736;</th>
 							<th class="npcTableColumn npcTableColumnHealth">&#10084;</th>
 							<th v-on:click="orderBy('Ressonance')" class="npcTableColumn clickable npcTableColumnRessonance">Ressonance<sorting-arrow v-bind:condition="orderByRessonance"></sorting-arrow></th>
 						</tr>
@@ -140,6 +147,7 @@
 								>
 							</neighbourhood-icon></td>
 							<td class="npcTableColumn npcTableColumnAge">{{npc.age}}</td>
+							<td class="npcTableColumn npcTableColumnProfession"><span v-for="profession in findNpcProfessions(npc)">{{profession.profession.name}}<span v-if="profession.business != undefined"> em {{profession.business.name}}</span></span></td>
 							<td class="npcTableColumn npcTableColumnHealth">{{npc.health}}/{{npc.max_health}}</td>
 							<td class="npcTableColumn npcTableColumnRessonance">{{npc.ressonance}}</td>
 						</tr>
@@ -257,7 +265,7 @@
 	</script>
 
 	<script type="text/x-template" id="npcDetailsTemplate">
-		<div v-if="npc != null" class="npcDetails">
+		<div v-if="npc != null && npc != undefined" class="npcDetails">
 			<h3>{{npc.id}} - {{npc.name}}</h3>
 			<div class="npcDetailsPortrait">
 				<portrait v-bind:npc="npc"/>
@@ -296,9 +304,9 @@
 				<tr><td>Ressonância</td><td>{{npc.ressonance}}</td></tr>
 				<tr><td>Humor</td><td>{{npc.humor}}</td></tr>
 				<tr><td>Descrição</td><td>{{npc.description}}</td></tr>
-				<tr><td>N1</td><td>{{npc.l1.name}} ({{npc.l1.business_type}})</td></tr>
-				<tr><td>N2</td><td>{{npc.l2.name}} ({{npc.l2.business_type}})</td></tr>
-				<tr><td>N3</td><td>{{npc.l3.name}} ({{npc.l3.business_type}})</td></tr>
+				<tr><td>N1</td><td><span v-if="npc.l1 != undefined">{{npc.l1.trogo}} ({{npc.l1.business_type}})</span></td></tr>
+				<tr><td>N2</td><td><span v-if="npc.l2 != undefined">{{npc.l2.trogo}} ({{npc.l2.business_type}})</span></td></tr>
+				<tr><td>N3</td><td><span v-if="npc.l3 != undefined">{{npc.l3.trogo}} ({{npc.l3.business_type}})</span></td></tr>
 				<tr><td>Clã</td><td>{{npc.clan}}</td></tr>
 				<tr><td>Geração</td><td>{{npc.generation}}</td></tr>
 				<tr><td>Predador</td><td>{{npc.predator_type}}</td></tr>
