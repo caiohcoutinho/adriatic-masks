@@ -27,10 +27,13 @@
 			v-on:click-link="showMainArea">
 		</left-bar-menu>
 		<main-area 
+			v-bind:last-update="lastUpdate"
 			v-on:click-npc="selectNpc"
 			v-bind:warning-list="warningList"
 			v-bind:main-area="mainArea"
 			v-bind:npc-list="npcList"
+			v-bind:business-list="businessList"
+			v-bind:selected-family="selectedFamily"
 			v-bind:family-list="familyList"
 			v-bind:neighbourhood-list="neighbourhoodList"
 			v-on:clear-warnings="clearWarnings">
@@ -52,9 +55,9 @@
 				<img class="leftBarMenuLinkImg leftBarMenuItem" src="/img/npc.png" >
 				<h1 class="leftBarMenuLinkImg leftBarMenuItem">NPC</h1>
 			</div>
-			<div class="leftBarMenuLinkBlock leftBarMenuNpcBlock" v-on:click="clickLocation">
+			<div class="leftBarMenuLinkBlock leftBarMenuNpcBlock" v-on:click="clickBusiness">
 				<img class="leftBarMenuLinkImg leftBarMenuItem" src="/img/location.png" >
-				<h1 class="leftBarMenuLinkImg leftBarMenuItem">Location</h1>
+				<h1 class="leftBarMenuLinkImg leftBarMenuItem">Negócios</h1>
 			</div>
 			<div class="leftBarMenuLinkBlock leftBarMenuNpcBlock" v-on:click="clickNight">
 				<img class="leftBarMenuLinkImg leftBarMenuItem" src="/img/moon.png" >
@@ -72,11 +75,17 @@
 		<div class="mainArea" v-if="mainArea != null">
 			<main-area-npc 
 				v-if="showNpc"
+				v-bind:family-filter="selectedFamily"
 				v-bind:family-list="familyList"
 				v-bind:neighbourhood-list="neighbourhoodList"
 				v-on:click-npc="clickNpc"
 				v-bind:npc-list="npcList"/>
-			<main-area-location v-if="showLocation"/>
+			<main-area-business
+				v-if="showBusiness"
+				v-on:click-npc="clickNpc"
+				v-bind:key="lastUpdate"
+				v-bind:business-list="businessList"
+				v-bind:neighbourhood-list="neighbourhoodList"/>
 			<main-area-config 
 				v-on:clear-warnings="clearWarnings"
 				v-bind:warning-list="warningList"
@@ -87,7 +96,7 @@
 	<script type="text/x-template" id="mainAreaNpcTemplate">
 		<div class="mainAreaNpc">
 			<div class="mainAreaNpcFilterForm">
-				<h1>Filtro</h1>
+				<h1>Filtro <span v-on:click="cleanFilter" class="cleanFilterButtton">&#128465;</span></h1>
 				Nome: <input class="npcFilterInput" type="text" v-model="nameFilter"/>
 				Idade mínima: <input class="npcFilterInput" type="number" v-model="minimunAgeFilter"/>
 				Idade máxima: <input class="npcFilterInput" type="number" v-model="maximunAgeFilter"/>
@@ -144,9 +153,95 @@
 		<span><span v-if="condition===true">&#8679;</span><span v-if="condition===false">&#8681;</span></span>
 	</script>
 	
-	<script type="text/x-template" id="mainAreaLocationTemplate">
-		<div>
-			<h1>Location</h1>
+	<script type="text/x-template" id="mainAreaBusinessTemplate">
+		<div class="mainAreaBusiness">
+			<div class="mainAreaBusinessFilterForm">
+				<h1>Filtro <span v-on:click="cleanFilter" class="cleanFilterButtton">&#128465;</span></h1>
+				Nome: <input class="businessFilterInput" type="text" v-model="nameFilter"/>
+				<select class="businessFilterInput" v-model="neighbourhoodFilter">
+					<option value="">Bairro</option>
+					<option v-for="neighbourhood in neighbourhoodList" v-bind:value="neighbourhood.id">
+						{{neighbourhood.name}} <span v-html="neighbourhood.symbol"></span>
+					</option>
+				</select>
+			</div>
+			<div class="mainAreaBusinessListSection">
+				<div class="businessTableContainer">
+					<table class="businessTable">
+						<tr class="businessTableHeaderRow">
+							<th v-on:click="orderBy('Id')" class="businessTableColumn clickable businessTableColumnId">#<sorting-arrow v-bind:condition="orderById"></sorting-arrow></th>
+							<th v-on:click="orderBy('Name')" class="businessTableColumn clickable businessTableColumnName">Nome<sorting-arrow v-bind:condition="orderByName"></sorting-arrow></th>
+							<th v-on:click="orderBy('Neighbourhood')" class="businessTableColumn clickable businessTableColumnNeighbourhood">&#127968;<sorting-arrow v-bind:condition="orderByNeighbourhood"></sorting-arrow></th>
+						</tr>
+						<tbody v-for="(business, index) in businessFilteredOrderedList">
+							<tr class="businessTableDataRow color1">
+								<td class="businessTableColumn businessTableColumnI"><h5>{{business.id}}</h5></td>
+								<td class="businessTableColumn businessTableColumnName"><h5>{{business.name}} ({{business.business_type}})</h5></td>
+								<td class="businessTableColumn businessTableColumnNeighbourhood">
+									<neighbourhood-icon	
+										v-bind:neighbourhood-id="business.neighbourhoodid"
+										v-bind:neighbourhood-list="neighbourhoodList"
+									>
+									</neighbourhood-icon>
+								</td>
+							</tr>
+							<tr class="color2">
+								<td><span v-if="business.n1">&#10003;</span><span v-if="!business.n1">&#128711;</span></td>
+								<td colspan="2">
+									<npc-list v-on:click-npc="clickNpc"
+											  v-bind:npc-list="business.npcListN1"
+											  v-bind:neighbourhood-list="neighbourhoodList"/>
+								</td>
+							</tr>
+							<tr class="color3">
+								<td><span v-if="business.n2">&#10003;</span><span v-if="!business.n2">&#128711;</span></td>
+								<td colspan="2">
+									<npc-list v-on:click-npc="clickNpc"
+											  v-bind:npc-list="business.npcListN2"
+											  v-bind:neighbourhood-list="neighbourhoodList"/>
+								</td>
+							</tr>
+							<tr class="color4">
+								<td><span v-if="business.n3">&#10003;</span><span v-if="!business.n3">&#128711;</span></td>
+								<td colspan="2">
+									<npc-list v-on:click-npc="clickNpc"
+											  v-bind:npc-list="business.npcListN3"
+											  v-bind:neighbourhood-list="neighbourhoodList"/>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</script>
+
+	<script type="text/x-template" id="npcListTemplate">
+		<div class="npcTableContainer">
+			<table class="npcTable">
+				<tr v-for="(npc, index) in npcList" class="npcTableDataRow"
+					v-on:click="clickNpc(npc)"
+					v-bind:class="{npcTableDataRowEven: (index+1)%2==0, npcTableDataRowOdd: (index+1)%2!=0}">
+					<td class="npcTableColumn npcTableColumnI">{{npc.id}}</td>
+					<td class="npcTableColumn npcTableColumnName">
+						<span v-if="npc.working">(work)</span>
+						<span v-if="npc.sick">(sick)</span>
+						<span v-if="npc.sleeping">(zZzZ)</span>
+						{{npc.name}}
+					</td>
+					<td class="npcTableColumn npcTableColumnNationality">{{npc.nationality}}</td>
+					<td class="npcTableColumn npcTableColumnGender">{{npc.gender}}</td>
+					<td class="npcTableColumn npcTableColumnNeighbourhood">
+						<neighbourhood-icon	
+							v-bind:neighbourhood-id="npc.neighbourhoodid"
+							v-bind:neighbourhood-list="neighbourhoodList"
+						>
+						</neighbourhood-icon></td>
+					<td class="npcTableColumn npcTableColumnAge">{{npc.age}}</td>
+					<td class="npcTableColumn npcTableColumnHealth">{{npc.health}}/{{npc.max_health}}</td>
+					<td class="npcTableColumn npcTableColumnRessonance">{{npc.ressonance}}</td>
+				</tr>
+			</table>
 		</div>
 	</script>
 
@@ -201,6 +296,9 @@
 				<tr><td>Ressonância</td><td>{{npc.ressonance}}</td></tr>
 				<tr><td>Humor</td><td>{{npc.humor}}</td></tr>
 				<tr><td>Descrição</td><td>{{npc.description}}</td></tr>
+				<tr><td>N1</td><td>{{npc.l1.name}} ({{npc.l1.business_type}})</td></tr>
+				<tr><td>N2</td><td>{{npc.l2.name}} ({{npc.l2.business_type}})</td></tr>
+				<tr><td>N3</td><td>{{npc.l3.name}} ({{npc.l3.business_type}})</td></tr>
 				<tr><td>Clã</td><td>{{npc.clan}}</td></tr>
 				<tr><td>Geração</td><td>{{npc.generation}}</td></tr>
 				<tr><td>Predador</td><td>{{npc.predator_type}}</td></tr>

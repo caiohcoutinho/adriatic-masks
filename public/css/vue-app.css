@@ -69,12 +69,12 @@ div.npcDetails{
 	height: 700px;
 }
 
-div.mainAreaNpc{
+div.mainAreaNpc, div.mainAreaBusiness{
 	height: 100%;
 	width: 100%;
 }
 
-div.mainAreaNpcFilterForm{
+div.mainAreaNpcFilterForm, div.mainAreaBusinessFilterForm{
 	padding-top: 100px;
 	width: 200px;
 	height: 100%;
@@ -85,7 +85,7 @@ div.mainAreaNpcFilterForm{
 	border-right-width: 3px;
 }
 
-div.mainAreaNpcListSection{
+div.mainAreaNpcListSection, div.mainAreaBusinessListSection{
 	left: 375px;
 	position: fixed;
 	top: 0;
@@ -120,7 +120,7 @@ span.clearWarningsButton:hover{
 	text-decoration: underline;
 }
 
-.npcFilterInput{
+.npcFilterInput, .businessFilterInput{
 	width: 97%;
 }
 
@@ -131,7 +131,15 @@ table.npcTable{
 	border-spacing: 0px;
 }
 
-table.npcTable tr.npcTableDataRow{
+table.businessTable{
+	table-layout: fixed;
+	width: 95%;
+	border-collapse: collapse;
+	border-spacing: 0px;	
+}
+
+table.npcTable tr.npcTableDataRow,
+table.businessTable tr.businessTableDataRow{
 	line-height: 30px;
 }
 
@@ -140,7 +148,8 @@ table.npcTable tr.npcTableDataRow:hover{
 	cursor:	pointer;
 }
 
-table.npcTable tr.npcTableHeaderRow th{
+table.npcTable tr.npcTableHeaderRow th,
+table.businessTable tr.businessTableHeaderRow th{
 	border-bottom-style: solid;
 	border-bottom-width: 3px;
 	border-color: #4C0813;
@@ -149,7 +158,8 @@ table.npcTable tr.npcTableHeaderRow th{
 	top: 0;
 }
 
-table.npcTable tr.npcTableHeaderRow th.clickable{
+table.npcTable tr.npcTableHeaderRow th.clickable,
+table.businessTable tr.businessTableHeaderRow th.clickable{
 	cursor:	pointer;
 }
 
@@ -169,7 +179,7 @@ table.npcTable tr.npcTableHeaderRow th.clickable{
 	width: 100px;
 }
 
-.npcTableColumnId{
+.npcTableColumnId, .businessTableColumnId{
 	width: 30px;
 }
 
@@ -196,17 +206,26 @@ th.npcTableColumm{
 
 }
 
-div.npcTableContainer{
+div.mainAreaNpcListSection div.npcTableContainer{
 	overflow-y: auto;
 	height: 700px;
 }
 
-table.npcTable .npcTableDataRowEven{
+div.businessTableContainer{
+	overflow-y: auto;
+	height: 700px;
+}
+
+div.mainAreaNpcListSection table.npcTable .npcTableDataRowEven{
 	background-color: #ffaeae;
 }
 
 table.npcTable .npcTableDataRowOdd{
 	
+}
+
+div.businessTableContainer tbody{
+
 }
 
 svg.personBody{
@@ -310,4 +329,24 @@ div.npcInformationTableArea{
 span.clickableLink:hover{
 	cursor: pointer;
 	text-decoration: underline;
+}
+
+span.cleanFilterButtton:hover{
+	cursor: pointer;
+}
+
+tr.color1{
+	background-color: white;
+}
+
+tr.color2{
+	background-color: #FFD1A9;
+}
+
+tr.color3{
+	background-color: #FF9E79;
+}
+
+tr.color4{
+	background-color: #FB6D4C;
 }

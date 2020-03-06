@@ -12,7 +12,7 @@ app.use(express.urlencoded()); // to support URL-encoded bodies
 
 app.use(express.static('public'))
 
-const PORT = process.env.PORT | 3000;
+const PORT = process.env.PORT;
 
 const pool = new Pool()
 
@@ -226,9 +226,10 @@ app.get("/business", (req, res, next) => {
 		client.query(
 			`
 			select b.id id, 
-				   b.name nome, 
-				   bt.name tipo, 
-				   n.name bairro, 
+				   b.name, 
+				   bt.name business_type, 
+				   n.id neighbourhoodid,
+				   n.name neighbourhood, 
 				   n1, 
 				   n2, 
 				   n3, 
@@ -335,7 +336,7 @@ app.get("/npcPreferences", (req, res, next) => {
 		}
 		client.query(
 			`
-			select npc, business, seed
+			select id, npc, business, seed
 			from npc_preferences 
 			`,
 			 (err, result) => {
