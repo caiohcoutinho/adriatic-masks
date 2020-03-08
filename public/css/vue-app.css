@@ -11,11 +11,11 @@ div.leftBarMenuLinkBlock:hover h1{
 }
 
 img.logoImg{
-	height: 80px;
+	height: 40px;
 }
 
 img.leftBarMenuLinkImg{
-	height: 50px;
+	height: 30px;
 }
 
 body{
@@ -46,7 +46,7 @@ div.leftBarMenu{
 	background-color: #4C0813;
 	text-align: center;
 	left: 0;
-	width: 160px;
+	width: 60px;
 }
 
 div.mainArea{
@@ -54,19 +54,19 @@ div.mainArea{
 	position: fixed;
 	z-index: 1;
 	top: 0;
-	left: 165px;
+	left: 65px;
 }
 
 div.npcDetails{
 	position: fixed;
 	z-index: 1;
 	top: 0;
-	right: 0;
-	width: 400px;
+	left: 1250px;
+	width: 280px;
 	padding-top: 20px;
 	color: #4C0813;
 	overflow-y: auto;
-	height: 700px;
+	height: 100%;
 }
 
 div.mainAreaNpc, div.mainAreaBusiness{
@@ -86,11 +86,10 @@ div.mainAreaNpcFilterForm, div.mainAreaBusinessFilterForm{
 }
 
 div.mainAreaNpcListSection, div.mainAreaBusinessListSection{
-	left: 375px;
+	left: 275px;
 	position: fixed;
 	top: 0;
-	padding-top: 40px;
-	width: 800px;
+	width: 950px;
 	height: 100%;
 	color: #4C0813;
 	background-color: white;
@@ -126,14 +125,14 @@ span.clearWarningsButton:hover{
 
 table.npcTable{
 	table-layout: fixed;
-	width: 95%;
+	width: 99%;
 	border-collapse: separate;
 	border-spacing: 0px;
 }
 
 table.businessTable{
 	table-layout: fixed;
-	width: 95%;
+	width: 99%;
 	border-collapse: collapse;
 	border-spacing: 0px;	
 }
@@ -179,7 +178,9 @@ table.businessTable tr.businessTableHeaderRow th.clickable{
 	width: 100px;
 }
 
-.npcTableColumnId, .businessTableColumnId{
+.npcTableColumnId,
+.businessTableColumnId,
+.businessTableColumnNeighbourhood{
 	width: 30px;
 }
 
@@ -208,12 +209,12 @@ th.npcTableColumm{
 
 div.mainAreaNpcListSection div.npcTableContainer{
 	overflow-y: auto;
-	height: 700px;
+	height: 100%;
 }
 
 div.businessTableContainer{
 	overflow-y: auto;
-	height: 700px;
+	height: 100%;
 }
 
 div.mainAreaNpcListSection table.npcTable .npcTableDataRowEven{
@@ -304,7 +305,6 @@ div.npcDetailsPortrait{
     border-style: solid;
     border-width: 3px;
     width: 18vh;
-    margin-top: 20px;
 }
 
 div.npcDetailsInformation{
@@ -322,7 +322,6 @@ table.npcInformationTable td{
 }
 
 div.npcInformationTableArea{
-	height: 400px;
     overflow-y: auto;
 }
 
@@ -335,18 +334,12 @@ span.cleanFilterButtton:hover{
 	cursor: pointer;
 }
 
-tr.color1{
-	background-color: white;
+tr.businessTableDataRowPeriod{
+    border-color: #4C0813;
+    border-width: 2px;
+    border-style: solid;
 }
 
-tr.color2{
-	background-color: #FFD1A9;
-}
-
-tr.color3{
-	background-color: #FF9E79;
-}
-
-tr.color4{
-	background-color: #FB6D4C;
+tr.businessTableDataRowPeriod tr.npcTableDataRowEven{
+	background-color: #ffaeae;	
 }

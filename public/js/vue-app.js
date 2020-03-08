@@ -175,15 +175,6 @@ Vue.component('main-area-npc', {
 			this.orderByAge = null;
 			this.orderByHealth = null;
 			this.orderByRessonance = null;
-		},
-		findNpcProfessions: function(npc){
-			return _.map(
-				_.filter(this.npcProfessionList, (npcProfession) => {return npcProfession.npc == npc.id}),
-				(profession) => ({
-					profession: _.find(this.professionList, (p) => {return p.id == profession.profession}),
-					business: _.find(this.businessList, (b) => {return b.id == profession.business})
-				})
-			);
 		}
 	}
 });
@@ -242,7 +233,7 @@ Vue.component('main-area-business', {
 		cleanFilter: function(){
 			this.nameFilter = null;
 			this.neighbourhoodFilter = "";
-			this.orderById = null;
+			this.orderById = true;
 			this.orderByName = null;
 			this.orderByNeighbourhood = null;
 		},
@@ -379,6 +370,7 @@ var app = new Vue({
 				generateNight(this.npcList, this.businessList, this.npcPreferencesList,
 					this.npcProfessionList, this.businessRulesList);
 				this.lastUpdate = new Date().toString();
+				this.lastUpdateDetails = new Date().toString();
 			} else{
 				this.mainArea = mainArea;
 			}
@@ -412,13 +404,24 @@ var app = new Vue({
 				self.axios.get('/npcProfession').catch(errorHandler).then(npcProfessionResponse => {
 					self.npcProfessionList = npcProfessionResponse.data;
 					self.axios.get('/npc').catch(errorHandler).then(function(npcResponse){
-						self.npcList = npcResponse.data;
 						self.axios.get('/neighbourhood').catch(errorHandler).then(function(neighbourhoodResponse){
 							self.neighbourhoodList = neighbourhoodResponse.data;
 							self.axios.get('/family').catch(errorHandler).then(function(familyResponse){
 								self.familyList = familyResponse.data;
 								self.axios.get('/business').catch(errorHandler).then(function(businessResponse){
 									self.businessList = businessResponse.data;
+									self.npcList = _.map(npcResponse.data, (npc) => {
+										return {
+											...npc,
+											professions:_.map(
+												_.filter(self.npcProfessionList, (npcProfession) => {return npcProfession.npc == npc.id}),
+												(profession) => ({
+													profession: _.find(self.professionList, (p) => {return p.id == profession.profession}),
+													business: _.find(self.businessList, (b) => {return b.id == profession.business})
+												})
+											)
+										}
+									});		
 									self.axios.get('/npcPreferences').catch(errorHandler).then(function(npcPreferencesResponse){
 										self.npcPreferencesList = npcPreferencesResponse.data;
 										self.axios.get('/businessRules').catch(errorHandler).then(function(businessRulesResponse){
