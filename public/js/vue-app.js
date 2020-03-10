@@ -36,7 +36,7 @@ Vue.component('left-bar-menu', {
 Vue.component('main-area', {
 	template: '#mainAreaTemplate',
 	props: ['mainArea', 'warningList', 'npcProfessionList', 'professionList',
-			'npc-list', 'neighbourhoodList', 'familyList',
+			'npc-list', 'neighbourhoodList', 'familyList', 'homeList',
 			'selectedFamily', 'businessList', 'lastUpdate', 'lastUpdateDetails'],
 	computed: {
 		showNpc: function(){
@@ -65,10 +65,11 @@ Vue.component('main-area', {
 Vue.component('main-area-npc', {
 	template: '#mainAreaNpcTemplate',
 	props: ['npcList', 'professionList', 'npcProfessionList', 'professionList',
-	'businessList', 'neighbourhoodList', 'familyList', 'familyFilter'],
+	'businessList', 'neighbourhoodList', 'familyList', 'familyFilter', 'homeList'],
 	data: function(){
 		return {
 			'nameFilter': null,
+			'homeFilter': null,
 			'minimunAgeFilter': null,
 			'maximunAgeFilter': null,
 			'neighbourhoodFilter': "",
@@ -106,6 +107,11 @@ Vue.component('main-area-npc', {
 					this.nameFilter.split(" "), (term) => {
 						return npc.name.toLowerCase().indexOf(term.toLowerCase()) > -1;
 					});
+				});
+			}
+			if(!isNullOrUndefinedOrEmpty(this.homeFilter)){
+				list = _.filter(list, (npc) => {
+					return npc.home_id == this.homeFilter;
 				});
 			}
 
@@ -323,6 +329,11 @@ Vue.component('npc-details', {
 	}
 });
 
+Vue.component('npc-location-summary', {
+	props: ['attendance'],
+	template: '#npcLocationSummary'
+});
+
 Vue.component('neighbourhood-icon', {
 	props: ['neighbourhoodId', 'neighbourhoodList'],
 	template: '#neighbourhoodIconTemplate'
@@ -353,7 +364,7 @@ var app = new Vue({
 	data: {
 		lastUpdateDetails: new Date().toString(),
 		lastUpdate: new Date().toString(),
-		mainArea: BUSINESS,
+		mainArea: NPC,
 		npcList: null,
 		professionList: [],
 		npcProfessionList: [],
@@ -362,6 +373,7 @@ var app = new Vue({
 		selectedNpc: null,
 		neighbourhoodList: [],
 		familyList: [],
+		homeList: [],
 		selectedFamily: null,
 	},
 	methods: {
@@ -369,6 +381,9 @@ var app = new Vue({
 			if(mainArea == NIGHT){
 				generateNight(this.npcList, this.businessList, this.npcPreferencesList,
 					this.npcProfessionList, this.businessRulesList);
+				if(this.selectedNpc != null && this.selectedNpc != undefined){
+					this.selectedNpc = _.find(this.npcList, (n) => {return n.id == this.selectedNpc.id;});
+				}
 				this.lastUpdate = new Date().toString();
 				this.lastUpdateDetails = new Date().toString();
 			} else{
@@ -379,7 +394,7 @@ var app = new Vue({
 			this.warningList = [];
 		},
 		selectNpc: function(npc){
-			this.selectedNpc = npc;
+			this.selectedNpc = _.find(this.npcList, (n) => {return n.id == npc.id;});
 			this.lastUpdateDetails = new Date().toString();
 		},
 		selectFamily: function(familyId){
@@ -426,9 +441,9 @@ var app = new Vue({
 										self.npcPreferencesList = npcPreferencesResponse.data;
 										self.axios.get('/businessRules').catch(errorHandler).then(function(businessRulesResponse){
 											self.businessRulesList = businessRulesResponse.data;
-											generateNight(self.npcList, self.businessList, self.npcPreferencesList,
-												self.npcProfessionList, self.businessRulesList);
-											self.lastUpdate = new Date().toString();
+											self.axios.get('/home').catch(errorHandler).then(function(homeResponse){
+												self.homeList = homeResponse.data;
+											});
 										});
 									});
 								});
@@ -447,11 +462,11 @@ const generateFinalLocation = function(npc, period,
 		let business = _.find(businessList, (b) => {return b.id == prof.business});
 		return prof.npc == npc.id && (business == null || business["n"+period]);
 	});
-	if(npc.idade <= 6){
+	if(npc.age <= 6){
 		return {
 			business: {
 				name: "Com os pais",
-				neighbourhood: npc.bairro
+				neighbourhood: npc.neighbourhood
 			},
 			working: false,
 			sleeping: false,
@@ -532,12 +547,12 @@ const generateFinalLocation = function(npc, period,
 							&& businessPref.business == pref.business
 							&& ( _.isUndefined(businessPref.withprofession) || _.isNull(businessPref.withprofession) || false /* TODO */)
 							&& ( _.isUndefined(businessPref.withoutprofession) || _.isNull(businessPref.withoutprofession) || false /* TODO */)
-							&& ( _.isUndefined(businessPref.agegreaterthan) || _.isNull(businessPref.agegreaterthan) || npc.idade >= businessPref.agegreaterthan)
-							&& ( _.isUndefined(businessPref.agelessthan) || _.isNull(businessPref.agelessthan) || npc.idade <= businessPref.agelessthan)
+							&& ( _.isUndefined(businessPref.agegreaterthan) || _.isNull(businessPref.agegreaterthan) || npc.age >= businessPref.agegreaterthan)
+							&& ( _.isUndefined(businessPref.agelessthan) || _.isNull(businessPref.agelessthan) || npc.age <= businessPref.agelessthan)
 							&& ( _.isUndefined(businessPref.wealthgreaterthan) || _.isNull(businessPref.wealthgreaterthan) || false /* TODO */)
 							&& ( _.isUndefined(businessPref.wealthlessthan) || _.isNull(businessPref.wealthlessthan) || false /* TODO */)
-							&& ( _.isUndefined(businessPref.withgender) || _.isNull(businessPref.withgender) || npc.sexo == businessPref.withgender)
-							&& ( _.isUndefined(businessPref.withoutgender) || _.isNull(businessPref.withoutgender) || npc.sexo != businessPref.withoutgender)
+							&& ( _.isUndefined(businessPref.withgender) || _.isNull(businessPref.withgender) || npc.gender == businessPref.withgender)
+							&& ( _.isUndefined(businessPref.withoutgender) || _.isNull(businessPref.withoutgender) || npc.gender != businessPref.withoutgender)
 							//&& ( _.isUndefined(locationPref.mesmobairro) ||  false /* TODO */)
 							;
 					}
@@ -571,11 +586,9 @@ const generateFinalLocation = function(npc, period,
 
 const generateNight = function(npcList, businessList, npcPreferencesList,
 		npcProfessionList, businessRulesList){
-	/*
 	if(!confirm("Tem certeza que deseja sobreescrever a noite atual?")){
 		return;
 	}
-	*/
 	const hospital = _.find(businessList, (b) => {
 		return b.business_type == 'Hospital';
 	});

@@ -37,6 +37,7 @@
 			v-bind:business-list="businessList"
 			v-bind:selected-family="selectedFamily"
 			v-bind:family-list="familyList"
+			v-bind:home-list="homeList"
 			v-bind:neighbourhood-list="neighbourhoodList"
 			v-on:clear-warnings="clearWarnings">
 		</main-area>
@@ -80,6 +81,7 @@
 				v-if="showNpc"
 				v-bind:family-filter="selectedFamily"
 				v-bind:family-list="familyList"
+				v-bind:home-list="homeList"
 				v-bind:npc-profession-list="npcProfessionList"
 				v-bind:business-list="businessList"
 				v-bind:profession-list="professionList"
@@ -116,6 +118,12 @@
 					<option value="">Família</option>
 					<option v-for="family in familyList" v-bind:value="family.id">
 						{{family.name}}
+					</option>
+				</select>
+				<select class="npcFilterInput" v-model="homeFilter">
+					<option value="">Moradia</option>
+					<option v-for="home in homeList" v-bind:value="home.id">
+						{{home.name}}
 					</option>
 				</select>
 			</div>
@@ -155,7 +163,7 @@
 									</span>
 								</span>
 							</td>
-							<td class="npcTableColumn npcTableColumnHealth">{{npc.health}}/{{npc.max_health}}</td>
+							<td class="npcTableColumn npcTableColumnHealth">{{npc.health}}/{{npc.max_health}}<span v-if="npc.l1 != undefined && npc.l1.sick">&#128137;</span></td>
 							<td class="npcTableColumn npcTableColumnRessonance">{{npc.ressonance}}</td>
 						</tr>
 					</table>
@@ -279,6 +287,9 @@
 			<table class="npcInformationTable">
 				<tr><td>Id</td><td>{{npc.id}}</td></tr>
 				<tr><td>Nome</td><td>{{npc.name}}</td></tr>
+				<tr><td>Clã</td><td>{{npc.clan}}</td></tr>
+				<tr><td>Geração</td><td>{{npc.generation}}</td></tr>
+				<tr><td>Predador</td><td>{{npc.predator_type}}</td></tr>
 				<tr><td>Gênero</td><td>{{npc.gender}}</td></tr>
 				<tr><td>Nacionalidade</td><td>{{npc.nationality}}</td></tr>
 				<tr><td>Idade</td><td>{{npc.age}}</td></tr>
@@ -296,7 +307,7 @@
 				<tr><td>Obrigacação</td><td>{{npc.oath}}</td></tr>
 				<tr><td>Natureza</td><td>{{npc.oath_nature}}</td></tr>
 				<tr><td>Riqueza</td><td>{{npc.wealth}}</td></tr>
-				<tr><td>Saúde</td><td>{{npc.health}}/{{npc.max_health}}</td></tr>
+				<tr><td>Saúde</td><td>{{npc.health}}/{{npc.max_health}}<span v-if="npc.l1 != undefined && npc.l1.sick">&#128137;</span></td></tr>
 				<tr><td>Ressonância</td><td>{{npc.ressonance}}</td></tr>
 				<tr><td>Humor</td><td>{{npc.humor}}</td></tr>
 				<tr>
@@ -311,14 +322,26 @@
 					</td>
 				</tr>
 				<tr><td>Descrição</td><td>{{npc.description}}</td></tr>
-				<tr><td>N1</td><td><span v-if="npc.l1 != undefined">{{npc.l1.trogo}} ({{npc.l1.business_type}})</span></td></tr>
-				<tr><td>N2</td><td><span v-if="npc.l2 != undefined">{{npc.l2.trogo}} ({{npc.l2.business_type}})</span></td></tr>
-				<tr><td>N3</td><td><span v-if="npc.l3 != undefined">{{npc.l3.trogo}} ({{npc.l3.business_type}})</span></td></tr>
-				<tr><td>Clã</td><td>{{npc.clan}}</td></tr>
-				<tr><td>Geração</td><td>{{npc.generation}}</td></tr>
-				<tr><td>Predador</td><td>{{npc.predator_type}}</td></tr>
+				<tr><td>N1</td><td><npc-location-summary v-bind:attendance="npc.l1"/></td></tr>
+				<tr><td>N2</td><td><npc-location-summary v-bind:attendance="npc.l2"/></td></tr>
+				<tr><td>N3</td><td><npc-location-summary v-bind:attendance="npc.l3"/></td></tr>		
 			</table>
 		</div>
+	</script>
+
+	<script type="text/x-template" id="npcLocationSummary">
+		<div class="npcLocationSummaryArea">
+			<span v-if="attendance != undefined && attendance != null">
+				<span v-if="attendance.working">(work)</span>
+				<span v-if="attendance.sick">(sick)</span>
+				<span v-if="attendance.sleeping">(zZzZ)</span>
+				<span v-if="attendance.business != null">
+					{{attendance.business.name}}
+					<span v-if="attendance.business.business_type != null">({{attendance.business.business_type}})</span>
+				</span>
+			</span>
+		</div>
+		
 	</script>
 
 

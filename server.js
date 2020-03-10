@@ -45,7 +45,7 @@ app.get("/npc", (req, res, next) => {
 			skin_color.color skin, 
 			eye_color.color eyes, 
 			hair_color.color hair,
-			home.id homeId, 
+			home.id home_id, 
 			home.name home, 
 			neighbourhood.name neighbourhood, 
 			neighbourhood.id neighbourhoodId, 
