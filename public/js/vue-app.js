@@ -325,6 +325,9 @@ Vue.component('npc-details', {
 	methods: {
 		clickFamily: function(familyId){
 			this.$emit('click-family', familyId);
+		},
+		saveSelectedNpc: function(){
+			this.$emit('save-selected-npc');
 		}
 	}
 });
@@ -355,6 +358,9 @@ Vue.component('npc-information', {
 	methods: {
 		clickFamily: function(familyId){
 			this.$emit('click-family', familyId);
+		},
+		saveSelectNpc: function(){
+			this.$emit('save-selected-npc');
 		}
 	}
 });
@@ -374,7 +380,7 @@ var app = new Vue({
 		neighbourhoodList: [],
 		familyList: [],
 		homeList: [],
-		selectedFamily: null,
+		selectedFamily: "",
 	},
 	methods: {
 		showMainArea: function(mainArea){
@@ -400,6 +406,18 @@ var app = new Vue({
 		selectFamily: function(familyId){
 			this.selectedFamily = familyId;	
 			this.mainArea = NPC;
+		},
+		saveSelectedNpc: function(){
+			let self = this;
+			self.axios.post('/npc', self.selectedNpc)
+				.then(response => {
+					alert("npc salvo com sucesso");
+				}).catch((exception) => {
+					self.warningList.push({
+						error: exception,
+						response: exception.response
+					});
+				});
 		}
 	},
 	mounted: function() {

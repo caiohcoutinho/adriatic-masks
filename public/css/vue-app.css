@@ -315,6 +315,11 @@ table.npcInformationTable{
 
 }
 
+textarea.npcInformationNotesTextArea{
+	width: 100%;
+	min-height: 150px;
+}
+
 table.npcInformationTable td{
     border-color: #4C0813;
     border-width: 2px;

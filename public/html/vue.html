@@ -44,6 +44,7 @@
 		<npc-details
 			v-bind:npc="selectedNpc"
 			v-bind:key="lastUpdateDetails"
+			v-on:save-selected-npc="saveSelectedNpc"
 			v-on:click-family="selectFamily">
 		</npc-details>
 	</div>
@@ -276,6 +277,7 @@
 			</div>
 			<div class="npcDetailsInformation">
 				<npc-information 
+					v-on:save-selected-npc="saveSelectedNpc"
 					v-on:click-family="clickFamily"
 					v-bind:npc="npc"/>
 			</div>
@@ -285,6 +287,8 @@
 	<script type="text/x-template" id="npcInformationTemplate">
 		<div class="npcInformationTableArea">
 			<table class="npcInformationTable">
+				<tr><td colspan="2"><textarea v-model="npc.notes" class="npcInformationNotesTextArea"></textarea></td></tr>
+				<tr><td colspan="2"><button v-on:click="saveSelectNpc" class="npcInformationSaveButton">Salvar</button></td></tr>
 				<tr><td>Id</td><td>{{npc.id}}</td></tr>
 				<tr><td>Nome</td><td>{{npc.name}}</td></tr>
 				<tr><td>Clã</td><td>{{npc.clan}}</td></tr>

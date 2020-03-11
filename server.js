@@ -63,6 +63,7 @@ app.get("/npc", (req, res, next) => {
 			r.name ressonance,
 			h.name humor,
 			npc.description,
+			npc.notes,
 			v.generation,
 			clan.name clan,
 			pt.name predator_type
@@ -182,6 +183,28 @@ app.post("/saveHealth", (req, res, next) => {
 		client.query("update npc set saude = "+req.body.saude+" where id = "+req.body.id,
 			 (err, result) => {
 			 	done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows)
+			}
+		  
+		});
+	});
+});
+
+
+app.post("/npc", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set notes = '"+req.body.notes+"' where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
 		  if(err){
 		  	  console.log(err);
 		  	  res.status(500);
