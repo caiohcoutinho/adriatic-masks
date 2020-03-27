@@ -58,6 +58,12 @@ Vue.component('main-area', {
 		},
 		clickNpc: function(npc){
 			this.$emit('click-npc', npc);
+		},
+		clearFamilyFilter: function(){
+			this.$emit('clear-family-filter');	
+		},
+		selectFamily: function(familyId){
+			this.$emit('select-family', familyId);
 		}
 	}
 });
@@ -169,7 +175,6 @@ Vue.component('main-area-npc', {
 		},
 		cleanFilter: function(){
 			this.nameFilter = null;
-			this.familyFilter = null;
 			this.minimunAgeFilter = null;
 			this.maximunAgeFilter = null;
 			this.neighbourhoodFilter = "";
@@ -181,6 +186,10 @@ Vue.component('main-area-npc', {
 			this.orderByAge = null;
 			this.orderByHealth = null;
 			this.orderByRessonance = null;
+			this.$emit('clear-family-filter');
+		},
+		selectFamily: function(event){
+			this.$emit('select-family', parseInt(event.target.value));
 		}
 	}
 });
@@ -418,6 +427,9 @@ var app = new Vue({
 						response: exception.response
 					});
 				});
+		},
+		clearFamilyFilter: function(){
+			this.selectedFamily = null;
 		}
 	},
 	mounted: function() {
@@ -460,7 +472,7 @@ var app = new Vue({
 										self.axios.get('/businessRules').catch(errorHandler).then(function(businessRulesResponse){
 											self.businessRulesList = businessRulesResponse.data;
 											self.axios.get('/home').catch(errorHandler).then(function(homeResponse){
-												self.homeList = homeResponse.data;
+												self.homeList = _.sortBy(homeResponse.data, (h) => h.name);
 											});
 										});
 									});

@@ -26,7 +26,7 @@
 			v-bind:warning-list="warningList"
 			v-on:click-link="showMainArea">
 		</left-bar-menu>
-		<main-area 
+		<main-area
 			v-bind:last-update="lastUpdate"
 			v-on:click-npc="selectNpc"
 			v-bind:warning-list="warningList"
@@ -39,6 +39,8 @@
 			v-bind:family-list="familyList"
 			v-bind:home-list="homeList"
 			v-bind:neighbourhood-list="neighbourhoodList"
+			v-on:clear-family-filter="clearFamilyFilter"
+			v-on:select-family="selectFamily"
 			v-on:clear-warnings="clearWarnings">
 		</main-area>
 		<npc-details
@@ -87,7 +89,9 @@
 				v-bind:business-list="businessList"
 				v-bind:profession-list="professionList"
 				v-bind:neighbourhood-list="neighbourhoodList"
+				v-on:select-family="selectFamily"
 				v-on:click-npc="clickNpc"
+				v-on:clear-family-filter="clearFamilyFilter"
 				v-bind:npc-list="npcList"/>
 			<main-area-business
 				v-if="showBusiness"
@@ -115,9 +119,10 @@
 						{{neighbourhood.name}} <span v-html="neighbourhood.symbol"></span>
 					</option>
 				</select>
-				<select class="npcFilterInput" v-model="familyFilter">
+				<select class="npcFilterInput" v-on:change="selectFamily">
 					<option value="">Família</option>
-					<option v-for="family in familyList" v-bind:value="family.id">
+					<option v-for="family in familyList" v-bind:value="family.id"
+						:selected="family.id == familyFilter">
 						{{family.name}}
 					</option>
 				</select>
