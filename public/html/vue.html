@@ -23,6 +23,7 @@
 <body>
 	<div id="app">
 		<left-bar-menu 
+			v-bind:loaded="loaded"
 			v-bind:warning-list="warningList"
 			v-on:click-link="showMainArea">
 		</left-bar-menu>
@@ -44,6 +45,7 @@
 			v-on:clear-warnings="clearWarnings">
 		</main-area>
 		<npc-details
+			v-bind:loaded="loaded"
 			v-bind:npc="selectedNpc"
 			v-bind:key="lastUpdateDetails"
 			v-on:save-selected-npc="saveSelectedNpc"
@@ -67,8 +69,8 @@
 				<h1 class="leftBarMenuLinkImg leftBarMenuItem">Negócios</h1>
 			</div>
 			<div class="leftBarMenuLinkBlock leftBarMenuNpcBlock" v-on:click="clickNight">
-				<img class="leftBarMenuLinkImg leftBarMenuItem" src="/img/moon.png" >
-				<h1 class="leftBarMenuLinkImg leftBarMenuItem">Noite</h1>
+				<img class="leftBarMenuLinkImg leftBarMenuItem" v-bind:src="loaded?'/img/moon.png':'/img/loader.gif'" >
+				<h1 v-bind:class="{'leftBarMenuForbiddenLinkImg':!loaded, 'leftBarMenuLinkImg':true, 'leftBarMenuItem':true}">Noite</h1>
 			</div>
 			<div class="leftBarMenuLinkBlock leftBarMenuNpcBlock" v-on:click="clickConfig">
 				<span v-if="warningListSize > 0" class="badge badge-light">{{ warningListSize }}</span>
@@ -282,6 +284,7 @@
 			</div>
 			<div class="npcDetailsInformation">
 				<npc-information 
+					v-bind:loaded="loaded"
 					v-on:save-selected-npc="saveSelectedNpc"
 					v-on:click-family="clickFamily"
 					v-bind:npc="npc"/>
@@ -293,7 +296,12 @@
 		<div class="npcInformationTableArea">
 			<table class="npcInformationTable">
 				<tr><td colspan="2"><textarea v-model="npc.notes" class="npcInformationNotesTextArea"></textarea></td></tr>
-				<tr><td colspan="2"><button v-on:click="saveSelectNpc" class="npcInformationSaveButton">Salvar</button></td></tr>
+				<tr>
+					<td colspan="2">
+						<img v-if="!loaded" class="npcInformationSaveButtonLoader" src="/img/loader.gif">
+						<button v-if="loaded" v-on:click="saveSelectNpc" class="npcInformationSaveButton">Salvar</button>
+					</td>
+				</tr>
 				<tr><td>Id</td><td>{{npc.id}}</td></tr>
 				<tr><td>Nome</td><td>{{npc.name}}</td></tr>
 				<tr><td>Clã</td><td>{{npc.clan}}</td></tr>

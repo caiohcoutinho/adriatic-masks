@@ -11,7 +11,7 @@ Vue.prototype.axios = axios;
 
 Vue.component('left-bar-menu', {
 	template: '#leftBarMenuTemplate',
-	props: ['warningList'],
+	props: ['warningList', 'loaded'],
 	computed: {
 		warningListSize: function(){
 			return _.size(this.warningList);
@@ -329,7 +329,7 @@ Vue.component('main-area-config', {
 });
 
 Vue.component('npc-details', {
-	props: ['npc'],
+	props: ['npc', 'loaded'],
 	template: '#npcDetailsTemplate',
 	methods: {
 		clickFamily: function(familyId){
@@ -362,7 +362,7 @@ Vue.component('npc-list', {
 });
 
 Vue.component('npc-information', {
-	props: ['npc'],
+	props: ['npc', 'loaded'],
 	template: '#npcInformationTemplate',
 	methods: {
 		clickFamily: function(familyId){
@@ -385,6 +385,7 @@ var app = new Vue({
 		npcProfessionList: [],
 		businessList: [],
 		warningList: [],
+		loaded:false,
 		selectedNpc: null,
 		neighbourhoodList: [],
 		familyList: [],
@@ -394,6 +395,9 @@ var app = new Vue({
 	methods: {
 		showMainArea: function(mainArea){
 			if(mainArea == NIGHT){
+				if(!this.loaded){
+					return;
+				}
 				generateNight(this.npcList, this.businessList, this.npcPreferencesList,
 					this.npcProfessionList, this.businessRulesList);
 				if(this.selectedNpc != null && this.selectedNpc != undefined){
@@ -442,38 +446,36 @@ var app = new Vue({
 			});
 		}
 
-		self.axios.get('/business').then(locationResponse => {
-			self.locationList = locationResponse.data;
-			self.axios.get('/profession').catch(errorHandler).then(professionsResponse => {
-				self.professionList = professionsResponse.data;
-				self.axios.get('/npcProfession').catch(errorHandler).then(npcProfessionResponse => {
-					self.npcProfessionList = npcProfessionResponse.data;
-					self.axios.get('/npc').catch(errorHandler).then(function(npcResponse){
-						self.axios.get('/neighbourhood').catch(errorHandler).then(function(neighbourhoodResponse){
-							self.neighbourhoodList = neighbourhoodResponse.data;
-							self.axios.get('/family').catch(errorHandler).then(function(familyResponse){
-								self.familyList = familyResponse.data;
-								self.axios.get('/business').catch(errorHandler).then(function(businessResponse){
-									self.businessList = businessResponse.data;
-									self.npcList = _.map(npcResponse.data, (npc) => {
-										return {
-											...npc,
-											professions:_.map(
-												_.filter(self.npcProfessionList, (npcProfession) => {return npcProfession.npc == npc.id}),
-												(profession) => ({
-													profession: _.find(self.professionList, (p) => {return p.id == profession.profession}),
-													business: _.find(self.businessList, (b) => {return b.id == profession.business})
-												})
-											)
-										}
-									});		
-									self.axios.get('/npcPreferences').catch(errorHandler).then(function(npcPreferencesResponse){
-										self.npcPreferencesList = npcPreferencesResponse.data;
-										self.axios.get('/businessRules').catch(errorHandler).then(function(businessRulesResponse){
-											self.businessRulesList = businessRulesResponse.data;
-											self.axios.get('/home').catch(errorHandler).then(function(homeResponse){
-												self.homeList = _.sortBy(homeResponse.data, (h) => h.name);
-											});
+		self.axios.get('/profession').catch(errorHandler).then(professionsResponse => {
+			self.professionList = professionsResponse.data;
+			self.axios.get('/npcProfession').catch(errorHandler).then(npcProfessionResponse => {
+				self.npcProfessionList = npcProfessionResponse.data;
+				self.axios.get('/npc').catch(errorHandler).then(function(npcResponse){
+					self.axios.get('/neighbourhood').catch(errorHandler).then(function(neighbourhoodResponse){
+						self.neighbourhoodList = neighbourhoodResponse.data;
+						self.axios.get('/family').catch(errorHandler).then(function(familyResponse){
+							self.familyList = familyResponse.data;
+							self.axios.get('/business').catch(errorHandler).then(function(businessResponse){
+								self.businessList = businessResponse.data;
+								self.npcList = _.map(npcResponse.data, (npc) => {
+									return {
+										...npc,
+										professions:_.map(
+											_.filter(self.npcProfessionList, (npcProfession) => {return npcProfession.npc == npc.id}),
+											(profession) => ({
+												profession: _.find(self.professionList, (p) => {return p.id == profession.profession}),
+												business: _.find(self.businessList, (b) => {return b.id == profession.business})
+											})
+										)
+									}
+								});		
+								self.axios.get('/npcPreferences').catch(errorHandler).then(function(npcPreferencesResponse){
+									self.npcPreferencesList = npcPreferencesResponse.data;
+									self.axios.get('/businessRules').catch(errorHandler).then(function(businessRulesResponse){
+										self.businessRulesList = businessRulesResponse.data;
+										self.axios.get('/home').catch(errorHandler).then(function(homeResponse){
+											self.homeList = _.sortBy(homeResponse.data, (h) => h.name);
+											self.loaded = true;
 										});
 									});
 								});
