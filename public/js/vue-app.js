@@ -75,7 +75,7 @@ Vue.component('main-area-npc', {
 	data: function(){
 		return {
 			'nameFilter': null,
-			'homeFilter': null,
+			'homeFilter': "",
 			'minimunAgeFilter': null,
 			'maximunAgeFilter': null,
 			'neighbourhoodFilter': "",
@@ -175,6 +175,7 @@ Vue.component('main-area-npc', {
 		},
 		cleanFilter: function(){
 			this.nameFilter = null;
+			this.homeFilter = "";
 			this.minimunAgeFilter = null;
 			this.maximunAgeFilter = null;
 			this.neighbourhoodFilter = "";
@@ -422,7 +423,14 @@ var app = new Vue({
 		},
 		saveSelectedNpc: function(){
 			let self = this;
-			self.axios.post('/npc', self.selectedNpc)
+			let cleanNpcJson = {
+				...self.selectedNpc
+			};
+			delete cleanNpcJson.l1;
+			delete cleanNpcJson.l2;
+			delete cleanNpcJson.l3;
+			delete cleanNpcJson.professions;
+			self.axios.post('/npc', cleanNpcJson)
 				.then(response => {
 					alert("npc salvo com sucesso");
 				}).catch((exception) => {
