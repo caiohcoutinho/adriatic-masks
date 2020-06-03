@@ -37,10 +37,15 @@
 			v-bind:npc-profession-list="npcProfessionList"
 			v-bind:business-list="businessList"
 			v-bind:selected-family="selectedFamily"
+			v-bind:npc-name-filter="npcNameFilter"
+			v-bind:npc-home-filter="npcHomeFilter"
+			v-bind:npc-minimun-age-filter="npcMinimunAgeFilter"
+			v-bind:npc-maximun-age-filter="npcMaximunAgeFilter"
+			v-bind:npc-neighbourhood-filter="npcNeighbourhoodFilter"
 			v-bind:family-list="familyList"
 			v-bind:home-list="homeList"
 			v-bind:neighbourhood-list="neighbourhoodList"
-			v-on:clear-family-filter="clearFamilyFilter"
+			v-on:clear-filter="clearFilter"
 			v-on:select-family="selectFamily"
 			v-on:clear-warnings="clearWarnings">
 		</main-area>
@@ -85,6 +90,11 @@
 			<main-area-npc 
 				v-if="showNpc"
 				v-bind:family-filter="selectedFamily"
+				v-bind:name-filter="npcNameFilter"
+				v-bind:home-filter="npcHomeFilter"
+				v-bind:minimun-age-filter="npcMinimunAgeFilter"
+				v-bind:maximun-age-filter="npcMaximunAgeFilter"
+				v-bind:neighbourhood-filter="npcNeighbourhoodFilter"
 				v-bind:family-list="familyList"
 				v-bind:home-list="homeList"
 				v-bind:npc-profession-list="npcProfessionList"
@@ -93,7 +103,7 @@
 				v-bind:neighbourhood-list="neighbourhoodList"
 				v-on:select-family="selectFamily"
 				v-on:click-npc="clickNpc"
-				v-on:clear-family-filter="clearFamilyFilter"
+				v-on:clear-filter="clearFilter"
 				v-bind:npc-list="npcList"/>
 			<main-area-business
 				v-if="showBusiness"

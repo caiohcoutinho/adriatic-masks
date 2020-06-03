@@ -35,7 +35,10 @@ Vue.component('left-bar-menu', {
 
 Vue.component('main-area', {
 	template: '#mainAreaTemplate',
-	props: ['mainArea', 'warningList', 'npcProfessionList', 'professionList',
+	props: ['mainArea', 'npcNameFilter', 'npcHomeFilter', 
+			'npcMinimunAgeFilter', 'npcMaximunAgeFilter',
+			'npcNeighbourhoodFilter',
+			'warningList', 'npcProfessionList', 'professionList',
 			'npc-list', 'neighbourhoodList', 'familyList', 'homeList',
 			'selectedFamily', 'businessList', 'lastUpdate', 'lastUpdateDetails'],
 	computed: {
@@ -59,8 +62,8 @@ Vue.component('main-area', {
 		clickNpc: function(npc){
 			this.$emit('click-npc', npc);
 		},
-		clearFamilyFilter: function(){
-			this.$emit('clear-family-filter');	
+		clearFilter: function(){
+			this.$emit('clear-filter');	
 		},
 		selectFamily: function(familyId){
 			this.$emit('select-family', familyId);
@@ -70,15 +73,12 @@ Vue.component('main-area', {
 
 Vue.component('main-area-npc', {
 	template: '#mainAreaNpcTemplate',
-	props: ['npcList', 'professionList', 'npcProfessionList', 'professionList',
+	props: ['npcList', 'nameFilter', 'homeFilter', 'minimunAgeFilter', 
+	'maximunAgeFilter', 'neighbourhoodFilter',
+	'professionList', 'npcProfessionList', 'professionList',
 	'businessList', 'neighbourhoodList', 'familyList', 'familyFilter', 'homeList'],
 	data: function(){
 		return {
-			'nameFilter': null,
-			'homeFilter': "",
-			'minimunAgeFilter': null,
-			'maximunAgeFilter': null,
-			'neighbourhoodFilter': "",
 			'orderById': null,
 			'orderByName': null,
 			'orderByGender': null,
@@ -187,7 +187,7 @@ Vue.component('main-area-npc', {
 			this.orderByAge = null;
 			this.orderByHealth = null;
 			this.orderByRessonance = null;
-			this.$emit('clear-family-filter');
+			this.$emit('clear-filter');
 		},
 		selectFamily: function(event){
 			this.$emit('select-family', parseInt(event.target.value));
@@ -392,6 +392,11 @@ var app = new Vue({
 		familyList: [],
 		homeList: [],
 		selectedFamily: "",
+		npcNameFilter: null,
+		npcHomeFilter: "",
+		npcMinimunAgeFilter: null,
+		npcMaximunAgeFilter: null,
+		npcNeighbourhoodFilter: "",
 	},
 	methods: {
 		showMainArea: function(mainArea){
@@ -419,6 +424,11 @@ var app = new Vue({
 		},
 		selectFamily: function(familyId){
 			this.selectedFamily = familyId;	
+			this.npcNameFilter = null;
+			this.npcHomeFilter = "";
+			this.npcMinimunAgeFilter = null;
+			this.npcMaximunAgeFilter = null;
+			this.npcNeighbourhoodFilter = "";
 			this.mainArea = NPC;
 		},
 		saveSelectedNpc: function(){
@@ -440,8 +450,14 @@ var app = new Vue({
 					});
 				});
 		},
-		clearFamilyFilter: function(){
+		clearFilter: function(){
 			this.selectedFamily = null;
+			this.npcNameFilter = null;
+			this.npcHomeFilter = "";
+			this.npcMinimunAgeFilter = null;
+			this.npcMaximunAgeFilter = null;
+			this.npcNeighbourhoodFilter = "";
+			this.mainArea = NPC;
 		}
 	},
 	mounted: function() {
