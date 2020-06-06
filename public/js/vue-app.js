@@ -281,7 +281,8 @@ const EYES = {
 	"Cinza": "#737070",
 	"Azul": "#5e8dec",
 	"Verde": "#6ab567",
-	"Castanho": "#523b3b"
+	"Castanho": "#523b3b",
+	"Preto": "#171616"
 };
 
 const HAIR = {
