@@ -196,6 +196,14 @@ table.businessTable tr.businessTableHeaderRow th.clickable{
 	width: 200px;
 }
 
+.npcDead{
+	text-decoration: line-through;
+}
+
+img.deathIcon{
+	height: 20px;
+}
+
 .npcTableColumnNationality{
 	width: 60px;	
 }

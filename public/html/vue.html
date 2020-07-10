@@ -50,6 +50,11 @@
 			v-on:select-family="selectFamily"
 			v-on:clear-warnings="clearWarnings"
 			v-on:vampire-filter-change="vampireFilterChange"
+			v-on:name-filter-change="nameFilterChange"
+			v-on:minimun-age-filter-change="minimunAgeFilterChange"
+			v-on:maximun-age-filter-change="maximunAgeFilterChange"
+			v-on:neighbourhood-filter-change="neighbourhoodFilterChange"
+			v-on:home-filter-change="homeFilterChange"
 			>
 		</main-area>
 		<npc-details
@@ -108,7 +113,12 @@
 				v-on:select-family="selectFamily"
 				v-on:click-npc="clickNpc"
 				v-on:clear-filter="clearFilter"
+				v-on:name-filter-change="nameFilterChange"
+				v-on:minimun-age-filter-change="minimunAgeFilterChange"
+				v-on:maximun-age-filter-change="maximunAgeFilterChange"
+				v-on:neighbourhood-filter-change="neighbourhoodFilterChange"
 				v-on:vampire-filter-change="vampireFilterChange"
+				v-on:home-filter-change="homeFilterChange"
 				v-bind:npc-list="npcList"/>
 			<main-area-business
 				v-if="showBusiness"
@@ -127,10 +137,10 @@
 		<div class="mainAreaNpc">
 			<div class="mainAreaNpcFilterForm">
 				<h1>Filtro <span v-on:click="cleanFilter" class="cleanFilterButtton">&#128465;</span></h1>
-				Nome: <input class="npcFilterInput" type="text" v-model="nameFilter"/>
-				Idade mínima: <input class="npcFilterInput" type="number" v-model="minimunAgeFilter"/>
-				Idade máxima: <input class="npcFilterInput" type="number" v-model="maximunAgeFilter"/>
-				<select class="npcFilterInput" v-model="neighbourhoodFilter">
+				Nome: <input class="npcFilterInput" type="text" v-bind:value="nameFilter" v-on:input="nameFilterChange"/>
+				Idade mínima: <input class="npcFilterInput" type="number" v-bind:value="minimunAgeFilter" v-on:input="minimunAgeFilterChange"/>
+				Idade máxima: <input class="npcFilterInput" type="number" v-bind:value="maximunAgeFilter" v-on:input="maximunAgeFilterChange"/>
+				<select class="npcFilterInput" v-bind:value="neighbourhoodFilter" v-on:change="neighbourhoodFilterChange">
 					<option value="">Bairro</option>
 					<option v-for="neighbourhood in neighbourhoodList" v-bind:value="neighbourhood.id">
 						{{neighbourhood.name}} <span v-html="neighbourhood.symbol"></span>
@@ -143,7 +153,7 @@
 						{{family.name}}
 					</option>
 				</select>
-				<select class="npcFilterInput" v-model="homeFilter">
+				<select class="npcFilterInput" v-bind:value="homeFilter" v-on:change="homeFilterChange">
 					<option value="">Moradia</option>
 					<option v-for="home in homeList" v-bind:value="home.id">
 						{{home.name}}
@@ -171,7 +181,7 @@
 							v-on:click="clickNpc(npc)"
 							v-bind:class="{npcTableDataRowEven: (index+1)%2==0, npcTableDataRowOdd: (index+1)%2!=0}">
 							<td class="npcTableColumn npcTableColumnI">{{npc.id}}</td>
-							<td class="npcTableColumn npcTableColumnName">{{npc.name}} <clan-icon v-if="npc.clan != undefined" v-bind:clan="npc.clan"/></td>
+							<td class="npcTableColumn npcTableColumnName"><span v-bind:class="{npcNameLabel: true, npcDead: !npc.alive}">{{npc.name}}</span> <clan-icon v-if="npc.clan != undefined" v-bind:clan="npc.clan"/></td>
 							<td class="npcTableColumn npcTableColumnNationality">{{npc.nationality}}</td>
 							<td class="npcTableColumn npcTableColumnGender">{{npc.gender}}</td>
 							<td class="npcTableColumn npcTableColumnNeighbourhood">
@@ -310,7 +320,7 @@
 
 	<script type="text/x-template" id="npcDetailsTemplate">
 		<div v-if="npc != null && npc != undefined" class="npcDetails">
-			<h5>{{npc.id}} - {{npc.name}}</h5>
+			<h5>{{npc.id}} - <span v-bind:class="{npcDead: !npc.alive}">{{npc.name}}</span></h5>
 			<div class="npcDetailsPortrait">
 				<portrait v-bind:npc="npc"/>
 			</div>
@@ -356,7 +366,7 @@
 				<tr><td>Obrigacação</td><td>{{npc.oath}}</td></tr>
 				<tr><td>Natureza</td><td>{{npc.oath_nature}}</td></tr>
 				<tr><td>Riqueza</td><td>{{npc.wealth}}</td></tr>
-				<tr><td>Saúde</td><td>{{npc.health}}/{{npc.max_health}}<span v-if="npc.l1 != undefined && npc.l1.sick">&#128137;</span></td></tr>
+				<tr><td>Saúde</td><td>{{npc.health}}/{{npc.max_health}}<span v-if="npc.l1 != undefined && npc.l1.sick">&#128137;</span><span v-if="!npc.alive"><img class="deathIcon" src="/img/death.jpg"></span></td></tr>
 				<tr><td>Ressonância</td><td>{{npc.ressonance}}</td></tr>
 				<tr><td>Humor</td><td>{{npc.humor}}</td></tr>
 				<tr>

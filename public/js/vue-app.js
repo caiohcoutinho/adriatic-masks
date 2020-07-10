@@ -85,6 +85,21 @@ Vue.component('main-area', {
 		},
 		vampireFilterChange: function(){
 			this.$emit('vampire-filter-change');
+		},
+		nameFilterChange: function(event){
+			this.$emit('name-filter-change', event);
+		},
+		minimunAgeFilterChange: function(event){
+			this.$emit('minimun-age-filter-change', event);	
+		},
+		maximunAgeFilterChange: function(event){
+			this.$emit('maximun-age-filter-change', event);	
+		},
+		neighbourhoodFilterChange: function(event){
+			this.$emit('neighbourhood-filter-change', event);	
+		},
+		homeFilterChange: function(event){
+			this.$emit('home-filter-change', event);
 		}
 	}
 });
@@ -197,11 +212,6 @@ Vue.component('main-area-npc', {
 			this.$emit('click-npc', npc);
 		},
 		cleanFilter: function(){
-			this.nameFilter = null;
-			this.homeFilter = "";
-			this.minimunAgeFilter = null;
-			this.maximunAgeFilter = null;
-			this.neighbourhoodFilter = "";
 			this.orderById = null;
 			this.orderByName = null;
 			this.orderByGender = null;
@@ -217,6 +227,21 @@ Vue.component('main-area-npc', {
 		},
 		vampireFilterChange: function(){
 			this.$emit('vampire-filter-change');
+		},
+		nameFilterChange: function(event){
+			this.$emit('name-filter-change', event);
+		},
+		minimunAgeFilterChange: function(event){
+			this.$emit('minimun-age-filter-change', event);	
+		},
+		maximunAgeFilterChange: function(event){
+			this.$emit('maximun-age-filter-change', event);	
+		},
+		neighbourhoodFilterChange: function(event){
+			this.$emit('neighbourhood-filter-change', event);	
+		},
+		homeFilterChange: function(event){
+			this.$emit('home-filter-change', event);
 		}
 	}
 });
@@ -433,7 +458,7 @@ var app = new Vue({
 					return;
 				}
 				generateNight(this.npcList, this.businessList, this.npcPreferencesList,
-					this.npcProfessionList, this.businessRulesList);
+					this.npcProfessionList, this.businessRulesList, this.homeList);
 				if(this.selectedNpc != null && this.selectedNpc != undefined){
 					this.selectedNpc = _.find(this.npcList, (n) => {return n.id == this.selectedNpc.id;});
 				}
@@ -451,6 +476,21 @@ var app = new Vue({
 			} else if(this.npcVampireFilter == false){
 				this.npcVampireFilter = null;
 			}
+		},
+		minimunAgeFilterChange: function(event){
+			this.npcMinimunAgeFilter = event.target.value;
+		},
+		maximunAgeFilterChange: function(event){
+			this.npcMaximunAgeFilter = event.target.value;
+		},
+		nameFilterChange: function(event){
+			this.npcNameFilter = event.target.value;
+		},
+		neighbourhoodFilterChange: function(event){
+			this.npcNeighbourhoodFilter = event.target.value;
+		},
+		homeFilterChange: function(event){
+			this.npcHomeFilter = event.target.value;
 		},
 		clearWarnings: function(){
 			this.warningList = [];
@@ -679,10 +719,13 @@ const generateFinalLocation = function(npc, period,
 };
 
 const generateNight = function(npcList, businessList, npcPreferencesList,
-		npcProfessionList, businessRulesList){
+		npcProfessionList, businessRulesList, homeList){
 	if(!confirm("Tem certeza que deseja sobreescrever a noite atual?")){
 		return;
 	}
+	const cemetery = _.find(homeList, (h) => {
+		return h.name == 'Cemitério';
+	});
 	const hospital = _.find(businessList, (b) => {
 		return b.business_type == 'Hospital';
 	});
@@ -695,10 +738,33 @@ const generateNight = function(npcList, businessList, npcPreferencesList,
 		//updateRessonance(npc);
 		let sickSeed = Math.random();
 		let isSick = sickSeed < 0.05;
+		let isAlive = npc.alive;
+		if(!isAlive){
+			npc.l1 = {
+				business: cemetery,
+				working: false,
+				sleeping: false,
+				sick: false,
+			};
+			npc.l2 = {
+				business: cemetery,
+				working: false,
+				sleeping: false,
+				sick: false,
+			};
+			npc.l3 = {
+				business: cemetery,
+				working: false,
+				sleeping: false,
+				sick: false,
+			};
+			return;
+		}
 		if(isSick){
 			let doctorCheck = Math.random();
 			let goesToDockor = doctorCheck < 0.5*_.find(npcPreferencesList, (pref) => {
-			return pref.npc == npc.id && pref.business == hospital.id}).seed;
+				return pref.npc == npc.id && pref.business == hospital.id}
+			).seed;
 			if(goesToDockor){
 				npc.l1 = {
 					business: hospital,

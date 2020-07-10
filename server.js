@@ -12,7 +12,7 @@ app.use(express.urlencoded()); // to support URL-encoded bodies
 
 app.use(express.static('public'))
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const pool = new Pool()
 
@@ -58,6 +58,7 @@ app.get("/npc", (req, res, next) => {
 			oath.name oath, 
 			oath_nature.name oath_nature,
 			wealth,
+			alive,
 			health,
 			max_health,
 			r.name ressonance,
