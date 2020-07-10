@@ -42,12 +42,15 @@
 			v-bind:npc-minimun-age-filter="npcMinimunAgeFilter"
 			v-bind:npc-maximun-age-filter="npcMaximunAgeFilter"
 			v-bind:npc-neighbourhood-filter="npcNeighbourhoodFilter"
+			v-bind:npc-vampire-filter="npcVampireFilter"
 			v-bind:family-list="familyList"
 			v-bind:home-list="homeList"
 			v-bind:neighbourhood-list="neighbourhoodList"
 			v-on:clear-filter="clearFilter"
 			v-on:select-family="selectFamily"
-			v-on:clear-warnings="clearWarnings">
+			v-on:clear-warnings="clearWarnings"
+			v-on:vampire-filter-change="vampireFilterChange"
+			>
 		</main-area>
 		<npc-details
 			v-bind:loaded="loaded"
@@ -95,6 +98,7 @@
 				v-bind:minimun-age-filter="npcMinimunAgeFilter"
 				v-bind:maximun-age-filter="npcMaximunAgeFilter"
 				v-bind:neighbourhood-filter="npcNeighbourhoodFilter"
+				v-bind:vampire-filter="npcVampireFilter"
 				v-bind:family-list="familyList"
 				v-bind:home-list="homeList"
 				v-bind:npc-profession-list="npcProfessionList"
@@ -104,6 +108,7 @@
 				v-on:select-family="selectFamily"
 				v-on:click-npc="clickNpc"
 				v-on:clear-filter="clearFilter"
+				v-on:vampire-filter-change="vampireFilterChange"
 				v-bind:npc-list="npcList"/>
 			<main-area-business
 				v-if="showBusiness"
@@ -144,6 +149,9 @@
 						{{home.name}}
 					</option>
 				</select>
+				Vampiro: <tristate
+					v-on:tristate-change="vampireFilterChange"
+					v-bind:value="vampireFilter"/>
 			</div>
 			<div class="mainAreaNpcListSection">
 				<div class="npcTableContainer">
@@ -188,6 +196,14 @@
 				</div>
 			</div>
 		</div>
+	</script>
+
+	<script type="text/x-template" id="tristateTemplate">
+		<span class="tristate" v-on:click="click()">
+			<img v-if="value == null" src="/img/tri-empty.png">
+			<img v-if="value == true" src="/img/tri-true.png">
+			<img v-if="value == false" src="/img/tri-false.png">
+		</span>
 	</script>
 
 	<script type="text/x-template" id="sortingArrowTemplate">

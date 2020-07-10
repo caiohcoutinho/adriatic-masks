@@ -12,7 +12,7 @@ app.use(express.urlencoded()); // to support URL-encoded bodies
 
 app.use(express.static('public'))
 
-const PORT = process.env.PORT;
+const PORT = 3000;
 
 const pool = new Pool()
 

@@ -356,3 +356,8 @@ tr.businessTableDataRowPeriod{
 tr.businessTableDataRowPeriod tr.npcTableDataRowEven{
 	background-color: #ffaeae;	
 }
+
+span.tristate img{
+	height: 20px;
+	cursor: pointer;
+}

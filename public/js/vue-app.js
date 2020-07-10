@@ -4,7 +4,7 @@ const NIGHT = 'night';
 const CONFIG = 'config';
 
 const isNullOrUndefinedOrEmpty = function(o){
-	return _.isNull(o) || _.isUndefined(o) || o == "";
+	return _.isNull(o) || _.isUndefined(o) || o === "";
 }
 
 Vue.prototype.axios = axios;
@@ -33,11 +33,21 @@ Vue.component('left-bar-menu', {
 	}
 });
 
+Vue.component('tristate', {
+	template: '#tristateTemplate',
+	props: ['value'],
+	methods: {
+		click: function(){
+			this.$emit('tristate-change');
+		}
+	}
+})
+
 Vue.component('main-area', {
 	template: '#mainAreaTemplate',
 	props: ['mainArea', 'npcNameFilter', 'npcHomeFilter', 
 			'npcMinimunAgeFilter', 'npcMaximunAgeFilter',
-			'npcNeighbourhoodFilter',
+			'npcNeighbourhoodFilter', 'npcVampireFilter',
 			'warningList', 'npcProfessionList', 'professionList',
 			'npc-list', 'neighbourhoodList', 'familyList', 'homeList',
 			'selectedFamily', 'businessList', 'lastUpdate', 'lastUpdateDetails'],
@@ -67,6 +77,9 @@ Vue.component('main-area', {
 		},
 		selectFamily: function(familyId){
 			this.$emit('select-family', familyId);
+		},
+		vampireFilterChange: function(){
+			this.$emit('vampire-filter-change');
 		}
 	}
 });
@@ -74,7 +87,7 @@ Vue.component('main-area', {
 Vue.component('main-area-npc', {
 	template: '#mainAreaNpcTemplate',
 	props: ['npcList', 'nameFilter', 'homeFilter', 'minimunAgeFilter', 
-	'maximunAgeFilter', 'neighbourhoodFilter',
+	'maximunAgeFilter', 'neighbourhoodFilter', 'vampireFilter',
 	'professionList', 'npcProfessionList', 'professionList',
 	'businessList', 'neighbourhoodList', 'familyList', 'familyFilter', 'homeList'],
 	data: function(){
@@ -118,6 +131,11 @@ Vue.component('main-area-npc', {
 			if(!isNullOrUndefinedOrEmpty(this.homeFilter)){
 				list = _.filter(list, (npc) => {
 					return npc.home_id == this.homeFilter;
+				});
+			}
+			if(!isNullOrUndefinedOrEmpty(this.vampireFilter)){
+				list = _.filter(list, (npc) => {
+					return (npc.clan != undefined) == this.vampireFilter;
 				});
 			}
 
@@ -191,6 +209,9 @@ Vue.component('main-area-npc', {
 		},
 		selectFamily: function(event){
 			this.$emit('select-family', parseInt(event.target.value));
+		},
+		vampireFilterChange: function(){
+			this.$emit('vampire-filter-change');
 		}
 	}
 });
@@ -398,6 +419,7 @@ var app = new Vue({
 		npcMinimunAgeFilter: null,
 		npcMaximunAgeFilter: null,
 		npcNeighbourhoodFilter: "",
+		npcVampireFilter: null
 	},
 	methods: {
 		showMainArea: function(mainArea){
@@ -414,6 +436,15 @@ var app = new Vue({
 				this.lastUpdateDetails = new Date().toString();
 			} else{
 				this.mainArea = mainArea;
+			}
+		},
+		vampireFilterChange: function(){
+			if(this.npcVampireFilter == null){
+				this.npcVampireFilter = true;
+			} else if(this.npcVampireFilter == true){
+				this.npcVampireFilter = false;
+			} else if(this.npcVampireFilter == false){
+				this.npcVampireFilter = null;
 			}
 		},
 		clearWarnings: function(){
