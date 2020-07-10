@@ -361,3 +361,7 @@ span.tristate img{
 	height: 20px;
 	cursor: pointer;
 }
+
+span.clanIcon img{
+	height: 20px;
+}

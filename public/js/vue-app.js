@@ -41,7 +41,12 @@ Vue.component('tristate', {
 			this.$emit('tristate-change');
 		}
 	}
-})
+});
+
+Vue.component('clan-icon', {
+	template: '#clanIconTemplate',
+	props: ['clan']
+});
 
 Vue.component('main-area', {
 	template: '#mainAreaTemplate',
@@ -489,6 +494,7 @@ var app = new Vue({
 			this.npcMinimunAgeFilter = null;
 			this.npcMaximunAgeFilter = null;
 			this.npcNeighbourhoodFilter = "";
+			this.npcVampireFilter = null;
 			this.mainArea = NPC;
 		}
 	},
