@@ -633,6 +633,7 @@ const generateFinalLocation = function(npc, period,
 				&& job.profession != 42 // Transporte de Drogas
 				&& job.profession != 43 // Turista
 				&& job.profession != 46 // Vendedor de Drogas
+				&& job.profession != 49 // Criminoso
 				){ 
 				let finalBusiness = _.find(businessList, (b) => {return b.id == job.business;});
 				if(finalBusiness != null){
