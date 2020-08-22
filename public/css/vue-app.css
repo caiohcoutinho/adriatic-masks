@@ -65,7 +65,7 @@ div.mainArea{
 	left: 65px;
 }
 
-div.npcDetails{
+div.details{
 	position: fixed;
 	z-index: 1;
 	top: 0;
@@ -327,7 +327,7 @@ div.npcDetailsInformation{
 	margin-top: 21vh;
 }
 
-table.npcInformationTable{
+table.informationTable{
 
 }
 
@@ -336,13 +336,13 @@ textarea.npcInformationNotesTextArea{
 	min-height: 150px;
 }
 
-table.npcInformationTable td{
+table.informationTable td{
     border-color: #4C0813;
     border-width: 2px;
     border-style: solid;
 }
 
-div.npcInformationTableArea{
+div.informationTableArea{
     overflow-y: auto;
 }
 

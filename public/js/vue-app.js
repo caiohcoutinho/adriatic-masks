@@ -53,6 +53,7 @@ Vue.component('main-area', {
 	props: ['mainArea', 'npcNameFilter', 'npcHomeFilter', 
 			'npcMinimunAgeFilter', 'npcMaximunAgeFilter',
 			'npcNeighbourhoodFilter', 'npcVampireFilter',
+			'npcAliveFilter',
 			'warningList', 'npcProfessionList', 'professionList',
 			'npc-list', 'neighbourhoodList', 'familyList', 'homeList',
 			'selectedFamily', 'businessList', 'lastUpdate', 'lastUpdateDetails'],
@@ -77,6 +78,9 @@ Vue.component('main-area', {
 		clickNpc: function(npc){
 			this.$emit('click-npc', npc);
 		},
+		clickBusiness: function(business){
+			this.$emit('click-business', business);
+		},
 		clearFilter: function(){
 			this.$emit('clear-filter');	
 		},
@@ -85,6 +89,9 @@ Vue.component('main-area', {
 		},
 		vampireFilterChange: function(){
 			this.$emit('vampire-filter-change');
+		},
+		aliveFilterChange: function(){
+			this.$emit('alive-filter-change');
 		},
 		nameFilterChange: function(event){
 			this.$emit('name-filter-change', event);
@@ -108,6 +115,7 @@ Vue.component('main-area-npc', {
 	template: '#mainAreaNpcTemplate',
 	props: ['npcList', 'nameFilter', 'homeFilter', 'minimunAgeFilter', 
 	'maximunAgeFilter', 'neighbourhoodFilter', 'vampireFilter',
+	'aliveFilter',
 	'professionList', 'npcProfessionList', 'professionList',
 	'businessList', 'neighbourhoodList', 'familyList', 'familyFilter', 'homeList'],
 	data: function(){
@@ -156,6 +164,11 @@ Vue.component('main-area-npc', {
 			if(!isNullOrUndefinedOrEmpty(this.vampireFilter)){
 				list = _.filter(list, (npc) => {
 					return (npc.clan != undefined) == this.vampireFilter;
+				});
+			}
+			if(!isNullOrUndefinedOrEmpty(this.aliveFilter)){
+				list = _.filter(list, (npc) => {
+					return npc.alive == this.aliveFilter;
 				});
 			}
 
@@ -227,6 +240,9 @@ Vue.component('main-area-npc', {
 		},
 		vampireFilterChange: function(){
 			this.$emit('vampire-filter-change');
+		},
+		aliveFilterChange: function(){
+			this.$emit('alive-filter-change');
 		},
 		nameFilterChange: function(event){
 			this.$emit('name-filter-change', event);
@@ -315,6 +331,9 @@ Vue.component('main-area-business', {
 		},
 		clickNpc: function(npc){
 			this.$emit("click-npc", npc);
+		},
+		clickBusiness: function(business){
+			this.$emit("click-business", business);
 		}
 	}
 });
@@ -381,6 +400,24 @@ Vue.component('main-area-config', {
 	}
 });
 
+Vue.component('side-details', {
+	props: ['npc', 'business', 'loaded', 'npcList', 'npcProfessionList'],
+	template: '#sideDetailsTemplate',
+	methods: {
+		clickFamily: function(familyId){
+			this.$emit('click-family', familyId);
+		},
+		saveSelectedNpc: function(){
+			this.$emit('save-selected-npc');
+		}
+	}
+});
+
+Vue.component('open-closed-icon', {
+	props: ['value'],
+	template: '#openClosedIconTemplate',
+});	
+
 Vue.component('npc-details', {
 	props: ['npc', 'loaded'],
 	template: '#npcDetailsTemplate',
@@ -390,6 +427,34 @@ Vue.component('npc-details', {
 		},
 		saveSelectedNpc: function(){
 			this.$emit('save-selected-npc');
+		}
+	}
+});
+
+Vue.component('business-details', {
+	props: ['business', 'loaded', 'npcList', 'npcProfessionList'],
+	template: '#businessDetailsTemplate'
+});
+
+Vue.component('business-information', {
+	props: ['business', 'loaded', 'npcList', 'npcProfessionList'],
+	template: '#businessInformationTemplate',
+	computed: {
+		workerList: function(){
+			return 
+				_.filter(this.npcList, 
+					(npc) => {
+						return _.any(
+							_.filter(this.npcProfessionList,
+									(npcProfession) => {
+										return npcProfession.business == this.business.id;
+									}),
+							(npcProfession) => {
+								return npcProfession.npc == npc.id;
+							}
+						)
+					}
+				);
 		}
 	}
 });
@@ -440,6 +505,7 @@ var app = new Vue({
 		warningList: [],
 		loaded:false,
 		selectedNpc: null,
+		selectedBusiness: null,
 		neighbourhoodList: [],
 		familyList: [],
 		homeList: [],
@@ -449,7 +515,8 @@ var app = new Vue({
 		npcMinimunAgeFilter: null,
 		npcMaximunAgeFilter: null,
 		npcNeighbourhoodFilter: "",
-		npcVampireFilter: null
+		npcVampireFilter: null,
+		npcAliveFilter: true
 	},
 	methods: {
 		showMainArea: function(mainArea){
@@ -477,6 +544,15 @@ var app = new Vue({
 				this.npcVampireFilter = null;
 			}
 		},
+		aliveFilterChange: function(){
+			if(this.npcAliveFilter == null){
+				this.npcAliveFilter = true;
+			} else if(this.npcAliveFilter == true){
+				this.npcAliveFilter = false;
+			} else if(this.npcAliveFilter == false){
+				this.npcAliveFilter = null;
+			}
+		},
 		minimunAgeFilterChange: function(event){
 			this.npcMinimunAgeFilter = event.target.value;
 		},
@@ -496,7 +572,13 @@ var app = new Vue({
 			this.warningList = [];
 		},
 		selectNpc: function(npc){
+			this.selectedBusiness = null;
 			this.selectedNpc = _.find(this.npcList, (n) => {return n.id == npc.id;});
+			this.lastUpdateDetails = new Date().toString();
+		},
+		selectBusiness: function(business){
+			this.selectedNpc = null;
+			this.selectedBusiness = _.find(this.businessList, (b) => {return b.id == business.id;});
 			this.lastUpdateDetails = new Date().toString();
 		},
 		selectFamily: function(familyId){
@@ -719,8 +801,7 @@ const generateFinalLocation = function(npc, period,
 	}
 };
 
-const generateNight = function(npcList, businessList, npcPreferencesList,
-		npcProfessionList, businessRulesList, homeList){
+const generateNight = function(npcList, businessList, npcPreferencesList, npcProfessionList, businessRulesList, homeList){
 	if(!confirm("Tem certeza que deseja sobreescrever a noite atual?")){
 		return;
 	}

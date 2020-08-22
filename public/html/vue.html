@@ -5,14 +5,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-<!-- <script src="/js/angular.min.js"></script> -->
-<!-- <script src="/js/app.js"></script> -->
 <script src="/js/vue.js"></script> 
 <script src="/js/axios.min.js"></script> 
 <script src="/js/underscore.js"></script>
 <script src="/js/bootstrap.min.js"></script>
-<!--<script src="/js/bootstrap.min.js.map"></script>-->
-<!--<script src="/js/ui-bootstrap.min.js"></script>-->
 <link rel="stylesheet" href="/css/vue-app.css">
 <link rel="stylesheet" href="/css/bootstrap.min.css">
 <link rel="stylesheet" href="/css/bootstrap.min.css.map">
@@ -30,6 +26,7 @@
 		<main-area
 			v-bind:last-update="lastUpdate"
 			v-on:click-npc="selectNpc"
+			v-on:click-business="selectBusiness"
 			v-bind:warning-list="warningList"
 			v-bind:main-area="mainArea"
 			v-bind:npc-list="npcList"
@@ -43,6 +40,7 @@
 			v-bind:npc-maximun-age-filter="npcMaximunAgeFilter"
 			v-bind:npc-neighbourhood-filter="npcNeighbourhoodFilter"
 			v-bind:npc-vampire-filter="npcVampireFilter"
+			v-bind:npc-alive-filter="npcAliveFilter"
 			v-bind:family-list="familyList"
 			v-bind:home-list="homeList"
 			v-bind:neighbourhood-list="neighbourhoodList"
@@ -50,6 +48,7 @@
 			v-on:select-family="selectFamily"
 			v-on:clear-warnings="clearWarnings"
 			v-on:vampire-filter-change="vampireFilterChange"
+			v-on:alive-filter-change="aliveFilterChange"
 			v-on:name-filter-change="nameFilterChange"
 			v-on:minimun-age-filter-change="minimunAgeFilterChange"
 			v-on:maximun-age-filter-change="maximunAgeFilterChange"
@@ -57,13 +56,16 @@
 			v-on:home-filter-change="homeFilterChange"
 			>
 		</main-area>
-		<npc-details
+		<side-details
 			v-bind:loaded="loaded"
 			v-bind:npc="selectedNpc"
+			v-bind:business="selectedBusiness"
+			v-bind:npc-list="npcList"
+			v-bind:npc-profession-list="npcProfessionList"
 			v-bind:key="lastUpdateDetails"
 			v-on:save-selected-npc="saveSelectedNpc"
 			v-on:click-family="selectFamily">
-		</npc-details>
+		</side-details>
 	</div>
 
 	<!-- TEMPLATES -->
@@ -104,6 +106,7 @@
 				v-bind:maximun-age-filter="npcMaximunAgeFilter"
 				v-bind:neighbourhood-filter="npcNeighbourhoodFilter"
 				v-bind:vampire-filter="npcVampireFilter"
+				v-bind:alive-filter="npcAliveFilter"
 				v-bind:family-list="familyList"
 				v-bind:home-list="homeList"
 				v-bind:npc-profession-list="npcProfessionList"
@@ -118,11 +121,13 @@
 				v-on:maximun-age-filter-change="maximunAgeFilterChange"
 				v-on:neighbourhood-filter-change="neighbourhoodFilterChange"
 				v-on:vampire-filter-change="vampireFilterChange"
+				v-on:alive-filter-change="aliveFilterChange"
 				v-on:home-filter-change="homeFilterChange"
 				v-bind:npc-list="npcList"/>
 			<main-area-business
 				v-if="showBusiness"
 				v-on:click-npc="clickNpc"
+				v-on:click-business="clickBusiness"
 				v-bind:key="lastUpdate"
 				v-bind:business-list="businessList"
 				v-bind:neighbourhood-list="neighbourhoodList"/>
@@ -161,7 +166,10 @@
 				</select>
 				Vampiro: <tristate
 					v-on:tristate-change="vampireFilterChange"
-					v-bind:value="vampireFilter"/>
+					v-bind:value="vampireFilter"/><br>
+				Vivo: <tristate
+					v-on:tristate-change="aliveFilterChange"
+					v-bind:value="aliveFilter"/>
 			</div>
 			<div class="mainAreaNpcListSection">
 				<div class="npcTableContainer">
@@ -247,7 +255,7 @@
 							<th v-on:click="orderBy('Neighbourhood')" class="businessTableColumn clickable businessTableColumnNeighbourhood">&#127968;<sorting-arrow v-bind:condition="orderByNeighbourhood"></sorting-arrow></th>
 						</tr>
 						<tbody v-for="(business, index) in businessFilteredOrderedList">
-							<tr class="businessTableDataRow">
+							<tr class="businessTableDataRow" v-on:click="clickBusiness(business)">
 								<td class="businessTableColumn businessTableColumnI"><h5>{{business.id}}</h5></td>
 								<td class="businessTableColumn businessTableColumnName"><h5>{{business.name}} ({{business.business_type}})</h5></td>
 								<td class="businessTableColumn businessTableColumnNeighbourhood">
@@ -259,7 +267,7 @@
 								</td>
 							</tr>
 							<tr class="businessTableDataRowPeriod">
-								<td><span v-if="business.n1">&#10003;</span><span v-if="!business.n1">&#128711;</span></td>
+								<td><open-closed-icon v-bind:value="business.n1"></open-closed-icon></td>
 								<td colspan="2">
 									<npc-list v-on:click-npc="clickNpc"
 											  v-bind:npc-list="business.npcListN1"
@@ -267,7 +275,7 @@
 								</td>
 							</tr>
 							<tr class="businessTableDataRowPeriod">
-								<td><span v-if="business.n2">&#10003;</span><span v-if="!business.n2">&#128711;</span></td>
+								<td><open-closed-icon v-bind:value="business.n2"></open-closed-icon></td>
 								<td colspan="2">
 									<npc-list v-on:click-npc="clickNpc"
 											  v-bind:npc-list="business.npcListN2"
@@ -275,7 +283,7 @@
 								</td>
 							</tr>
 							<tr class="businessTableDataRowPeriod">
-								<td><span v-if="business.n3">&#10003;</span><span v-if="!business.n3">&#128711;</span></td>
+								<td><open-closed-icon v-bind:value="business.n3"></open-closed-icon></td>
 								<td colspan="2">
 									<npc-list v-on:click-npc="clickNpc"
 											  v-bind:npc-list="business.npcListN3"
@@ -286,6 +294,12 @@
 					</table>
 				</div>
 			</div>
+		</div>
+	</script>
+
+	<script type="text/x-template" id="openClosedIconTemplate">
+		<div>
+			<span v-if="value">&#10003;</span><span v-if="!value">&#128711;</span>
 		</div>
 	</script>
 
@@ -318,8 +332,40 @@
 		</div>
 	</script>
 
+	<script type="text/x-template" id="sideDetailsTemplate">	
+		<div>
+			<npc-details
+				v-if="npc != null"
+				v-bind:loaded="loaded"
+				v-bind:npc="npc"
+				v-on:save-selected-npc="saveSelectedNpc"
+				v-on:click-family="clickFamily">
+			</npc-details>
+			<business-details
+				v-if="business != null"
+				v-bind:npc-list="npcList"
+				v-bind:npc-profession-list="npcProfessionList"
+				v-bind:loaded="loaded"
+				v-bind:business="business">
+			</business-details>
+		</div>
+	</script>
+
+	<script type="text/x-template" id="businessDetailsTemplate">	
+		<div v-if="business != null && business != undefined" class="details">
+			<h5>{{business.id}} - {{business.name}}</h5>
+			<div class="businessDetailsInformation">
+				<business-information 
+					v-bind:npc-list="npcList"
+					v-bind:npc-profession-list="npcProfessionList"
+					v-bind:loaded="loaded"
+					v-bind:business="business"/>
+			</div>
+		</div>
+	</script>
+
 	<script type="text/x-template" id="npcDetailsTemplate">
-		<div v-if="npc != null && npc != undefined" class="npcDetails">
+		<div v-if="npc != null && npc != undefined" class="details">
 			<h5>{{npc.id}} - <span v-bind:class="{npcDead: !npc.alive}">{{npc.name}}</span></h5>
 			<div class="npcDetailsPortrait">
 				<portrait v-bind:npc="npc"/>
@@ -332,11 +378,23 @@
 					v-bind:npc="npc"/>
 			</div>
 		</div>
-	</script>	
+	</script>
+
+	<script type="text/x-template" id="businessInformationTemplate">	
+		<div class="informationTableArea">
+			<table class="informationTable">
+				<tr><td colspan="2">{{business.description}}</td></tr>
+				<tr><td>N1</td><td><open-closed-icon v-bind:value="business.n1"></open-closed-icon></td></tr>
+				<tr><td>N2</td><td><open-closed-icon v-bind:value="business.n2"></open-closed-icon></td></tr>
+				<tr><td>N3</td><td><open-closed-icon v-bind:value="business.n3"></open-closed-icon></td></tr>
+				<tr v-for="npc in workerList"><td>{{npc.name}}</td><td></td></tr>
+			</table>
+		</div>
+	</script>
 
 	<script type="text/x-template" id="npcInformationTemplate">
-		<div class="npcInformationTableArea">
-			<table class="npcInformationTable">
+		<div class="informationTableArea">
+			<table class="informationTable">
 				<tr><td colspan="2"><textarea v-model="npc.notes" class="npcInformationNotesTextArea"></textarea></td></tr>
 				<tr>
 					<td colspan="2">
