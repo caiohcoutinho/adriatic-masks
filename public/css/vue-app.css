@@ -151,7 +151,7 @@ table.businessTable tr.businessTableDataRow{
 }
 
 table.npcTable tr.npcTableDataRow:hover{
-	font-weight: bold;
+	text-shadow: 0 0 10px black;
 	cursor:	pointer;
 }
 
