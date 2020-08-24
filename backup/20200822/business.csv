@@ -1,0 +1,78 @@
+51,Universidade,25,4,t,t,f,"Cursos: Artes cênicas, Música, Moda, Arquitetura e Urbanismo, Jornalismo, Arquelogia, História, Ciências Sociais."
+78,Scola Canton,18,5,t,f,f,Cadeiras nos cantos. Pequeno púpito.
+36,Basilica di San Marco,18,3,t,t,f,Basílica enorme. Abobodas. Imagens. Arcos. Pinturas.
+38,Gems of Venice,19,5,t,f,f,Joias nos balcões. Caixa.
+39,Ohmyblue,19,5,t,f,f,Joias nos balcões. Caixa.
+40,Cartier,19,3,t,f,f,Joias nos balcões. Caixa.
+41,Lan House,20,4,t,t,f,Computadores enfileirados. Balcão.
+42,Sacca San Biagio,21,4,t,t,t,Pilhas de lixo. Tratores. Encineiradoras. Containers.
+1,Venetur,1,2,t,f,f,Sala pequena. Posteres na parede. Mesa. Cadeira.
+2,Venetian Tur,1,3,t,f,f,Sala pequena. Posteres na parede. Mesa. Cadeira.
+14,Corpo de Bombeiros,7,2,t,t,t,Vários caminhões. Escritório no segundo andar.
+15,Delegacia,8,3,t,t,t,Barulhento. Cadeiras de madeira. Pequena cela. Armários.
+16,Vino Veneza,9,5,t,f,f,Sofisticada. Vinhos nas prateleiras. Caixa registradora. Balcão.
+17,Escola de ensino médio,10,5,t,f,f,Dois andares. Corredores com salas. Diretoria. Sala dos professores.
+3,Casanova Grand Ball,2,3,f,f,f,Complexo com salas de jantar e quartos com decoração clássica.
+70,Tabacaria,34,4,t,f,f,Fumo. Narguile. Cubos mágicos. Charutos. Esculturas exóticas.
+6,Inferno,3,6,f,t,f,Sala quadrada larga e alta. Sacada em todos os lados. Grande chama no meio.
+4,Barbarian,3,4,f,t,f,Balada pequena. Dois andares. No segundo andar tem um mezanino com uma piscina com fundo de vidro.
+7,Unicredit,4,5,t,f,f,Sala pequena. Porta giratória. Mesa. Cadeira.
+18,Escola de italiano,11,6,t,f,f,Uma única sala no segundo andar de um prédio.
+19,Escola de primário,12,6,t,f,f,"Parquinho. Algumas salas com brinquedos, carteiras e desenhos nas paredes."
+8,Banco San Marco,4,3,t,f,f,Sala pequena. Porta giratória. Mesa. Cadeira.
+9,Oceanic,5,4,t,f,f,Apertada. Corredores estreitos. Prateleiras de livros até o teto
+10,Global,5,6,t,f,f,Organizada. Espaçosa. Seções claras.
+11,Santa Croce – Casa,6,1,t,f,f,Terceiro andar de um prédio. Sala pequena. Cozinha. Quarto. Banheiro.
+12,Dorsoduro – Casa 1,6,4,t,f,f,Casa térrea. Sala espaçosa com uma cama de solteiro. Quarto. Cozinha. Banheiro
+13,Dorsoduro – Casa 2,6,4,t,f,f,Kitnet. Cozinha e quarto juntos. Banheiro com porta de correr
+20,D’Alto Rampone,13,1,t,f,f,Mesa. Cadeira. Armários.
+21,Droga 24,14,2,t,t,f,Prateleiras. Balcão. Caixa registradora.
+22,Vene++,14,3,t,t,f,Prateleiras. Balcão. Caixa registradora.
+23,Farmacia San Polo,14,6,t,t,f,Prateleiras. Balcão. Caixa registradora.
+24,Dorsoduro – Galeria,15,2,f,t,f,Seca. Iluminada. Banquinhos. Elegante.
+25,San Polo – Galeria,15,4,f,t,f,Casa bagunçada. Obras por todos os lugares. Escadas. Corredores. Música.
+26,Castello – Galeria,15,6,f,t,f,"Escura, com pequenos lagos retangulares que cerceam o caminho"
+27,Hospital,16,1,t,t,t,Sala de espera. Consultório. Salas interiores.
+28,Royal Hotel,17,2,t,t,t,Muito clássico. Tapeçarias com cores fortes vermelhas e alaranjadas.
+29,The Prophecy,17,3,t,t,t,Estilo mais moderno em tons beges.
+30,Olive Tower,17,3,t,t,t,Mistura de clássico com moderno. Lustres de vidro. Painéis de madeira.
+31,Obsidian Sanctum,17,3,t,t,t,"Hotel bem antigo, com madeiras escuras por toda parte."
+32,Chiesa di San Simeone Piccolo,18,1,t,t,f,Igreja simples. Algumas poucas cadeiras. Imagem no fundo.
+33,Chiesa dell Abbazia della Misericordia,18,5,t,t,f,Igreja simples. Algumas poucas cadeiras. Imagem no fundo.
+34,Chiesa di San Giacomo di Rialto,18,2,t,t,f,Igreja simples. Algumas poucas cadeiras. Imagem no fundo.
+35,Chiesa di San Barnaba,18,4,t,t,f,Igreja simples. Algumas poucas cadeiras. Imagem no fundo.
+37,Chiesa di San Lorenzo,18,6,t,t,f,Igreja simples. Algumas poucas cadeiras. Imagem no fundo.
+45,Prada,22,3,t,f,f,Manequins. Bolsas. Sapatos. Roupas. Balcões. Caixa.
+46,Versace,22,3,t,f,f,Manequins. Bolsas. Sapatos. Roupas. Balcões. Caixa.
+47,Gucci,22,3,t,f,f,Manequins. Bolsas. Sapatos. Roupas. Balcões. Caixa.
+48,Fendi,22,3,t,f,f,Manequins. Bolsas. Sapatos. Roupas. Balcões. Caixa.
+49,Castello,23,6,t,f,f,Pequeno escritório. Mesa. Cadeira. Posteres.
+50,Loja de barcos,24,1,t,f,f,Oficina com porto em frente. Peças. Ferramentas. Pedaços de barcos.
+52,Museo Ebraico Di Venezia,26,2,t,t,f,Muito clássico. Livros. Esculturas.
+53,Leonardo da Vinci Museum,26,3,t,t,f,Esculturas. Parafernalhas. Quadros. Livros.
+54,Museo Correr,26,5,t,t,f,Esculturas. Pinturas.
+56,Campo d’Arsenal,27,5,t,t,f,Ponte em V. Duas Torres.
+57,Parco Savorgnan,27,6,t,t,f,Parque com muito verde. Parquinhos de criança. Fontes.
+59,Prefeitura,29,6,t,f,f,Poucas salas. Bem decorada. Clássica. Quadros.
+62,Pizza al Volo,30,4,t,t,f,Pizzaria. Movimentado. Apertado. Barulhento.
+63,Trattoria Dai Tosi,30,5,t,t,f,Meia luz. Aconchegante. Comidas diversas.
+64,Rodoviária,31,1,t,t,t,Alguns guichês. Estações de parada dos ônibus.
+68,Castello – Coop,33,4,t,t,f,Pequeno mercado. Vários corredores. Duas caixas registradoras.
+69,Dorsoduro – Coop,33,6,t,t,f,Pequeno mercado. Vários corredores. Duas caixas registradoras.
+72,Beco Santa Croce (Prostituição),36,1,t,f,f,Beco estreito e escuro.
+77,Masjid Musawa,18,1,t,f,f,Vários desenhos geométricos. Chão livre.
+5,Club Delirium,3,5,f,t,f,"Vários puffs e mini-salas vips com look retro-futurista, luzes azuis e neon."
+43,Givenchy,22,2,t,f,f,Manequins. Bolsas. Sapatos. Roupas. Balcões. Caixa.
+44,Dolce & Gabbana,22,2,t,f,f,Manequins. Bolsas. Sapatos. Roupas. Balcões. Caixa.
+55,Piazza San Marco,27,3,t,t,f,Bares. Restaurantes. Lojas.
+58,Posto de gasolina para barco,28,4,t,t,t,Posto flutuante com bombas de gasolina.
+60,Vino Vero,30,1,t,t,f,Restaurante pequeno. Casual. Música de fundo.
+61,Cantina do Spade,30,3,t,t,f,Restaurante sofisticado. Silencioso. Refinado. Carta de vinhos.
+65,Salão de Beleza - Dorsoduro,32,1,t,f,f,Pequeno corredor. Cadeiras de cabelereiro. Fotos nas paredes.
+66,Salão de Beleza – Castello,32,4,t,f,f,Pequeno corredor. Cadeiras de cabelereiro. Fotos nas paredes.
+67,Salão de Beleza - Santa Croce,32,6,t,f,f,Pequeno corredor. Cadeiras de cabelereiro. Fotos nas paredes.
+71,Tatoo Parlor,35,6,t,f,f,Sofá. Caixa. Fotos pelas paredes. Pequena cortina no fundo.
+73,Rodoviária (Prostituição),36,1,t,f,f,Beco estreito e escuro.
+74,Beco Dorsoduro (Prostituição),36,4,t,f,f,Beco estreito e escuro.
+75,Beco Cannaregio (Prostituição),36,5,t,f,f,Beco estreito e escuro.
+76,Beco Castello (Prostituição),36,6,t,f,f,Beco estreito e escuro.
