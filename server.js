@@ -101,6 +101,55 @@ app.get("/npc", (req, res, next) => {
 	});
 });
 
+app.post("/health", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		let npcId = req.body.npc;
+		let index = req.body.index;
+		let value = req.body.value;
+		client.query("select * from health where npc = "+npcId+" and index = "+index, (err, result) => {
+		  	if(err){
+		  		done();
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				if(result.rows.length > 0){
+					let query = "update health set value = '"+value+"' where npc = "+npcId+" and index = "+index;
+					client.query(query, (err, result) => {
+					  	if(err){
+					  		done();
+							console.log(err);
+							res.status(500);
+							res.json(err);
+						} else{
+							done();
+							res.json("{message: 'ok'}");
+						}
+					});
+				} else {
+					let query = "insert into health(\"npc\", \"index\", \"value\") values ("+npcId+", "+index+", '"+value+"')";
+					console.log("query = "+query);
+					client.query(query, (err, result) => {
+					  	if(err){
+					  		done();
+							console.log(err);
+							res.status(500);
+							res.json(err);
+						} else{
+							done();
+							res.json("{message: 'ok'}");
+						}
+					});
+				}
+			}
+		});
+	});
+});
+
 app.post("/saveResources", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){
@@ -131,14 +180,13 @@ app.post("/saveLocationDescription", (req, res, next) => {
 		client.query("update negocio set descricao = '"+req.body.descricao+"' where id = "+req.body.id,
 			 (err, result) => {
 		 	done()
-		  if(err){
-		  	  console.log(err);
-		  	  res.status(500);
-			  res.json(err);
+		  	if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
 			} else{
-			  res.json(result.rows)
+				res.json(result.rows)
 			}
-		  
 		});
 	});
 });
@@ -175,29 +223,7 @@ app.post("/saveRessonance", (req, res, next) => {
 	res.json("ok");
 });
 
-app.post("/saveHealth", (req, res, next) => {
-	pool.connect((err, client, done) => {
-		if(err){
-			res.json(err);
-			return;
-		}
-		client.query("update npc set saude = "+req.body.saude+" where id = "+req.body.id,
-			 (err, result) => {
-			 	done()
-		  if(err){
-		  	  console.log(err);
-		  	  res.status(500);
-			  res.json(err);
-			} else{
-			  res.json(result.rows)
-			}
-		  
-		});
-	});
-});
-
-
-app.post("/npc", (req, res, next) => {
+app.post("/notes", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){
 			res.json(err);
@@ -236,6 +262,33 @@ app.post("/saveDescription", (req, res, next) => {
 			}
 		  
 		});
+	});
+});
+
+app.get("/health", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			console.log(err);
+			res.status(500);
+			res.json(err);
+			return;
+		}
+		client.query(
+			`
+			select *
+			from health
+			order by npc, index
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows)
+			}
+		})
 	});
 });
 

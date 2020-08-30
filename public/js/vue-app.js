@@ -3,6 +3,16 @@ const BUSINESS = 'business';
 const NIGHT = 'night';
 const CONFIG = 'config';
 
+const TASK_TYPES = {
+	SAVE_HEALTH: "saveHealth",
+	SAVE_NOTES: "saveNotes"
+}
+
+const Task = function(type, data){
+	this.type = type;
+	this.data = data;
+}
+
 const isNullOrUndefinedOrEmpty = function(o){
 	return _.isNull(o) || _.isUndefined(o) || o === "";
 }
@@ -11,7 +21,7 @@ Vue.prototype.axios = axios;
 
 Vue.component('left-bar-menu', {
 	template: '#leftBarMenuTemplate',
-	props: ['warningList', 'loaded'],
+	props: ['warningList', 'loaded', 'saving'],
 	computed: {
 		warningListSize: function(){
 			return _.size(this.warningList);
@@ -53,7 +63,7 @@ Vue.component('main-area', {
 	props: ['mainArea', 'npcNameFilter', 'npcHomeFilter', 
 			'npcMinimunAgeFilter', 'npcMaximunAgeFilter',
 			'npcNeighbourhoodFilter', 'npcVampireFilter',
-			'npcAliveFilter',
+			'npcAliveFilter', 'logList',
 			'warningList', 'npcProfessionList', 'professionList',
 			'npc-list', 'neighbourhoodList', 'familyList', 'homeList',
 			'selectedFamily', 'businessList', 'lastUpdate', 'lastUpdateDetails'],
@@ -74,6 +84,9 @@ Vue.component('main-area', {
 	methods: {
 		clearWarnings: function(){
 			this.$emit('clear-warnings');
+		},
+		clearLogs: function(){
+			this.$emit('clear-logs');
 		},
 		clickNpc: function(npc){
 			this.$emit('click-npc', npc);
@@ -387,15 +400,21 @@ Vue.component('sorting-arrow', {
 
 Vue.component('main-area-config', {
 	template: '#mainAreaConfigTemplate',
-	props: ['warningList'],
+	props: ['warningList', 'logList'],
 	computed: {
 		warningListSize: function(){
 			return _.size(this.warningList);
+		},
+		logListSize: function(){
+			return _.size(this.logList);
 		}
 	},
 	methods: {
 		clickClearWarnings: function(){
 			this.$emit('clear-warnings');
+		},
+		clickClearLogs: function(){
+			this.$emit('clear-logs');
 		}
 	}
 });
@@ -407,8 +426,11 @@ Vue.component('side-details', {
 		clickFamily: function(familyId){
 			this.$emit('click-family', familyId);
 		},
-		saveSelectedNpc: function(){
-			this.$emit('save-selected-npc');
+		saveSelectedNpcNotes: function(){
+			this.$emit('save-selected-npc-notes');
+		},
+		saveSelectedNpcHealthChange: function(event){
+			this.$emit('save-selected-npc-health-change', event);
 		}
 	}
 });
@@ -425,8 +447,11 @@ Vue.component('npc-details', {
 		clickFamily: function(familyId){
 			this.$emit('click-family', familyId);
 		},
-		saveSelectedNpc: function(){
-			this.$emit('save-selected-npc');
+		saveSelectedNpcNotes: function(){
+			this.$emit('save-selected-npc-notes');
+		},
+		saveSelectedNpcHealthChange: function(event){
+			this.$emit('save-selected-npc-health-change', event);
 		}
 	}
 });
@@ -486,11 +511,44 @@ Vue.component('npc-information', {
 		clickFamily: function(familyId){
 			this.$emit('click-family', familyId);
 		},
-		saveSelectNpc: function(){
-			this.$emit('save-selected-npc');
+		saveSelectedNpcNotes: function(){
+			this.$emit('save-selected-npc-notes');
+		},
+		saveHealthBar: function(health){
+			this.$emit('save-selected-npc-health-change', {
+				npc: this.npc,
+				health: health
+			});
 		}
 	}
 });
+
+Vue.component('health-bar', {
+	props: ['health'],
+	template: '#healthBar',
+	methods: {
+		clickHealth: function(h){
+			this.$emit('click-health', {
+				index: h.index,
+				value: h.value
+			});
+		}
+	},
+	computed: {
+		healthStatusList: function(){
+			return _.sortBy(this.health, (h) => h.index);
+		}
+	}
+});
+
+const DAMAGE_CLEAN = "clean";
+const DAMAGE_SUPERFICIAL = "superficial";
+const DAMAGE_AGGRAVATED = "aggravated";
+
+const Log = function(message){
+	this.message = message;
+	this.time = new Date();
+}
 
 var app = new Vue({
 	el: '#app',
@@ -503,7 +561,9 @@ var app = new Vue({
 		npcProfessionList: [],
 		businessList: [],
 		warningList: [],
+		logList: [],
 		loaded:false,
+		saving:false,
 		selectedNpc: null,
 		selectedBusiness: null,
 		neighbourhoodList: [],
@@ -516,9 +576,50 @@ var app = new Vue({
 		npcMaximunAgeFilter: null,
 		npcNeighbourhoodFilter: "",
 		npcVampireFilter: null,
-		npcAliveFilter: true
+		npcAliveFilter: null,
+		taskQueue: []
 	},
 	methods: {
+		thenAction: function(response){
+			this.runTask();			
+		},
+		errorAction: function(exception){
+			this.warningList.push({
+				error: exception,
+				response: exception.response
+			});
+			this.runTask();		
+		},
+		runTask: function(){
+			let self = this;
+			if(_.isEmpty(self.taskQueue)){
+				self.saving = false;
+				return;
+			}
+			let task = self.taskQueue.shift();
+			let type = task.type;
+			let data = task.data;
+
+			if(type == TASK_TYPES.SAVE_NOTES){
+				self.axios.post('/notes', data)
+					.then(self.thenAction)
+					.catch(self.errorAction);
+			} else if(type == TASK_TYPES.SAVE_HEALTH){
+				self.axios.post('/health', data)
+					.then(self.thenAction)
+					.catch(self.errorAction);
+			}
+		},
+		addTask: function(task){
+			this.taskQueue.push(task);
+			if(this.saving == false){
+				this.saving = true;
+				this.runTask();
+			}
+		},
+		log: function(text){
+			this.logList.push(new Log(text));
+		},
 		showMainArea: function(mainArea){
 			if(mainArea == NIGHT){
 				if(!this.loaded){
@@ -571,6 +672,9 @@ var app = new Vue({
 		clearWarnings: function(){
 			this.warningList = [];
 		},
+		clearLogs: function(){
+			this.logList = [];
+		},
 		selectNpc: function(npc){
 			this.selectedBusiness = null;
 			this.selectedNpc = _.find(this.npcList, (n) => {return n.id == npc.id;});
@@ -590,24 +694,47 @@ var app = new Vue({
 			this.npcNeighbourhoodFilter = "";
 			this.mainArea = NPC;
 		},
-		saveSelectedNpc: function(){
+		saveSelectedNpcNotes: (function(){
+			return _.debounce(function(){
+				let self = this;
+				let cleanNpcJson = {
+					...self.selectedNpc
+				};
+				delete cleanNpcJson.l1;
+				delete cleanNpcJson.l2;
+				delete cleanNpcJson.l3;
+				delete cleanNpcJson.professions;
+				this.log("Saving npc "+cleanNpcJson.id);
+				this.addTask(new Task(
+					TASK_TYPES.SAVE_NOTES,
+					{
+						id: cleanNpcJson.id,
+						notes: cleanNpcJson.notes
+					}
+				));
+			}, 1500);
+		})(),
+		saveSelectedNpcHealthChange: function(event){
 			let self = this;
-			let cleanNpcJson = {
-				...self.selectedNpc
-			};
-			delete cleanNpcJson.l1;
-			delete cleanNpcJson.l2;
-			delete cleanNpcJson.l3;
-			delete cleanNpcJson.professions;
-			self.axios.post('/npc', cleanNpcJson)
-				.then(response => {
-					alert("npc salvo com sucesso");
-				}).catch((exception) => {
-					self.warningList.push({
-						error: exception,
-						response: exception.response
-					});
-				});
+			let i = event.health.index;
+			let h = self.selectedNpc.healthBar[i];
+			if(h.value == DAMAGE_CLEAN){
+				h.value = DAMAGE_SUPERFICIAL;
+			} else if(h.value == DAMAGE_AGGRAVATED){
+				h.value = DAMAGE_CLEAN;
+			} else if(h.value == DAMAGE_SUPERFICIAL){
+				h.value = DAMAGE_AGGRAVATED;
+			}
+			let npcId = self.selectedNpc.id;
+			this.log("Saving npc "+npcId+" health "+i+" value "+h.value);
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_HEALTH,
+				{
+					npc: npcId,
+					index: i,
+					value: h.value
+				}
+			));
 		},
 		clearFilter: function(){
 			this.selectedFamily = null;
@@ -616,6 +743,7 @@ var app = new Vue({
 			this.npcMinimunAgeFilter = null;
 			this.npcMaximunAgeFilter = null;
 			this.npcNeighbourhoodFilter = "";
+			this.npcAliveFilter = null;
 			this.npcVampireFilter = null;
 			this.mainArea = NPC;
 		}
@@ -641,25 +769,36 @@ var app = new Vue({
 							self.familyList = familyResponse.data;
 							self.axios.get('/business').catch(errorHandler).then(function(businessResponse){
 								self.businessList = businessResponse.data;
-								self.npcList = _.map(npcResponse.data, (npc) => {
-									return {
-										...npc,
-										professions:_.map(
-											_.filter(self.npcProfessionList, (npcProfession) => {return npcProfession.npc == npc.id}),
-											(profession) => ({
-												profession: _.find(self.professionList, (p) => {return p.id == profession.profession}),
-												business: _.find(self.businessList, (b) => {return b.id == profession.business})
-											})
-										)
-									}
-								});		
-								self.axios.get('/npcPreferences').catch(errorHandler).then(function(npcPreferencesResponse){
-									self.npcPreferencesList = npcPreferencesResponse.data;
-									self.axios.get('/businessRules').catch(errorHandler).then(function(businessRulesResponse){
-										self.businessRulesList = businessRulesResponse.data;
-										self.axios.get('/home').catch(errorHandler).then(function(homeResponse){
-											self.homeList = _.sortBy(homeResponse.data, (h) => h.name);
-											self.loaded = true;
+								self.axios.get('/health').catch(errorHandler).then(function(healthResponse){
+									self.npcList = _.map(npcResponse.data, (npc) => {
+										let healthBarData = _.filter(healthResponse.data, (h) => h.npc == npc.id);
+										let healthBar = [];
+										for(var i = 0 ; i < npc.max_health ; i++){
+											let healthStatus = _.find(healthBarData, (h) => h.index == i);
+											let value = isNullOrUndefinedOrEmpty(healthStatus) ? DAMAGE_CLEAN : healthStatus.value;
+											healthBar.push({index: i, value: value});
+										}
+										return {
+											...npc,
+											healthBar: healthBar,
+											professions:_.map(
+												_.filter(self.npcProfessionList, (npcProfession) => {return npcProfession.npc == npc.id}),
+												(profession) => ({
+													profession: _.find(self.professionList, (p) => {return p.id == profession.profession}),
+													business: _.find(self.businessList, (b) => {return b.id == profession.business})
+												})
+											)
+										}
+									});		
+									self.axios.get('/npcPreferences').catch(errorHandler).then(function(npcPreferencesResponse){
+										self.npcPreferencesList = npcPreferencesResponse.data;
+										self.axios.get('/businessRules').catch(errorHandler).then(function(businessRulesResponse){
+											self.businessRulesList = businessRulesResponse.data;
+											self.axios.get('/home').catch(errorHandler).then(function(homeResponse){
+												self.homeList = _.sortBy(homeResponse.data, (h) => h.name);
+												self.loaded = true;
+												self.runTask();
+											});
 										});
 									});
 								});

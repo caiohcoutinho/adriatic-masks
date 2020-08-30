@@ -8,7 +8,6 @@
 <script src="/js/vue.js"></script> 
 <script src="/js/axios.min.js"></script> 
 <script src="/js/underscore.js"></script>
-<script src="/js/bootstrap.min.js"></script>
 <link rel="stylesheet" href="/css/vue-app.css">
 <link rel="stylesheet" href="/css/bootstrap.min.css">
 <link rel="stylesheet" href="/css/bootstrap.min.css.map">
@@ -20,6 +19,7 @@
 	<div id="app">
 		<left-bar-menu 
 			v-bind:loaded="loaded"
+			v-bind:saving="saving"
 			v-bind:warning-list="warningList"
 			v-on:click-link="showMainArea">
 		</left-bar-menu>
@@ -28,6 +28,7 @@
 			v-on:click-npc="selectNpc"
 			v-on:click-business="selectBusiness"
 			v-bind:warning-list="warningList"
+			v-bind:log-list="logList"
 			v-bind:main-area="mainArea"
 			v-bind:npc-list="npcList"
 			v-bind:profession-list="professionList"
@@ -47,6 +48,7 @@
 			v-on:clear-filter="clearFilter"
 			v-on:select-family="selectFamily"
 			v-on:clear-warnings="clearWarnings"
+			v-on:clear-logs="clearLogs"
 			v-on:vampire-filter-change="vampireFilterChange"
 			v-on:alive-filter-change="aliveFilterChange"
 			v-on:name-filter-change="nameFilterChange"
@@ -63,7 +65,8 @@
 			v-bind:npc-list="npcList"
 			v-bind:npc-profession-list="npcProfessionList"
 			v-bind:key="lastUpdateDetails"
-			v-on:save-selected-npc="saveSelectedNpc"
+			v-on:save-selected-npc-notes="saveSelectedNpcNotes"
+			v-on:save-selected-npc-health-change="saveSelectedNpcHealthChange"
 			v-on:click-family="selectFamily">
 		</side-details>
 	</div>
@@ -84,8 +87,8 @@
 				<h1 class="leftBarMenuLinkImg leftBarMenuItem">Negócios</h1>
 			</div>
 			<div class="leftBarMenuLinkBlock leftBarMenuNpcBlock" v-on:click="clickNight">
-				<img class="leftBarMenuLinkImg leftBarMenuItem" v-bind:src="loaded?'/img/moon.png':'/img/loader.gif'" >
-				<h1 v-bind:class="{'leftBarMenuForbiddenLinkImg':!loaded, 'leftBarMenuLinkImg':true, 'leftBarMenuItem':true}">Noite</h1>
+				<img class="leftBarMenuLinkImg leftBarMenuItem" v-bind:src="(loaded && !saving)?'/img/moon.png':'/img/loader.gif'" >
+				<h1 v-bind:class="{'leftBarMenuForbiddenLinkImg': (!loaded || saving), 'leftBarMenuLinkImg':true, 'leftBarMenuItem':true}">Noite</h1>
 			</div>
 			<div class="leftBarMenuLinkBlock leftBarMenuNpcBlock" v-on:click="clickConfig">
 				<span v-if="warningListSize > 0" class="badge badge-light">{{ warningListSize }}</span>
@@ -133,7 +136,9 @@
 				v-bind:neighbourhood-list="neighbourhoodList"/>
 			<main-area-config 
 				v-on:clear-warnings="clearWarnings"
+				v-on:clear-logs="clearLogs"
 				v-bind:warning-list="warningList"
+				v-bind:log-list="logList"
 				v-if="showConfig"/>
 		</div>
 	</script>
@@ -338,7 +343,8 @@
 				v-if="npc != null"
 				v-bind:loaded="loaded"
 				v-bind:npc="npc"
-				v-on:save-selected-npc="saveSelectedNpc"
+				v-on:save-selected-npc-notes="saveSelectedNpcNotes"
+				v-on:save-selected-npc-health-change="saveSelectedNpcHealthChange"
 				v-on:click-family="clickFamily">
 			</npc-details>
 			<business-details
@@ -372,8 +378,9 @@
 			</div>
 			<div class="npcDetailsInformation">
 				<npc-information 
+					v-on:save-selected-npc-health-change="saveSelectedNpcHealthChange"
 					v-bind:loaded="loaded"
-					v-on:save-selected-npc="saveSelectedNpc"
+					v-on:save-selected-npc-notes="saveSelectedNpcNotes"
 					v-on:click-family="clickFamily"
 					v-bind:npc="npc"/>
 			</div>
@@ -394,14 +401,11 @@
 
 	<script type="text/x-template" id="npcInformationTemplate">
 		<div class="informationTableArea">
+			<span>Health: <health-bar 
+				v-bind:health="npc.healthBar"
+				v-on:click-health="saveHealthBar"/></span><br/>
 			<table class="informationTable">
-				<tr><td colspan="2"><textarea v-model="npc.notes" class="npcInformationNotesTextArea"></textarea></td></tr>
-				<tr>
-					<td colspan="2">
-						<img v-if="!loaded" class="npcInformationSaveButtonLoader" src="/img/loader.gif">
-						<button v-if="loaded" v-on:click="saveSelectNpc" class="npcInformationSaveButton">Salvar</button>
-					</td>
-				</tr>
+				<tr><td colspan="2"><textarea v-model="npc.notes" v-on:input="saveSelectedNpcNotes" class="npcInformationNotesTextArea"></textarea></td></tr>
 				<tr><td>Id</td><td>{{npc.id}}</td></tr>
 				<tr><td>Nome</td><td>{{npc.name}}</td></tr>
 				<tr><td>Clã</td><td>{{npc.clan}} <clan-icon v-if="npc.clan != undefined" v-bind:clan="npc.clan"/></td></tr>
@@ -446,6 +450,14 @@
 		</div>
 	</script>
 
+	<script type="text/x-template" id="healthBar">
+		<span class="healthBar">
+			<img 
+			v-on:click="clickHealth(h)"
+			v-for="h in healthStatusList" class="healthIcon" v-bind:src="'/img/damage_'+h.value+'.png'">
+		</span>
+	</script>
+
 	<script type="text/x-template" id="npcLocationSummary">
 		<div class="npcLocationSummaryArea">
 			<span v-if="attendance != undefined && attendance != null">
@@ -458,9 +470,7 @@
 				</span>
 			</span>
 		</div>
-		
 	</script>
-
 
 	<script type="text/x-template" id="mainAreaConfigTemplate">
 		<div class="mainAreaConfig">
@@ -474,6 +484,18 @@
 				<div class="clearWarningButtonArea">
 					<span v-if="warningListSize > 0" class="clearWarningsButton" v-on:click="clickClearWarnings">Limpar notificações</span>
 					<span v-if="warningListSize == 0">Sem notificações</span>
+				</div>
+			</div>
+			<h1>Registros</h1>
+			<div>
+				<table>
+					<tr v-for="log in logList">
+						{{log.time}} - {{log.message}}
+					</tr>
+				</table>
+				<div class="clearLogsButtonArea">
+					<span v-if="logListSize > 0" class="clearLogsButton" v-on:click="clickClearLogs">Limpar registros</span>
+					<span v-if="logListSize == 0">Sem registros</span>
 				</div>
 			</div>
 		</div>

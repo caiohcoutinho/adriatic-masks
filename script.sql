@@ -1516,3 +1516,13 @@ create table vampiro(
 	predator_type int NOT NULL references predator_type(id),
  	PRIMARY KEY (id)
 );
+
+create sequence health_id_seq;
+
+create table Health(
+	id int NOT NULL DEFAULT nextval('health_id_seq'), 
+	npc int NOT NULL references npc(id),
+	index int NOT NULL,
+	value varchar(255),
+	PRIMARY KEY (id)
+);
