@@ -72,6 +72,20 @@ Vue.component('sickIcon', {
 	props: ['sick']
 });
 
+Vue.component('ressonance', {
+	template: '#ressonanceTemplate',
+	props: ['value', 'ressonanceList'],
+	computed: {
+		ressonanceName: function(){
+			let r = _.findWhere(this.ressonanceList, {id: this.value});
+			if(isNullOrUndefinedOrEmpty(r)){
+				return "";
+			}
+			return r.name;
+		}
+	}
+})
+
 Vue.component('clan-icon', {
 	template: '#clanIconTemplate',
 	props: ['clan']
@@ -85,6 +99,7 @@ Vue.component('main-area', {
 			'npcAliveFilter', 'npcSickFilter', 'logList',
 			'warningList', 'npcProfessionList', 'professionList',
 			'npc-list', 'neighbourhoodList', 'familyList', 'homeList',
+			'ressonanceList',
 			'selectedFamily', 'businessList', 'lastUpdate', 'lastUpdateDetails'],
 	computed: {
 		showNpc: function(){
@@ -150,7 +165,7 @@ Vue.component('main-area-npc', {
 	template: '#mainAreaNpcTemplate',
 	props: ['npcList', 'nameFilter', 'homeFilter', 'minimunAgeFilter', 
 	'maximunAgeFilter', 'neighbourhoodFilter', 'vampireFilter',
-	'aliveFilter', 'sickFilter',
+	'aliveFilter', 'sickFilter', 'ressonanceList',
 	'professionList', 'npcProfessionList', 'professionList',
 	'businessList', 'neighbourhoodList', 'familyList', 'familyFilter', 'homeList'],
 	data: function(){
@@ -307,7 +322,7 @@ Vue.component('main-area-npc', {
 
 Vue.component('main-area-business', {
 	template: '#mainAreaBusinessTemplate',
-	props: ['businessList', 'neighbourhoodList'],
+	props: ['businessList', 'neighbourhoodList', 'ressonanceList'],
 	data: function(){
 		return {
 			'nameFilter': null,
@@ -550,7 +565,7 @@ Vue.component('neighbourhood-icon', {
 });
 
 Vue.component('npc-list', {
-	props: ['npcList', 'neighbourhoodList'],
+	props: ['npcList', 'neighbourhoodList', 'ressonanceList'],
 	template: '#npcListTemplate',
 	methods: {
 		clickNpc: function(npc){
@@ -908,46 +923,46 @@ var app = new Vue({
 			});
 		}
 
-		self.axios.get('/profession').catch(errorHandler).then(professionsResponse => {
-			self.professionList = professionsResponse.data;
-			self.axios.get('/npcProfession').catch(errorHandler).then(npcProfessionResponse => {
-				self.npcProfessionList = npcProfessionResponse.data;
-				self.axios.get('/npc').catch(errorHandler).then(function(npcResponse){
-					self.axios.get('/neighbourhood').catch(errorHandler).then(function(neighbourhoodResponse){
-						self.neighbourhoodList = neighbourhoodResponse.data;
-						self.axios.get('/family').catch(errorHandler).then(function(familyResponse){
-							self.familyList = familyResponse.data;
-							self.axios.get('/business').catch(errorHandler).then(function(businessResponse){
-								self.businessList = businessResponse.data;
-								self.axios.get('/health').catch(errorHandler).then(function(healthResponse){
-									self.npcList = _.map(npcResponse.data, (npc) => {
-										let healthBarData = _.filter(healthResponse.data, (h) => h.npc == npc.id);
-										let healthBar = [];
-										for(var i = 0 ; i < npc.max_health ; i++){
-											let healthStatus = _.find(healthBarData, (h) => h.index == i);
-											let value = isNullOrUndefinedOrEmpty(healthStatus) ? DAMAGE_CLEAN : healthStatus.value;
-											healthBar.push({index: i, value: value});
-										}
-										return {
-											...npc,
-											healthBar: healthBar,
-											professions:_.map(
-												_.filter(self.npcProfessionList, (npcProfession) => {return npcProfession.npc == npc.id}),
-												(profession) => ({
-													profession: _.find(self.professionList, (p) => {return p.id == profession.profession}),
-													business: _.find(self.businessList, (b) => {return b.id == profession.business})
-												})
-											)
-										}
-									});		
-									self.axios.get('/npcPreferences').catch(errorHandler).then(function(npcPreferencesResponse){
-										self.npcPreferencesList = npcPreferencesResponse.data;
-										self.axios.get('/businessRules').catch(errorHandler).then(function(businessRulesResponse){
-											self.businessRulesList = businessRulesResponse.data;
-											self.axios.get('/home').catch(errorHandler).then(function(homeResponse){
-												self.homeList = _.sortBy(homeResponse.data, (h) => h.name);
-												self.axios.get('/ressonance').catch(errorHandler).then(function(ressonanceResponse){
-													self.ressonanceList = _.sortBy(ressonanceResponse.data, (r) => r.name);
+		self.axios.get('/ressonance').catch(errorHandler).then(function(ressonanceResponse){
+			self.ressonanceList = _.sortBy(ressonanceResponse.data, (r) => r.id);
+			self.axios.get('/profession').catch(errorHandler).then(professionsResponse => {
+				self.professionList = professionsResponse.data;
+				self.axios.get('/npcProfession').catch(errorHandler).then(npcProfessionResponse => {
+					self.npcProfessionList = npcProfessionResponse.data;
+					self.axios.get('/npc').catch(errorHandler).then(function(npcResponse){
+						self.axios.get('/neighbourhood').catch(errorHandler).then(function(neighbourhoodResponse){
+							self.neighbourhoodList = neighbourhoodResponse.data;
+							self.axios.get('/family').catch(errorHandler).then(function(familyResponse){
+								self.familyList = familyResponse.data;
+								self.axios.get('/business').catch(errorHandler).then(function(businessResponse){
+									self.businessList = businessResponse.data;
+									self.axios.get('/health').catch(errorHandler).then(function(healthResponse){
+										self.npcList = _.map(npcResponse.data, (npc) => {
+											let healthBarData = _.filter(healthResponse.data, (h) => h.npc == npc.id);
+											let healthBar = [];
+											for(var i = 0 ; i < npc.max_health ; i++){
+												let healthStatus = _.find(healthBarData, (h) => h.index == i);
+												let value = isNullOrUndefinedOrEmpty(healthStatus) ? DAMAGE_CLEAN : healthStatus.value;
+												healthBar.push({index: i, value: value});
+											}
+											return {
+												...npc,
+												healthBar: healthBar,
+												professions:_.map(
+													_.filter(self.npcProfessionList, (npcProfession) => {return npcProfession.npc == npc.id}),
+													(profession) => ({
+														profession: _.find(self.professionList, (p) => {return p.id == profession.profession}),
+														business: _.find(self.businessList, (b) => {return b.id == profession.business})
+													})
+												)
+											}
+										});		
+										self.axios.get('/npcPreferences').catch(errorHandler).then(function(npcPreferencesResponse){
+											self.npcPreferencesList = npcPreferencesResponse.data;
+											self.axios.get('/businessRules').catch(errorHandler).then(function(businessRulesResponse){
+												self.businessRulesList = businessRulesResponse.data;
+												self.axios.get('/home').catch(errorHandler).then(function(homeResponse){
+													self.homeList = _.sortBy(homeResponse.data, (h) => h.name);
 													self.loaded = true;
 													self.runTask();
 												});

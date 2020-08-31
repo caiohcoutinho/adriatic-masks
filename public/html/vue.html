@@ -44,6 +44,7 @@
 			v-bind:npc-alive-filter="npcAliveFilter"
 			v-bind:npc-sick-filter="npcSickFilter"
 			v-bind:family-list="familyList"
+			v-bind:ressonance-list="ressonanceList"
 			v-bind:home-list="homeList"
 			v-bind:neighbourhood-list="neighbourhoodList"
 			v-on:clear-filter="clearFilter"
@@ -119,6 +120,7 @@
 				v-bind:alive-filter="npcAliveFilter"
 				v-bind:sick-filter="npcSickFilter"
 				v-bind:family-list="familyList"
+				v-bind:ressonance-list="ressonanceList"
 				v-bind:home-list="homeList"
 				v-bind:npc-profession-list="npcProfessionList"
 				v-bind:business-list="businessList"
@@ -142,6 +144,7 @@
 				v-on:click-business="clickBusiness"
 				v-bind:key="lastUpdate"
 				v-bind:business-list="businessList"
+				v-bind:ressonance-list="ressonanceList"
 				v-bind:neighbourhood-list="neighbourhoodList"/>
 			<main-area-config 
 				v-on:clear-warnings="clearWarnings"
@@ -225,7 +228,7 @@
 								</span>
 							</td>
 							<td class="npcTableColumn npcTableColumnHealth"><sick-icon v-bind:sick="npc.sick"/><health-bar  v-bind:health="npc.healthBar"/></td>
-							<td class="npcTableColumn npcTableColumnRessonance">{{npc.ressonance}}</td>
+							<td class="npcTableColumn npcTableColumnRessonance"><ressonance v-bind:value="npc.ressonance" v-bind:ressonanceList="ressonanceList"/></td>
 						</tr>
 					</table>
 				</div>
@@ -237,6 +240,10 @@
 		<span class="sickIcon">
 			<img v-if="sick == true" src="/img/disease.png">
 		</span>
+	</script>
+
+	<script type="text/x-template" id="ressonanceTemplate">
+		<span class="ressonance">{{ressonanceName}}</span>
 	</script>
 
 	<script type="text/x-template" id="tristateTemplate">
@@ -301,6 +308,7 @@
 								<td colspan="2">
 									<npc-list v-on:click-npc="clickNpc"
 											  v-bind:npc-list="business.npcListN1"
+											  v-bind:ressonance-list="ressonanceList"
 											  v-bind:neighbourhood-list="neighbourhoodList"/>
 								</td>
 							</tr>
@@ -309,6 +317,7 @@
 								<td colspan="2">
 									<npc-list v-on:click-npc="clickNpc"
 											  v-bind:npc-list="business.npcListN2"
+											  v-bind:ressonance-list="ressonanceList"
 											  v-bind:neighbourhood-list="neighbourhoodList"/>
 								</td>
 							</tr>
@@ -317,6 +326,7 @@
 								<td colspan="2">
 									<npc-list v-on:click-npc="clickNpc"
 											  v-bind:npc-list="business.npcListN3"
+											  v-bind:ressonance-list="ressonanceList"
 											  v-bind:neighbourhood-list="neighbourhoodList"/>
 								</td>
 							</tr>
@@ -345,7 +355,9 @@
 						<span v-if="npc.sleeping">(zZzZ)</span>
 						{{npc.name}}
 					</td>
-					<td class="npcTableColumn npcTableColumnRessonance">{{npc.ressonance}}</td>
+					<td class="npcTableColumn npcTableColumnRessonance">
+						<ressonance v-bind:value="npc.ressonance" v-bind:ressonanceList="ressonanceList"/>
+					</td>
 				</tr>
 			</table>
 		</div>
@@ -481,7 +493,7 @@
 						<option
 							v-for="ressonance in ressonanceList"
 							v-bind:value="ressonance.id">
-							{{ressonance.name}}
+							<ressonance v-bind:value="ressonance.id" v-bind:ressonanceList="ressonanceList"/>
 						</option>
 					</select>
 				</td></tr>
