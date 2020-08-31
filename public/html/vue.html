@@ -212,7 +212,7 @@
 									</span>
 								</span>
 							</td>
-							<td class="npcTableColumn npcTableColumnHealth">{{npc.health}}/{{npc.max_health}}<span v-if="npc.l1 != undefined && npc.l1.sick">&#128137;</span></td>
+							<td class="npcTableColumn npcTableColumnHealth"><health-bar  v-bind:health="npc.healthBar"/><span v-if="npc.l1 != undefined && npc.l1.sick">&#128137;</span></td>
 							<td class="npcTableColumn npcTableColumnRessonance">{{npc.ressonance}}</td>
 						</tr>
 					</table>
@@ -401,7 +401,7 @@
 
 	<script type="text/x-template" id="npcInformationTemplate">
 		<div class="informationTableArea">
-			<span>Health: <health-bar 
+			<span>Saúde: <health-bar 
 				v-bind:health="npc.healthBar"
 				v-on:click-health="saveHealthBar"/></span><br/>
 			<table class="informationTable">

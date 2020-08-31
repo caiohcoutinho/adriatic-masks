@@ -132,7 +132,6 @@ app.post("/health", (req, res, next) => {
 					});
 				} else {
 					let query = "insert into health(\"npc\", \"index\", \"value\") values ("+npcId+", "+index+", '"+value+"')";
-					console.log("query = "+query);
 					client.query(query, (err, result) => {
 					  	if(err){
 					  		done();

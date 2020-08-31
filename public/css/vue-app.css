@@ -200,7 +200,11 @@ table.businessTable tr.businessTableHeaderRow th.clickable{
 	text-decoration: line-through;
 }
 
-img.deathIcon, img.healthIcon{
+img.healthIcon{
+	height: 14px;
+}
+
+img.deathIcon{
 	height: 20px;
 }
 
