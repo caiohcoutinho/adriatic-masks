@@ -2,6 +2,10 @@ div.logoBlock{
 	margin-bottom: 70px;
 }
 
+div.informationTableArea span.bistate img{
+	height: 20px;
+}
+
 div.leftBarMenuLinkBlock{
 	margin-bottom: 18px;
 }

@@ -65,6 +65,7 @@
 			v-bind:npc-list="npcList"
 			v-bind:npc-profession-list="npcProfessionList"
 			v-bind:key="lastUpdateDetails"
+			v-on:selected-npc-alive-change="selectedNpcAliveChange"
 			v-on:save-selected-npc-notes="saveSelectedNpcNotes"
 			v-on:save-selected-npc-health-change="saveSelectedNpcHealthChange"
 			v-on:click-family="selectFamily">
@@ -229,6 +230,13 @@
 		</span>
 	</script>
 
+	<script type="text/x-template" id="bistateTemplate">
+		<span class="bistate" v-on:click="click()">
+			<img v-if="value == true" src="/img/tri-true.png">
+			<img v-if="value != true" src="/img/tri-false.png">
+		</span>
+	</script>
+
 	<script type="text/x-template" id="clanIconTemplate">
 		<span class="clanIcon" v-bind:title="clan">
 			<img v-bind:src="'/img/'+clan+'-icon.png'">
@@ -343,6 +351,7 @@
 				v-if="npc != null"
 				v-bind:loaded="loaded"
 				v-bind:npc="npc"
+				v-on:selected-npc-alive-change="selectedNpcAliveChange"
 				v-on:save-selected-npc-notes="saveSelectedNpcNotes"
 				v-on:save-selected-npc-health-change="saveSelectedNpcHealthChange"
 				v-on:click-family="clickFamily">
@@ -380,6 +389,7 @@
 				<npc-information 
 					v-on:save-selected-npc-health-change="saveSelectedNpcHealthChange"
 					v-bind:loaded="loaded"
+					v-on:selected-npc-alive-change="selectedNpcAliveChange"
 					v-on:save-selected-npc-notes="saveSelectedNpcNotes"
 					v-on:click-family="clickFamily"
 					v-bind:npc="npc"/>
@@ -403,7 +413,13 @@
 		<div class="informationTableArea">
 			<span>Saúde: <health-bar 
 				v-bind:health="npc.healthBar"
-				v-on:click-health="saveHealthBar"/></span><br/>
+				v-on:click-health="saveHealthBar"/></span>
+			<span v-if="npc.l1 != undefined && npc.l1.sick">&#128137;</span>
+			<span v-if="!npc.alive"><img class="deathIcon" src="/img/death.jpg"></span>
+			<br/>
+			Vivo: <bistate
+					v-on:bistate-change="selectedNpcAliveChange"
+					v-bind:value="npc.alive"/>
 			<table class="informationTable">
 				<tr><td colspan="2"><textarea v-model="npc.notes" v-on:input="saveSelectedNpcNotes" class="npcInformationNotesTextArea"></textarea></td></tr>
 				<tr><td>Id</td><td>{{npc.id}}</td></tr>
@@ -428,7 +444,6 @@
 				<tr><td>Obrigacação</td><td>{{npc.oath}}</td></tr>
 				<tr><td>Natureza</td><td>{{npc.oath_nature}}</td></tr>
 				<tr><td>Riqueza</td><td>{{npc.wealth}}</td></tr>
-				<tr><td>Saúde</td><td>{{npc.health}}/{{npc.max_health}}<span v-if="npc.l1 != undefined && npc.l1.sick">&#128137;</span><span v-if="!npc.alive"><img class="deathIcon" src="/img/death.jpg"></span></td></tr>
 				<tr><td>Ressonância</td><td>{{npc.ressonance}}</td></tr>
 				<tr><td>Humor</td><td>{{npc.humor}}</td></tr>
 				<tr>

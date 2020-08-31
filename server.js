@@ -243,6 +243,27 @@ app.post("/notes", (req, res, next) => {
 	});
 });
 
+app.post("/alive", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set alive = "+req.body.alive+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows)
+			}
+		  
+		});
+	});
+});
+
 app.post("/saveDescription", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){

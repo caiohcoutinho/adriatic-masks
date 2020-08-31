@@ -5,7 +5,8 @@ const CONFIG = 'config';
 
 const TASK_TYPES = {
 	SAVE_HEALTH: "saveHealth",
-	SAVE_NOTES: "saveNotes"
+	SAVE_NOTES: "saveNotes",
+	SAVE_ALIVE: "saveAlive"
 }
 
 const Task = function(type, data){
@@ -49,6 +50,16 @@ Vue.component('tristate', {
 	methods: {
 		click: function(){
 			this.$emit('tristate-change');
+		}
+	}
+});
+
+Vue.component('bistate', {
+	template: '#bistateTemplate',
+	props: ['value'],
+	methods: {
+		click: function(){
+			this.$emit('bistate-change');
 		}
 	}
 });
@@ -431,6 +442,9 @@ Vue.component('side-details', {
 		},
 		saveSelectedNpcHealthChange: function(event){
 			this.$emit('save-selected-npc-health-change', event);
+		},
+		selectedNpcAliveChange: function(){
+			this.$emit('selected-npc-alive-change');
 		}
 	}
 });
@@ -452,6 +466,9 @@ Vue.component('npc-details', {
 		},
 		saveSelectedNpcHealthChange: function(event){
 			this.$emit('save-selected-npc-health-change', event);
+		},
+		selectedNpcAliveChange: function(event){
+			this.$emit('selected-npc-alive-change', event);	
 		}
 	}
 });
@@ -513,6 +530,9 @@ Vue.component('npc-information', {
 		},
 		saveSelectedNpcNotes: function(){
 			this.$emit('save-selected-npc-notes');
+		},
+		selectedNpcAliveChange: function(){
+			this.$emit('selected-npc-alive-change');
 		},
 		saveHealthBar: function(health){
 			this.$emit('save-selected-npc-health-change', {
@@ -606,6 +626,10 @@ var app = new Vue({
 					.catch(self.errorAction);
 			} else if(type == TASK_TYPES.SAVE_HEALTH){
 				self.axios.post('/health', data)
+					.then(self.thenAction)
+					.catch(self.errorAction);
+			} else if(type == TASK_TYPES.SAVE_ALIVE){
+				self.axios.post('/alive', data)
 					.then(self.thenAction)
 					.catch(self.errorAction);
 			}
@@ -704,7 +728,7 @@ var app = new Vue({
 				delete cleanNpcJson.l2;
 				delete cleanNpcJson.l3;
 				delete cleanNpcJson.professions;
-				this.log("Saving npc "+cleanNpcJson.id);
+				this.log("Saving npc "+cleanNpcJson.id+" notes");
 				this.addTask(new Task(
 					TASK_TYPES.SAVE_NOTES,
 					{
@@ -714,6 +738,20 @@ var app = new Vue({
 				));
 			}, 1500);
 		})(),
+		selectedNpcAliveChange: function(){
+			let self = this;
+			let npcId = self.selectedNpc.id;
+			self.selectedNpc.alive = !self.selectedNpc.alive;
+			let value = self.selectedNpc.alive;
+			this.log("Saving npc "+npcId+" alive "+value);
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_ALIVE,
+				{
+					id: npcId,
+					alive: value
+				}
+			));
+		},
 		saveSelectedNpcHealthChange: function(event){
 			let self = this;
 			let i = event.health.index;
