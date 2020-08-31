@@ -63,7 +63,7 @@ app.get("/npc", (req, res, next) => {
 			hospitalized,
 			health,
 			max_health,
-			r.name ressonance,
+			ressonance,
 			h.name humor,
 			npc.description,
 			npc.notes,
@@ -83,7 +83,6 @@ app.get("/npc", (req, res, next) => {
 		join humor h on h.id = instinct.humor
 		join oath_nature on oath_nature.id = npc.oath_nature
 		join home on home.id = npc.home
-		left join ressonance r on r.id = npc.ressonance
 		left join vampire v on v.id = npc.id
 		left join clan on clan.id = v.clan
 		left join predator_type pt on pt.id = v.predator_type
@@ -231,6 +230,26 @@ app.post("/notes", (req, res, next) => {
 			return;
 		}
 		client.query("update npc set notes = '"+req.body.notes+"' where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+		  	if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}
+		});
+	});
+});
+
+app.post("/ressonance", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set ressonance = '"+req.body.ressonance+"' where id = "+req.body.id,
 			 (err, result) => {
 	 		done()
 		  	if(err){
@@ -411,6 +430,30 @@ app.get("/home", (req, res, next) => {
 			  res.json(result.rows)
 			}
 		  
+		})
+	});
+});
+
+app.get("/ressonance", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query(
+			`
+			select *
+			from ressonance
+			`,
+			 (err, result) => {
+		 	done()
+		  	if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}
 		})
 	});
 });

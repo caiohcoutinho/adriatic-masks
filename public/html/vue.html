@@ -65,11 +65,13 @@
 			v-bind:npc="selectedNpc"
 			v-bind:business="selectedBusiness"
 			v-bind:npc-list="npcList"
+			v-bind:ressonance-list="ressonanceList"
 			v-bind:npc-profession-list="npcProfessionList"
 			v-bind:key="lastUpdateDetails"
 			v-on:selected-npc-sick-change="selectedNpcSickChange"
 			v-on:selected-npc-alive-change="selectedNpcAliveChange"
 			v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
+			v-on:selected-npc-ressonance-change="selectedNpcRessonanceChange"
 			v-on:save-selected-npc-notes="saveSelectedNpcNotes"
 			v-on:save-selected-npc-health-change="saveSelectedNpcHealthChange"
 			v-on:click-family="selectFamily">
@@ -366,9 +368,11 @@
 				v-if="npc != null"
 				v-bind:loaded="loaded"
 				v-bind:npc="npc"
+				v-bind:ressonance-list="ressonanceList"
 				v-on:selected-npc-sick-change="selectedNpcSickChange"
 				v-on:selected-npc-alive-change="selectedNpcAliveChange"
 				v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
+				v-on:selected-npc-ressonance-change="selectedNpcRessonanceChange"
 				v-on:save-selected-npc-notes="saveSelectedNpcNotes"
 				v-on:save-selected-npc-health-change="saveSelectedNpcHealthChange"
 				v-on:click-family="clickFamily">
@@ -406,9 +410,11 @@
 				<npc-information 
 					v-on:save-selected-npc-health-change="saveSelectedNpcHealthChange"
 					v-bind:loaded="loaded"
+					v-bind:ressonance-list="ressonanceList"
 					v-on:selected-npc-sick-change="selectedNpcSickChange"
 					v-on:selected-npc-alive-change="selectedNpcAliveChange"
 					v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
+					v-on:selected-npc-ressonance-change="selectedNpcRessonanceChange"
 					v-on:save-selected-npc-notes="saveSelectedNpcNotes"
 					v-on:click-family="clickFamily"
 					v-bind:npc="npc"/>
@@ -468,7 +474,17 @@
 				<tr><td>Obrigacação</td><td>{{npc.oath}}</td></tr>
 				<tr><td>Natureza</td><td>{{npc.oath_nature}}</td></tr>
 				<tr><td>Riqueza</td><td>{{npc.wealth}}</td></tr>
-				<tr><td>Ressonância</td><td>{{npc.ressonance}}</td></tr>
+				<tr><td>Ressonância</td><td>
+					<select class="ressonanceSelect"
+						v-model="npc.ressonance"
+						v-on:change="selectedNpcRessonanceChange">
+						<option
+							v-for="ressonance in ressonanceList"
+							v-bind:value="ressonance.id">
+							{{ressonance.name}}
+						</option>
+					</select>
+				</td></tr>
 				<tr><td>Humor</td><td>{{npc.humor}}</td></tr>
 				<tr>
 					<td>Profissão</td>

@@ -8,7 +8,8 @@ const TASK_TYPES = {
 	SAVE_NOTES: "saveNotes",
 	SAVE_ALIVE: "saveAlive",
 	SAVE_SICK: "saveSick",
-	SAVE_HOSPITALIZED: "saveHospitalized"
+	SAVE_HOSPITALIZED: "saveHospitalized",
+	SAVE_RESSONANCE: "saveRessonance"
 }
 
 const Task = function(type, data){
@@ -449,7 +450,8 @@ Vue.component('main-area-config', {
 });
 
 Vue.component('side-details', {
-	props: ['npc', 'business', 'loaded', 'npcList', 'npcProfessionList'],
+	props: ['npc', 'business', 'loaded', 
+		'npcList', 'npcProfessionList', 'ressonanceList'],
 	template: '#sideDetailsTemplate',
 	methods: {
 		clickFamily: function(familyId){
@@ -467,6 +469,9 @@ Vue.component('side-details', {
 		selectedNpcHospitalizedChange: function(){
 			this.$emit('selected-npc-hospitalized-change');
 		},
+		selectedNpcRessonanceChange: function(){
+			this.$emit('selected-npc-ressonance-change');
+		},
 		selectedNpcSickChange: function(){
 			this.$emit('selected-npc-sick-change');
 		}
@@ -479,7 +484,7 @@ Vue.component('open-closed-icon', {
 });	
 
 Vue.component('npc-details', {
-	props: ['npc', 'loaded'],
+	props: ['npc', 'loaded', 'ressonanceList'],
 	template: '#npcDetailsTemplate',
 	methods: {
 		clickFamily: function(familyId){
@@ -496,6 +501,9 @@ Vue.component('npc-details', {
 		},
 		selectedNpcHospitalizedChange: function(){
 			this.$emit('selected-npc-hospitalized-change');
+		},
+		selectedNpcRessonanceChange: function(){
+			this.$emit('selected-npc-ressonance-change', event);
 		},
 		selectedNpcSickChange: function(event){
 			this.$emit('selected-npc-sick-change', event);	
@@ -552,7 +560,7 @@ Vue.component('npc-list', {
 });
 
 Vue.component('npc-information', {
-	props: ['npc', 'loaded'],
+	props: ['npc', 'loaded', 'ressonanceList'],
 	template: '#npcInformationTemplate',
 	methods: {
 		clickFamily: function(familyId){
@@ -569,6 +577,9 @@ Vue.component('npc-information', {
 		},
 		selectedNpcHospitalizedChange: function(){
 			this.$emit('selected-npc-hospitalized-change');
+		},
+		selectedNpcRessonanceChange: function(){
+			this.$emit('selected-npc-ressonance-change');
 		},
 		saveHealthBar: function(health){
 			this.$emit('save-selected-npc-health-change', {
@@ -624,6 +635,7 @@ var app = new Vue({
 		selectedBusiness: null,
 		neighbourhoodList: [],
 		familyList: [],
+		ressonanceList: [],
 		homeList: [],
 		selectedFamily: "",
 		npcNameFilter: null,
@@ -675,6 +687,10 @@ var app = new Vue({
 					.catch(self.errorAction);
 			} else if(type == TASK_TYPES.SAVE_HOSPITALIZED){
 				self.axios.post('/hospitalized', data)
+					.then(self.thenAction)
+					.catch(self.errorAction);
+			} else if(type == TASK_TYPES.SAVE_RESSONANCE){
+				self.axios.post('/ressonance', data)
 					.then(self.thenAction)
 					.catch(self.errorAction);
 			}
@@ -820,6 +836,19 @@ var app = new Vue({
 				}
 			));
 		},
+		selectedNpcRessonanceChange: function(){
+			let self = this;
+			let npcId = self.selectedNpc.id;
+			let value = self.selectedNpc.ressonance;
+			this.log("Saving npc "+npcId+" ressonance "+value);
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_RESSONANCE,
+				{
+					id: npcId,
+					ressonance: value
+				}
+			));
+		},
 		selectedNpcSickChange: function(){
 			let self = this;
 			let npcId = self.selectedNpc.id;
@@ -917,8 +946,11 @@ var app = new Vue({
 											self.businessRulesList = businessRulesResponse.data;
 											self.axios.get('/home').catch(errorHandler).then(function(homeResponse){
 												self.homeList = _.sortBy(homeResponse.data, (h) => h.name);
-												self.loaded = true;
-												self.runTask();
+												self.axios.get('/ressonance').catch(errorHandler).then(function(ressonanceResponse){
+													self.ressonanceList = _.sortBy(ressonanceResponse.data, (r) => r.name);
+													self.loaded = true;
+													self.runTask();
+												});
 											});
 										});
 									});
@@ -1155,3 +1187,39 @@ const generateNight = function(npcList, businessList, npcPreferencesList, npcPro
 	});
 	//saveRessonance();
 }
+
+
+/*
+const updateRessonance = function(npc){
+        let seed = Math.random();
+        if(npc.ressonancia == NONE){
+                if(seed > 1-$scope.upToFleeting){
+                        npc.ressonancia = FLEETING;
+                }
+        } else if(npc.ressonancia == FLEETING){
+                if(seed > 1-$scope.upToIntense){
+                        npc.ressonancia = INTENSE;
+                } else if(seed < $scope.downToNone){
+                        npc.ressonancia = NONE;
+                }
+        } else if(npc.ressonancia == INTENSE){
+                if(seed > 1-$scope.upToDyscrasia){
+                        npc.ressonancia = DYSCRASIA;
+                } else if(seed < $scope.downToFleeting){
+                        npc.ressonancia = FLEETING;
+                }
+        } else if(npc.ressonancia == DYSCRASIA){
+                if(seed < $scope.downToIntense){
+                        npc.ressonancia = INTENSE;
+                }
+        }
+}
+
+$scope.upToFleeting = 0.1;
+$scope.downToNone = 0.25;
+$scope.upToIntense = 0.1;
+$scope.downToFleeting = 0.2;
+$scope.upToDyscrasia = 0.1;
+$scope.downToIntense = 0.4;
+
+*/
