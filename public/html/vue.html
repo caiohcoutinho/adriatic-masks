@@ -42,6 +42,7 @@
 			v-bind:npc-neighbourhood-filter="npcNeighbourhoodFilter"
 			v-bind:npc-vampire-filter="npcVampireFilter"
 			v-bind:npc-alive-filter="npcAliveFilter"
+			v-bind:npc-sick-filter="npcSickFilter"
 			v-bind:family-list="familyList"
 			v-bind:home-list="homeList"
 			v-bind:neighbourhood-list="neighbourhoodList"
@@ -51,6 +52,7 @@
 			v-on:clear-logs="clearLogs"
 			v-on:vampire-filter-change="vampireFilterChange"
 			v-on:alive-filter-change="aliveFilterChange"
+			v-on:sick-filter-change="sickFilterChange"
 			v-on:name-filter-change="nameFilterChange"
 			v-on:minimun-age-filter-change="minimunAgeFilterChange"
 			v-on:maximun-age-filter-change="maximunAgeFilterChange"
@@ -65,7 +67,9 @@
 			v-bind:npc-list="npcList"
 			v-bind:npc-profession-list="npcProfessionList"
 			v-bind:key="lastUpdateDetails"
+			v-on:selected-npc-sick-change="selectedNpcSickChange"
 			v-on:selected-npc-alive-change="selectedNpcAliveChange"
+			v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
 			v-on:save-selected-npc-notes="saveSelectedNpcNotes"
 			v-on:save-selected-npc-health-change="saveSelectedNpcHealthChange"
 			v-on:click-family="selectFamily">
@@ -111,6 +115,7 @@
 				v-bind:neighbourhood-filter="npcNeighbourhoodFilter"
 				v-bind:vampire-filter="npcVampireFilter"
 				v-bind:alive-filter="npcAliveFilter"
+				v-bind:sick-filter="npcSickFilter"
 				v-bind:family-list="familyList"
 				v-bind:home-list="homeList"
 				v-bind:npc-profession-list="npcProfessionList"
@@ -126,6 +131,7 @@
 				v-on:neighbourhood-filter-change="neighbourhoodFilterChange"
 				v-on:vampire-filter-change="vampireFilterChange"
 				v-on:alive-filter-change="aliveFilterChange"
+				v-on:sick-filter-change="sickFilterChange"
 				v-on:home-filter-change="homeFilterChange"
 				v-bind:npc-list="npcList"/>
 			<main-area-business
@@ -173,9 +179,12 @@
 				Vampiro: <tristate
 					v-on:tristate-change="vampireFilterChange"
 					v-bind:value="vampireFilter"/><br>
+				Doente: <tristate
+					v-on:tristate-change="sickFilterChange"
+					v-bind:value="sickFilter"/><br>
 				Vivo: <tristate
 					v-on:tristate-change="aliveFilterChange"
-					v-bind:value="aliveFilter"/>
+					v-bind:value="aliveFilter"/><br>
 			</div>
 			<div class="mainAreaNpcListSection">
 				<div class="npcTableContainer">
@@ -213,13 +222,19 @@
 									</span>
 								</span>
 							</td>
-							<td class="npcTableColumn npcTableColumnHealth"><health-bar  v-bind:health="npc.healthBar"/><span v-if="npc.l1 != undefined && npc.l1.sick">&#128137;</span></td>
+							<td class="npcTableColumn npcTableColumnHealth"><sick-icon v-bind:sick="npc.sick"/><health-bar  v-bind:health="npc.healthBar"/></td>
 							<td class="npcTableColumn npcTableColumnRessonance">{{npc.ressonance}}</td>
 						</tr>
 					</table>
 				</div>
 			</div>
 		</div>
+	</script>
+
+	<script type="text/x-template" id="sickIconTemplate">
+		<span class="sickIcon">
+			<img v-if="sick == true" src="/img/disease.png">
+		</span>
 	</script>
 
 	<script type="text/x-template" id="tristateTemplate">
@@ -351,7 +366,9 @@
 				v-if="npc != null"
 				v-bind:loaded="loaded"
 				v-bind:npc="npc"
+				v-on:selected-npc-sick-change="selectedNpcSickChange"
 				v-on:selected-npc-alive-change="selectedNpcAliveChange"
+				v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
 				v-on:save-selected-npc-notes="saveSelectedNpcNotes"
 				v-on:save-selected-npc-health-change="saveSelectedNpcHealthChange"
 				v-on:click-family="clickFamily">
@@ -389,7 +406,9 @@
 				<npc-information 
 					v-on:save-selected-npc-health-change="saveSelectedNpcHealthChange"
 					v-bind:loaded="loaded"
+					v-on:selected-npc-sick-change="selectedNpcSickChange"
 					v-on:selected-npc-alive-change="selectedNpcAliveChange"
+					v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
 					v-on:save-selected-npc-notes="saveSelectedNpcNotes"
 					v-on:click-family="clickFamily"
 					v-bind:npc="npc"/>
@@ -411,15 +430,20 @@
 
 	<script type="text/x-template" id="npcInformationTemplate">
 		<div class="informationTableArea">
-			<span>Saúde: <health-bar 
+			<span>Saúde: <sick-icon v-bind:sick="npc.sick"/><health-bar 
 				v-bind:health="npc.healthBar"
 				v-on:click-health="saveHealthBar"/></span>
-			<span v-if="npc.l1 != undefined && npc.l1.sick">&#128137;</span>
 			<span v-if="!npc.alive"><img class="deathIcon" src="/img/death.jpg"></span>
 			<br/>
+			Doente: <bistate
+					v-on:bistate-change="selectedNpcSickChange"
+					v-bind:value="npc.sick"/><br>
+			Hospitalizado: <bistate
+					v-on:bistate-change="selectedNpcHospitalizedChange"
+					v-bind:value="npc.hospitalized"/><br>
 			Vivo: <bistate
 					v-on:bistate-change="selectedNpcAliveChange"
-					v-bind:value="npc.alive"/>
+					v-bind:value="npc.alive"/><br>
 			<table class="informationTable">
 				<tr><td colspan="2"><textarea v-model="npc.notes" v-on:input="saveSelectedNpcNotes" class="npcInformationNotesTextArea"></textarea></td></tr>
 				<tr><td>Id</td><td>{{npc.id}}</td></tr>

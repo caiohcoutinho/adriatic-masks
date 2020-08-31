@@ -59,6 +59,8 @@ app.get("/npc", (req, res, next) => {
 			oath_nature.name oath_nature,
 			wealth,
 			alive,
+			sick,
+			hospitalized,
 			health,
 			max_health,
 			r.name ressonance,
@@ -249,6 +251,46 @@ app.post("/alive", (req, res, next) => {
 			return;
 		}
 		client.query("update npc set alive = "+req.body.alive+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+			if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}		  
+		});
+	});
+});
+
+app.post("/sick", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set sick = "+req.body.sick+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+			if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}		  
+		});
+	});
+});
+
+app.post("/hospitalized", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set hospitalized = "+req.body.hospitalized+" where id = "+req.body.id,
 			 (err, result) => {
 	 		done()
 			if(err){

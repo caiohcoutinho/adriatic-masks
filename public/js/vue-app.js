@@ -6,7 +6,9 @@ const CONFIG = 'config';
 const TASK_TYPES = {
 	SAVE_HEALTH: "saveHealth",
 	SAVE_NOTES: "saveNotes",
-	SAVE_ALIVE: "saveAlive"
+	SAVE_ALIVE: "saveAlive",
+	SAVE_SICK: "saveSick",
+	SAVE_HOSPITALIZED: "saveHospitalized"
 }
 
 const Task = function(type, data){
@@ -64,6 +66,11 @@ Vue.component('bistate', {
 	}
 });
 
+Vue.component('sickIcon', {
+	template: '#sickIconTemplate',
+	props: ['sick']
+});
+
 Vue.component('clan-icon', {
 	template: '#clanIconTemplate',
 	props: ['clan']
@@ -74,7 +81,7 @@ Vue.component('main-area', {
 	props: ['mainArea', 'npcNameFilter', 'npcHomeFilter', 
 			'npcMinimunAgeFilter', 'npcMaximunAgeFilter',
 			'npcNeighbourhoodFilter', 'npcVampireFilter',
-			'npcAliveFilter', 'logList',
+			'npcAliveFilter', 'npcSickFilter', 'logList',
 			'warningList', 'npcProfessionList', 'professionList',
 			'npc-list', 'neighbourhoodList', 'familyList', 'homeList',
 			'selectedFamily', 'businessList', 'lastUpdate', 'lastUpdateDetails'],
@@ -117,6 +124,9 @@ Vue.component('main-area', {
 		aliveFilterChange: function(){
 			this.$emit('alive-filter-change');
 		},
+		sickFilterChange: function(){
+			this.$emit('sick-filter-change');
+		},
 		nameFilterChange: function(event){
 			this.$emit('name-filter-change', event);
 		},
@@ -139,7 +149,7 @@ Vue.component('main-area-npc', {
 	template: '#mainAreaNpcTemplate',
 	props: ['npcList', 'nameFilter', 'homeFilter', 'minimunAgeFilter', 
 	'maximunAgeFilter', 'neighbourhoodFilter', 'vampireFilter',
-	'aliveFilter',
+	'aliveFilter', 'sickFilter',
 	'professionList', 'npcProfessionList', 'professionList',
 	'businessList', 'neighbourhoodList', 'familyList', 'familyFilter', 'homeList'],
 	data: function(){
@@ -193,6 +203,11 @@ Vue.component('main-area-npc', {
 			if(!isNullOrUndefinedOrEmpty(this.aliveFilter)){
 				list = _.filter(list, (npc) => {
 					return npc.alive == this.aliveFilter;
+				});
+			}
+			if(!isNullOrUndefinedOrEmpty(this.sickFilter)){
+				list = _.filter(list, (npc) => {
+					return npc.sick == this.sickFilter;
 				});
 			}
 
@@ -267,6 +282,9 @@ Vue.component('main-area-npc', {
 		},
 		aliveFilterChange: function(){
 			this.$emit('alive-filter-change');
+		},
+		sickFilterChange: function(){
+			this.$emit('sick-filter-change');
 		},
 		nameFilterChange: function(event){
 			this.$emit('name-filter-change', event);
@@ -445,6 +463,12 @@ Vue.component('side-details', {
 		},
 		selectedNpcAliveChange: function(){
 			this.$emit('selected-npc-alive-change');
+		},
+		selectedNpcHospitalizedChange: function(){
+			this.$emit('selected-npc-hospitalized-change');
+		},
+		selectedNpcSickChange: function(){
+			this.$emit('selected-npc-sick-change');
 		}
 	}
 });
@@ -469,6 +493,12 @@ Vue.component('npc-details', {
 		},
 		selectedNpcAliveChange: function(event){
 			this.$emit('selected-npc-alive-change', event);	
+		},
+		selectedNpcHospitalizedChange: function(){
+			this.$emit('selected-npc-hospitalized-change');
+		},
+		selectedNpcSickChange: function(event){
+			this.$emit('selected-npc-sick-change', event);	
 		}
 	}
 });
@@ -534,6 +564,12 @@ Vue.component('npc-information', {
 		selectedNpcAliveChange: function(){
 			this.$emit('selected-npc-alive-change');
 		},
+		selectedNpcSickChange: function(){
+			this.$emit('selected-npc-sick-change');
+		},
+		selectedNpcHospitalizedChange: function(){
+			this.$emit('selected-npc-hospitalized-change');
+		},
 		saveHealthBar: function(health){
 			this.$emit('save-selected-npc-health-change', {
 				npc: this.npc,
@@ -597,6 +633,7 @@ var app = new Vue({
 		npcNeighbourhoodFilter: "",
 		npcVampireFilter: null,
 		npcAliveFilter: null,
+		npcSickFilter: null,
 		taskQueue: []
 	},
 	methods: {
@@ -630,6 +667,14 @@ var app = new Vue({
 					.catch(self.errorAction);
 			} else if(type == TASK_TYPES.SAVE_ALIVE){
 				self.axios.post('/alive', data)
+					.then(self.thenAction)
+					.catch(self.errorAction);
+			} else if(type == TASK_TYPES.SAVE_SICK){
+				self.axios.post('/sick', data)
+					.then(self.thenAction)
+					.catch(self.errorAction);
+			} else if(type == TASK_TYPES.SAVE_HOSPITALIZED){
+				self.axios.post('/hospitalized', data)
 					.then(self.thenAction)
 					.catch(self.errorAction);
 			}
@@ -676,6 +721,15 @@ var app = new Vue({
 				this.npcAliveFilter = false;
 			} else if(this.npcAliveFilter == false){
 				this.npcAliveFilter = null;
+			}
+		},
+		sickFilterChange: function(){
+			if(this.npcSickFilter == null){
+				this.npcSickFilter = true;
+			} else if(this.npcSickFilter == true){
+				this.npcSickFilter = false;
+			} else if(this.npcSickFilter == false){
+				this.npcSickFilter = null;
 			}
 		},
 		minimunAgeFilterChange: function(event){
@@ -751,6 +805,34 @@ var app = new Vue({
 					alive: value
 				}
 			));
+		},		
+		selectedNpcHospitalizedChange: function(){
+			let self = this;
+			let npcId = self.selectedNpc.id;
+			self.selectedNpc.hospitalized = !self.selectedNpc.hospitalized;
+			let value = self.selectedNpc.hospitalized;
+			this.log("Saving npc "+npcId+" hospitalized "+value);
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_HOSPITALIZED,
+				{
+					id: npcId,
+					hospitalized: value
+				}
+			));
+		},
+		selectedNpcSickChange: function(){
+			let self = this;
+			let npcId = self.selectedNpc.id;
+			self.selectedNpc.sick = !self.selectedNpc.sick;
+			let value = self.selectedNpc.sick;
+			this.log("Saving npc "+npcId+" sick "+value);
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_SICK,
+				{
+					id: npcId,
+					sick: value
+				}
+			));
 		},
 		saveSelectedNpcHealthChange: function(event){
 			let self = this;
@@ -782,6 +864,7 @@ var app = new Vue({
 			this.npcMaximunAgeFilter = null;
 			this.npcNeighbourhoodFilter = "";
 			this.npcAliveFilter = null;
+			this.npcSickFilter = null;
 			this.npcVampireFilter = null;
 			this.mainArea = NPC;
 		}
@@ -862,8 +945,7 @@ const generateFinalLocation = function(npc, period,
 				neighbourhood: npc.neighbourhood
 			},
 			working: false,
-			sleeping: false,
-			sick: isSick
+			sleeping: false
 		}
 	}
 	if(!_.isEmpty(professions)){
@@ -901,8 +983,7 @@ const generateFinalLocation = function(npc, period,
 				return {
 					business: finalBusiness,
 					working: true,
-					sleeping: false,
-					sick: isSick
+					sleeping: false
 				}
 			}
 		}
@@ -917,8 +998,7 @@ const generateFinalLocation = function(npc, period,
 					neighbourhood: npc.neighbourhood
 				},
 				working: false,
-				sleeping: true,
-				sick: isSick
+				sleeping: true
 			}
 		}
 	}
@@ -973,8 +1053,7 @@ const generateFinalLocation = function(npc, period,
 	return {
 		business: finalBusiness,
 		working: false,
-		sleeping: false,
-		sick: isSick
+		sleeping: false
 	}
 };
 
@@ -995,27 +1074,42 @@ const generateNight = function(npcList, businessList, npcPreferencesList, npcPro
 	});
 	_.each(npcList, (npc) => {
 		//updateRessonance(npc);
-		let sickSeed = Math.random();
-		let isSick = sickSeed < 0.05;
+		let isSick = npc.sick;
+		let isHospitalized = npc.hospitalized;
 		let isAlive = npc.alive;
 		if(!isAlive){
 			npc.l1 = {
 				business: cemetery,
 				working: false,
-				sleeping: false,
-				sick: false,
+				sleeping: false
 			};
 			npc.l2 = {
 				business: cemetery,
 				working: false,
-				sleeping: false,
-				sick: false,
+				sleeping: false
 			};
 			npc.l3 = {
 				business: cemetery,
 				working: false,
-				sleeping: false,
-				sick: false,
+				sleeping: false
+			};
+			return;
+		}
+		if(isHospitalized){
+			npc.l1 = {
+				business: hospital,
+				working: false,
+				sleeping: false
+			};
+			npc.l2 = {
+				business: hospital,
+				working: false,
+				sleeping: false
+			};
+			npc.l3 = {
+				business: hospital,
+				working: false,
+				sleeping: false
 			};
 			return;
 		}
@@ -1028,20 +1122,17 @@ const generateNight = function(npcList, businessList, npcPreferencesList, npcPro
 				npc.l1 = {
 					business: hospital,
 					working: false,
-					sleeping: false,
-					sick: true,
+					sleeping: false
 				};
 				npc.l2 = {
 					business: hospital,
 					working: false,
-					sleeping: false,
-					sick: true,
+					sleeping: false
 				};
 				npc.l3 = {
 					business: hospital,
 					working: false,
-					sleeping: false,
-					sick: true,
+					sleeping: false
 				};
 				return;
 			}
