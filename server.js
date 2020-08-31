@@ -231,14 +231,13 @@ app.post("/notes", (req, res, next) => {
 		client.query("update npc set notes = '"+req.body.notes+"' where id = "+req.body.id,
 			 (err, result) => {
 	 		done()
-		  if(err){
-		  	  console.log(err);
-		  	  res.status(500);
-			  res.json(err);
+		  	if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
 			} else{
-			  res.json(result.rows)
+				res.json(result.rows)
 			}
-		  
 		});
 	});
 });
@@ -252,14 +251,13 @@ app.post("/alive", (req, res, next) => {
 		client.query("update npc set alive = "+req.body.alive+" where id = "+req.body.id,
 			 (err, result) => {
 	 		done()
-		  if(err){
-		  	  console.log(err);
-		  	  res.status(500);
-			  res.json(err);
+			if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
 			} else{
-			  res.json(result.rows)
-			}
-		  
+				res.json(result.rows)
+			}		  
 		});
 	});
 });
