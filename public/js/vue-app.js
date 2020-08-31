@@ -1111,6 +1111,9 @@ const generateNight = function(npcList, businessList, npcPreferencesList, npcPro
 				working: false,
 				sleeping: false
 			};
+			hospital.npcListN1.push(npc);
+			hospital.npcListN2.push(npc);
+			hospital.npcListN3.push(npc);
 			return;
 		}
 		if(isSick){
@@ -1134,6 +1137,9 @@ const generateNight = function(npcList, businessList, npcPreferencesList, npcPro
 					working: false,
 					sleeping: false
 				};
+				hospital.npcListN1.push(npc);
+				hospital.npcListN2.push(npc);
+				hospital.npcListN3.push(npc);
 				return;
 			}
 		}
