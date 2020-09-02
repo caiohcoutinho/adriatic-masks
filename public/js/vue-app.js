@@ -9,8 +9,78 @@ const TASK_TYPES = {
 	SAVE_ALIVE: "saveAlive",
 	SAVE_SICK: "saveSick",
 	SAVE_HOSPITALIZED: "saveHospitalized",
-	SAVE_RESSONANCE: "saveRessonance"
+	SAVE_RESSONANCE: "saveRessonance",
+	LOAD_RESSONANCE: "loadRessonance",
+	LOAD_PROFESSION: "loadProfession",
+	LOAD_NPC_PROFESSION: "loadNpcProfession",
+	LOAD_NPC: "loadNpc",
+	LOAD_NEIGHBOURHOOD: "loadNeighbourhood",
+	LOAD_FAMILY: "loadFamily",
+	LOAD_BUSINESS: "loadBusiness",
+	LOAD_HEALTH: "loadHealth",
+	LOAD_NPC_PREFERENCES: "loadNpcPreferences",
+	LOAD_BUSINESS_RULES: "loadBusinessRules",
+	LOAD_HOME: "loadHome",
+	GENERATE_NIGHT: "generateNight"
 }
+
+const createPostUrlAction = (url) => {
+	return function(self, data){
+		self.axios.post(url, data).then(self.thenAction).catch(self.errorAction);
+	}
+}
+
+const createLoadListUrlAction = (url, fieldName, sortingFunction) => {
+	return function(self, data){
+		self.axios.get(url).catch(self.errorAction).then(function(response){
+			if(sortingFunction != undefined){
+				self[fieldName] = _.sortBy(response.data, sortingFunction)
+			} else{
+				self[fieldName] = _.sortBy(response.data, (r) => r.id);
+			}
+			self.thenAction(response);
+		});
+	}
+}
+
+const TASK_EXECUTIONS = {};
+TASK_EXECUTIONS[TASK_TYPES.SAVE_HEALTH] = createPostUrlAction("/health");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_NOTES] = createPostUrlAction("/notes");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_ALIVE] = createPostUrlAction("/alive");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_SICK] = createPostUrlAction("/sick");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_HOSPITALIZED] = createPostUrlAction("/hospitalized");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_RESSONANCE] = createPostUrlAction("/ressonance");
+
+TASK_EXECUTIONS[TASK_TYPES.LOAD_RESSONANCE] = createLoadListUrlAction("/ressonance", "ressonanceList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_PROFESSION] = createLoadListUrlAction("/profession", "professionList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_NPC_PROFESSION] = createLoadListUrlAction("/npcProfession", "npcProfessionList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_NPC] = createLoadListUrlAction("/npc", "npcList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_NEIGHBOURHOOD] = createLoadListUrlAction("/neighbourhood", "neighbourhoodList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_FAMILY] = createLoadListUrlAction("/family", "familyList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_BUSINESS] = createLoadListUrlAction("/business", "businessList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_HEALTH] = createLoadListUrlAction("/health", "healthList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_NPC_PREFERENCES] = createLoadListUrlAction("/npcPreferences", "npcPreferencesList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_BUSINESS_RULES] = createLoadListUrlAction("/businessRules", "businessRulesList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_HOME] = createLoadListUrlAction("/home", "homeList", (h) => h.name);
+TASK_EXECUTIONS[TASK_TYPES.GENERATE_NIGHT] = function(self, data){
+	if(!window.Worker){
+		alert("no support for web workers.");
+		self.thenAction();
+	}
+	let tic = new Date().getTime();
+	var worker = new Worker('../js/generateNight.js');
+	worker.onmessage = function(event){
+		let tac = new Date().getTime();
+		self.night = event.data;
+		self.lastUpdate = new Date().toString();
+		self.lastUpdateDetails = new Date().toString();
+		self.log("generateNight took "+((tac-tic)/1000)+"s.");
+		self.log("state = "+JSON.stringify(self.night.stats));
+		self.thenAction();
+	}
+	worker.postMessage([self.npcList, self.businessList, self.npcPreferencesList,
+					self.npcProfessionList, self.businessRulesList, self.homeList]);
+};
 
 const Task = function(type, data){
 	this.type = type;
@@ -25,7 +95,7 @@ Vue.prototype.axios = axios;
 
 Vue.component('left-bar-menu', {
 	template: '#leftBarMenuTemplate',
-	props: ['warningList', 'loaded', 'saving'],
+	props: ['warningList', 'working'],
 	computed: {
 		warningListSize: function(){
 			return _.size(this.warningList);
@@ -166,7 +236,7 @@ Vue.component('main-area-npc', {
 	props: ['npcList', 'nameFilter', 'homeFilter', 'minimunAgeFilter', 
 	'maximunAgeFilter', 'neighbourhoodFilter', 'vampireFilter',
 	'aliveFilter', 'sickFilter', 'ressonanceList',
-	'professionList', 'npcProfessionList', 'professionList',
+	'professionList', 'npcProfessionList', 
 	'businessList', 'neighbourhoodList', 'familyList', 'familyFilter', 'homeList'],
 	data: function(){
 		return {
@@ -181,6 +251,23 @@ Vue.component('main-area-npc', {
 		}
 	},
 	computed: {
+		professionById: function(){
+			let cache = [];
+			_.each(this.professionList, (p) => {
+				cache[p.id] = p.name;
+			});
+			return cache;
+		},
+		businessById: function(){
+			let cache = [];
+			_.each(this.businessList, (b) => {
+				cache[b.id] = b.name;
+			});
+			return cache;
+		},
+		npcProfessionByNpc: function(){
+			return _.groupBy(this.npcProfessionList, (i) => i.npc);
+		},
 		npcFilteredOrderedList: function(){
 			let list = this.npcList;
 			if(!isNullOrUndefinedOrEmpty(this.minimunAgeFilter)){
@@ -465,8 +552,9 @@ Vue.component('main-area-config', {
 });
 
 Vue.component('side-details', {
-	props: ['npc', 'business', 'loaded', 
-		'npcList', 'npcProfessionList', 'ressonanceList'],
+	props: ['night', 'npc', 'business', 'working', 'homeList',
+		'npcList', 'npcProfessionList', 'businessList', 
+		'professionList', 'ressonanceList'],
 	template: '#sideDetailsTemplate',
 	methods: {
 		clickFamily: function(familyId){
@@ -499,7 +587,8 @@ Vue.component('open-closed-icon', {
 });	
 
 Vue.component('npc-details', {
-	props: ['npc', 'loaded', 'ressonanceList'],
+	props: ['night','npc', 'working', 'ressonanceList', 'homeList',
+		'businessList', 'professionList', 'npcProfessionList'],
 	template: '#npcDetailsTemplate',
 	methods: {
 		clickFamily: function(familyId){
@@ -527,12 +616,12 @@ Vue.component('npc-details', {
 });
 
 Vue.component('business-details', {
-	props: ['business', 'loaded', 'npcList', 'npcProfessionList'],
+	props: ['business', 'working', 'npcList', 'npcProfessionList'],
 	template: '#businessDetailsTemplate'
 });
 
 Vue.component('business-information', {
-	props: ['business', 'loaded', 'npcList', 'npcProfessionList'],
+	props: ['business', 'working', 'npcList', 'npcProfessionList'],
 	template: '#businessInformationTemplate',
 	computed: {
 		workerList: function(){
@@ -555,8 +644,31 @@ Vue.component('business-information', {
 });
 
 Vue.component('npc-location-summary', {
-	props: ['attendance'],
-	template: '#npcLocationSummary'
+	props: ['attendance', 'businessList', 'homeList'],
+	template: '#npcLocationSummary',
+	computed: {
+		businessNameById: function(){
+			let cache = [];
+			_.each(this.businessList, (b) => {
+				cache[b.id] = b.name;
+			});
+			return cache;
+		},
+		businessTypeNameById: function(){
+			let cache = [];
+			_.each(this.businessList, (b) => {
+				cache[b.id] = b.business_type;
+			});
+			return cache;
+		},
+		homeNameById: function(){
+			let cache = [];
+			_.each(this.homeList, (h) => {
+				cache[h.id] = h.name;
+			});
+			return cache;
+		}
+	}
 });
 
 Vue.component('neighbourhood-icon', {
@@ -575,7 +687,8 @@ Vue.component('npc-list', {
 });
 
 Vue.component('npc-information', {
-	props: ['npc', 'loaded', 'ressonanceList'],
+	props: ['night', 'npc', 'working', 'ressonanceList', 
+		'professionList', 'npcProfessionList', 'homeList', 'businessList',],
 	template: '#npcInformationTemplate',
 	methods: {
 		clickFamily: function(familyId){
@@ -601,6 +714,25 @@ Vue.component('npc-information', {
 				npc: this.npc,
 				health: health
 			});
+		}
+	},
+	computed: {
+		professionById: function(){
+			let cache = [];
+			_.each(this.professionList, (p) => {
+				cache[p.id] = p.name;
+			});
+			return cache;
+		},
+		businessById: function(){
+			let cache = [];
+			_.each(this.businessList, (b) => {
+				cache[b.id] = b.name;
+			});
+			return cache;
+		},
+		npcProfessionByNpc: function(){
+			return _.groupBy(this.npcProfessionList, (i) => i.npc);
 		}
 	}
 });
@@ -632,6 +764,7 @@ const Log = function(message){
 	this.time = new Date();
 }
 
+
 var app = new Vue({
 	el: '#app',
 	data: {
@@ -644,8 +777,7 @@ var app = new Vue({
 		businessList: [],
 		warningList: [],
 		logList: [],
-		loaded:false,
-		saving:false,
+		working:false,
 		selectedNpc: null,
 		selectedBusiness: null,
 		neighbourhoodList: [],
@@ -661,7 +793,8 @@ var app = new Vue({
 		npcVampireFilter: null,
 		npcAliveFilter: null,
 		npcSickFilter: null,
-		taskQueue: []
+		taskQueue: [],
+		night: {}
 	},
 	methods: {
 		thenAction: function(response){
@@ -677,43 +810,18 @@ var app = new Vue({
 		runTask: function(){
 			let self = this;
 			if(_.isEmpty(self.taskQueue)){
-				self.saving = false;
+				self.working = false;
 				return;
 			}
 			let task = self.taskQueue.shift();
 			let type = task.type;
 			let data = task.data;
-
-			if(type == TASK_TYPES.SAVE_NOTES){
-				self.axios.post('/notes', data)
-					.then(self.thenAction)
-					.catch(self.errorAction);
-			} else if(type == TASK_TYPES.SAVE_HEALTH){
-				self.axios.post('/health', data)
-					.then(self.thenAction)
-					.catch(self.errorAction);
-			} else if(type == TASK_TYPES.SAVE_ALIVE){
-				self.axios.post('/alive', data)
-					.then(self.thenAction)
-					.catch(self.errorAction);
-			} else if(type == TASK_TYPES.SAVE_SICK){
-				self.axios.post('/sick', data)
-					.then(self.thenAction)
-					.catch(self.errorAction);
-			} else if(type == TASK_TYPES.SAVE_HOSPITALIZED){
-				self.axios.post('/hospitalized', data)
-					.then(self.thenAction)
-					.catch(self.errorAction);
-			} else if(type == TASK_TYPES.SAVE_RESSONANCE){
-				self.axios.post('/ressonance', data)
-					.then(self.thenAction)
-					.catch(self.errorAction);
-			}
+			TASK_EXECUTIONS[type](self, data);
 		},
 		addTask: function(task){
 			this.taskQueue.push(task);
-			if(this.saving == false){
-				this.saving = true;
+			if(this.working == false){
+				this.working = true;
 				this.runTask();
 			}
 		},
@@ -722,16 +830,13 @@ var app = new Vue({
 		},
 		showMainArea: function(mainArea){
 			if(mainArea == NIGHT){
-				if(!this.loaded){
+				if(this.working == true){
 					return;
 				}
-				generateNight(this.npcList, this.businessList, this.npcPreferencesList,
-					this.npcProfessionList, this.businessRulesList, this.homeList);
-				if(this.selectedNpc != null && this.selectedNpc != undefined){
-					this.selectedNpc = _.find(this.npcList, (n) => {return n.id == this.selectedNpc.id;});
+				if(!confirm("Tem certeza que deseja sobreescrever a noite atual?")){
+					return;
 				}
-				this.lastUpdate = new Date().toString();
-				this.lastUpdateDetails = new Date().toString();
+				this.addTask(new Task(TASK_TYPES.GENERATE_NIGHT, {}));
 			} else{
 				this.mainArea = mainArea;
 			}
@@ -806,19 +911,14 @@ var app = new Vue({
 		saveSelectedNpcNotes: (function(){
 			return _.debounce(function(){
 				let self = this;
-				let cleanNpcJson = {
-					...self.selectedNpc
-				};
-				delete cleanNpcJson.l1;
-				delete cleanNpcJson.l2;
-				delete cleanNpcJson.l3;
-				delete cleanNpcJson.professions;
-				this.log("Saving npc "+cleanNpcJson.id+" notes");
+				let npcId = self.selectedNpc.id;
+				let value = self.selectedNpc.notes;
+				this.log("Saving npc "+npcId+" notes");
 				this.addTask(new Task(
 					TASK_TYPES.SAVE_NOTES,
 					{
-						id: cleanNpcJson.id,
-						notes: cleanNpcJson.notes
+						id: npcId,
+						notes: value
 					}
 				));
 			}, 1500);
@@ -915,293 +1015,14 @@ var app = new Vue({
 	},
 	mounted: function() {
 		let self = this;
-
-		const errorHandler = function(exception){
-			self.warningList.push({
-				error: exception,
-				response: exception.response
-			});
-		}
-
-		self.axios.get('/ressonance').catch(errorHandler).then(function(ressonanceResponse){
-			self.ressonanceList = _.sortBy(ressonanceResponse.data, (r) => r.id);
-			self.axios.get('/profession').catch(errorHandler).then(professionsResponse => {
-				self.professionList = professionsResponse.data;
-				self.axios.get('/npcProfession').catch(errorHandler).then(npcProfessionResponse => {
-					self.npcProfessionList = npcProfessionResponse.data;
-					self.axios.get('/npc').catch(errorHandler).then(function(npcResponse){
-						self.axios.get('/neighbourhood').catch(errorHandler).then(function(neighbourhoodResponse){
-							self.neighbourhoodList = neighbourhoodResponse.data;
-							self.axios.get('/family').catch(errorHandler).then(function(familyResponse){
-								self.familyList = familyResponse.data;
-								self.axios.get('/business').catch(errorHandler).then(function(businessResponse){
-									self.businessList = businessResponse.data;
-									self.axios.get('/health').catch(errorHandler).then(function(healthResponse){
-										self.npcList = _.map(npcResponse.data, (npc) => {
-											let healthBarData = _.filter(healthResponse.data, (h) => h.npc == npc.id);
-											let healthBar = [];
-											for(var i = 0 ; i < npc.max_health ; i++){
-												let healthStatus = _.find(healthBarData, (h) => h.index == i);
-												let value = isNullOrUndefinedOrEmpty(healthStatus) ? DAMAGE_CLEAN : healthStatus.value;
-												healthBar.push({index: i, value: value});
-											}
-											return {
-												...npc,
-												healthBar: healthBar,
-												professions:_.map(
-													_.filter(self.npcProfessionList, (npcProfession) => {return npcProfession.npc == npc.id}),
-													(profession) => ({
-														profession: _.find(self.professionList, (p) => {return p.id == profession.profession}),
-														business: _.find(self.businessList, (b) => {return b.id == profession.business})
-													})
-												)
-											}
-										});		
-										self.axios.get('/npcPreferences').catch(errorHandler).then(function(npcPreferencesResponse){
-											self.npcPreferencesList = npcPreferencesResponse.data;
-											self.axios.get('/businessRules').catch(errorHandler).then(function(businessRulesResponse){
-												self.businessRulesList = businessRulesResponse.data;
-												self.axios.get('/home').catch(errorHandler).then(function(homeResponse){
-													self.homeList = _.sortBy(homeResponse.data, (h) => h.name);
-													self.loaded = true;
-													self.runTask();
-												});
-											});
-										});
-									});
-								});
-							});
-						});
-					});
-				});
-			});
-		}).catch(errorHandler);
+		_.each(
+			_.filter(_.keys(TASK_TYPES), (t) => TASK_TYPES[t].indexOf("load") == 0),
+			(t) => {
+				self.addTask(new Task(TASK_TYPES[t], {}));
+			}
+		)
 	}
 });
-
-const generateFinalLocation = function(npc, period, 
-	isSick, npcProfessionList, npcPreferencesList, businessList, businessRulesList){
-	let professions = _.filter(npcProfessionList, (prof) => {
-		let business = _.find(businessList, (b) => {return b.id == prof.business});
-		return prof.npc == npc.id && (business == null || business["n"+period]);
-	});
-	if(npc.age <= 6){
-		return {
-			business: {
-				name: "Com os pais",
-				neighbourhood: npc.neighbourhood
-			},
-			working: false,
-			sleeping: false
-		}
-	}
-	if(!_.isEmpty(professions)){
-		let workingSeed = Math.random();
-		let isWorking = workingSeed < 0.95;
-		if(isWorking){
-			let jobSeed = Math.random();
-			let job;
-			if(_.size(professions) > 1){
-				if(jobSeed < 0.5){
-					job = professions[0];
-				} else{
-					job = professions[1];
-				}
-			} else{
-				job = professions[0];
-			}
-			if( 1==1
-				&& job.profession != 2 // Aposentado
-				&& job.profession != 9 // Detetive
-				&& job.profession != 17 // Faxineiro de rua
-				&& job.profession != 28 // Guarda do Tráfico
-				&& job.profession != 33 // Morador de Rua
-				&& job.profession != 24 // Piloto de Táxi
-				&& job.profession != 37 // Policial
-				&& job.profession != 42 // Transporte de Drogas
-				&& job.profession != 43 // Turista
-				&& job.profession != 46 // Vendedor de Drogas
-				&& job.profession != 49 // Criminoso
-				){ 
-				let finalBusiness = _.find(businessList, (b) => {return b.id == job.business;});
-				if(finalBusiness != null){
-					finalBusiness["npcListN"+period].push({...npc, working: true});
-				}
-				return {
-					business: finalBusiness,
-					working: true,
-					sleeping: false
-				}
-			}
-		}
-	}
-	if(period == 3){
-		let sleepingSeed = Math.random();
-		let isSleeping = sleepingSeed < 0.95;
-		if(isSleeping){
-			return {
-				business: {
-					name: npc.home,
-					neighbourhood: npc.neighbourhood
-				},
-				working: false,
-				sleeping: true
-			}
-		}
-	}
-
-	let businessSeed = Math.random();
-	let sum = 0;
-	let npcPrefs = _.filter(
-		npcPreferencesList, 
-		(pref) => {return pref.npc == npc.id}
-	);
-	let npcPrefsWithCorrections = _.map(
-		npcPrefs, 
-		(pref) => {
-			let business = _.find(businessList, (b) => {return b.id == pref.business});
-			let businessPrefModifier = _.reduce(
-				_.filter(
-					businessRulesList, 
-					(businessPref) => {
-						return 1==1
-							&& businessPref.business == pref.business
-							&& ( _.isUndefined(businessPref.withprofession) || _.isNull(businessPref.withprofession) || false /* TODO */)
-							&& ( _.isUndefined(businessPref.withoutprofession) || _.isNull(businessPref.withoutprofession) || false /* TODO */)
-							&& ( _.isUndefined(businessPref.agegreaterthan) || _.isNull(businessPref.agegreaterthan) || npc.age >= businessPref.agegreaterthan)
-							&& ( _.isUndefined(businessPref.agelessthan) || _.isNull(businessPref.agelessthan) || npc.age <= businessPref.agelessthan)
-							&& ( _.isUndefined(businessPref.wealthgreaterthan) || _.isNull(businessPref.wealthgreaterthan) || false /* TODO */)
-							&& ( _.isUndefined(businessPref.wealthlessthan) || _.isNull(businessPref.wealthlessthan) || false /* TODO */)
-							&& ( _.isUndefined(businessPref.withgender) || _.isNull(businessPref.withgender) || npc.gender == businessPref.withgender)
-							&& ( _.isUndefined(businessPref.withoutgender) || _.isNull(businessPref.withoutgender) || npc.gender != businessPref.withoutgender)
-							//&& ( _.isUndefined(locationPref.mesmobairro) ||  false /* TODO */)
-							;
-					}
-				), 
-				(memo, value) => {return memo*parseFloat(value.modifier)}, 
-				1
-			);
-			return {
-				id: pref.id,
-				npc: pref.npc,
-				business: pref.business,
-				seed: Math.pow(pref.seed, 4) * businessPrefModifier * (business["n"+period] ? 1 : 0.05)
-			}
-		}
-	);
-	let totalChance = _.reduce(npcPrefsWithCorrections, (memo, pref) => {return memo+pref.seed}, 0);
-	let businessId = _.find(npcPrefsWithCorrections, (pref) => {
-		let seed = pref.seed;
-		sum += seed;
-		return seed > 0 ? businessSeed < sum/totalChance : false;
-	}).business;
-	let finalBusiness = _.find(businessList, (b) => {return b.id == businessId});
-	finalBusiness["npcListN"+period].push({...npc, working: false});
-	return {
-		business: finalBusiness,
-		working: false,
-		sleeping: false
-	}
-};
-
-const generateNight = function(npcList, businessList, npcPreferencesList, npcProfessionList, businessRulesList, homeList){
-	if(!confirm("Tem certeza que deseja sobreescrever a noite atual?")){
-		return;
-	}
-	const cemetery = _.find(homeList, (h) => {
-		return h.name == 'Cemitério';
-	});
-	const hospital = _.find(businessList, (b) => {
-		return b.business_type == 'Hospital';
-	});
-	_.each(businessList, (business) => {
-		business.npcListN1 = [];
-		business.npcListN2 = [];
-		business.npcListN3 = [];
-	});
-	_.each(npcList, (npc) => {
-		//updateRessonance(npc);
-		let isSick = npc.sick;
-		let isHospitalized = npc.hospitalized;
-		let isAlive = npc.alive;
-		if(!isAlive){
-			npc.l1 = {
-				business: cemetery,
-				working: false,
-				sleeping: false
-			};
-			npc.l2 = {
-				business: cemetery,
-				working: false,
-				sleeping: false
-			};
-			npc.l3 = {
-				business: cemetery,
-				working: false,
-				sleeping: false
-			};
-			return;
-		}
-		if(isHospitalized){
-			npc.l1 = {
-				business: hospital,
-				working: false,
-				sleeping: false
-			};
-			npc.l2 = {
-				business: hospital,
-				working: false,
-				sleeping: false
-			};
-			npc.l3 = {
-				business: hospital,
-				working: false,
-				sleeping: false
-			};
-			hospital.npcListN1.push(npc);
-			hospital.npcListN2.push(npc);
-			hospital.npcListN3.push(npc);
-			return;
-		}
-		if(isSick){
-			let doctorCheck = Math.random();
-			let goesToDockor = doctorCheck < 0.5*_.find(npcPreferencesList, (pref) => {
-				return pref.npc == npc.id && pref.business == hospital.id}
-			).seed;
-			if(goesToDockor){
-				npc.l1 = {
-					business: hospital,
-					working: false,
-					sleeping: false
-				};
-				npc.l2 = {
-					business: hospital,
-					working: false,
-					sleeping: false
-				};
-				npc.l3 = {
-					business: hospital,
-					working: false,
-					sleeping: false
-				};
-				hospital.npcListN1.push(npc);
-				hospital.npcListN2.push(npc);
-				hospital.npcListN3.push(npc);
-				return;
-			}
-		}
-		let l1 = generateFinalLocation(npc, 1, isSick, 
-			npcProfessionList, npcPreferencesList, businessList, businessRulesList);
-		let l2 = generateFinalLocation(npc, 2, isSick, 
-			npcProfessionList, npcPreferencesList, businessList, businessRulesList);
-		let l3 = generateFinalLocation(npc, 3, isSick, 
-			npcProfessionList, npcPreferencesList, businessList, businessRulesList);
-		npc.l1 = l1;
-		npc.l2 = l2;
-		npc.l3 = l3;
-	});
-	//saveRessonance();
-}
 
 
 /*

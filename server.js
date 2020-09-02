@@ -45,8 +45,7 @@ app.get("/npc", (req, res, next) => {
 			skin_color.color skin, 
 			eye_color.color eyes, 
 			hair_color.color hair,
-			home.id home_id, 
-			home.name home, 
+			home home_id, 
 			neighbourhood.name neighbourhood, 
 			neighbourhood.id neighbourhoodId, 
 			npc.physical F, 
@@ -82,7 +81,6 @@ app.get("/npc", (req, res, next) => {
 		join instinct on instinct.id = npc.instinct
 		join humor h on h.id = instinct.humor
 		join oath_nature on oath_nature.id = npc.oath_nature
-		join home on home.id = npc.home
 		left join vampire v on v.id = npc.id
 		left join clan on clan.id = v.clan
 		left join predator_type pt on pt.id = v.predator_type

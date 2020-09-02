@@ -158,7 +158,8 @@ table.businessTable tr.businessTableDataRow{
 	line-height: 30px;
 }
 
-table.npcTable tr.npcTableDataRow:hover{
+table.npcTable tr.npcTableDataRow:hover, 
+table.businessTable tr.businessTableDataRow:hover{
 	text-shadow: 0 0 10px black;
 	cursor:	pointer;
 }
