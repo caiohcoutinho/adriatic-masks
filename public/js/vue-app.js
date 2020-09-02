@@ -58,8 +58,7 @@ TASK_EXECUTIONS[TASK_TYPES.LOAD_NPC] = createLoadListUrlAction("/npc", "npcList"
 TASK_EXECUTIONS[TASK_TYPES.LOAD_NEIGHBOURHOOD] = createLoadListUrlAction("/neighbourhood", "neighbourhoodList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_FAMILY] = createLoadListUrlAction("/family", "familyList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_BUSINESS] = createLoadListUrlAction("/business", "businessList");
-TASK_EXECUTIONS[TASK_TYPES.LOAD_HEALTH] = createLoadListUrlAction("/health", "healthList");
-TASK_EXECUTIONS[TASK_TYPES.LOAD_NPC_PREFERENCES] = createLoadListUrlAction("/npcPreferences", "npcPreferencesList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_HEALTH] = createLoadListUrlAction("/health", "healthList");TASK_EXECUTIONS[TASK_TYPES.LOAD_NPC_PREFERENCES] = createLoadListUrlAction("/npcPreferences", "npcPreferencesList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_BUSINESS_RULES] = createLoadListUrlAction("/businessRules", "businessRulesList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_HOME] = createLoadListUrlAction("/home", "homeList", (h) => h.name);
 TASK_EXECUTIONS[TASK_TYPES.GENERATE_NIGHT] = function(self, data){
@@ -168,8 +167,8 @@ Vue.component('main-area', {
 			'npcNeighbourhoodFilter', 'npcVampireFilter',
 			'npcAliveFilter', 'npcSickFilter', 'logList',
 			'warningList', 'npcProfessionList', 'professionList',
-			'npc-list', 'neighbourhoodList', 'familyList', 'homeList',
-			'ressonanceList',
+			'npcList', 'neighbourhoodList', 'familyList', 'homeList',
+			'ressonanceList', 'healthList',
 			'selectedFamily', 'businessList', 'lastUpdate', 'lastUpdateDetails'],
 	computed: {
 		showNpc: function(){
@@ -236,7 +235,7 @@ Vue.component('main-area-npc', {
 	props: ['npcList', 'nameFilter', 'homeFilter', 'minimunAgeFilter', 
 	'maximunAgeFilter', 'neighbourhoodFilter', 'vampireFilter',
 	'aliveFilter', 'sickFilter', 'ressonanceList',
-	'professionList', 'npcProfessionList', 
+	'professionList', 'npcProfessionList', 'healthList',
 	'businessList', 'neighbourhoodList', 'familyList', 'familyFilter', 'homeList'],
 	data: function(){
 		return {
@@ -553,7 +552,7 @@ Vue.component('main-area-config', {
 
 Vue.component('side-details', {
 	props: ['night', 'npc', 'business', 'working', 'homeList',
-		'npcList', 'npcProfessionList', 'businessList', 
+		'npcList', 'npcProfessionList', 'businessList', 'healthList',
 		'professionList', 'ressonanceList'],
 	template: '#sideDetailsTemplate',
 	methods: {
@@ -588,6 +587,7 @@ Vue.component('open-closed-icon', {
 
 Vue.component('npc-details', {
 	props: ['night','npc', 'working', 'ressonanceList', 'homeList',
+		'healthList',
 		'businessList', 'professionList', 'npcProfessionList'],
 	template: '#npcDetailsTemplate',
 	methods: {
@@ -687,7 +687,7 @@ Vue.component('npc-list', {
 });
 
 Vue.component('npc-information', {
-	props: ['night', 'npc', 'working', 'ressonanceList', 
+	props: ['night', 'npc', 'working', 'ressonanceList', 'healthList',
 		'professionList', 'npcProfessionList', 'homeList', 'businessList',],
 	template: '#npcInformationTemplate',
 	methods: {
@@ -745,7 +745,7 @@ Vue.component('npc-information', {
 });
 
 Vue.component('health-bar', {
-	props: ['health'],
+	props: ['npc', 'healthList'],
 	template: '#healthBar',
 	methods: {
 		clickHealth: function(h){
@@ -756,8 +756,16 @@ Vue.component('health-bar', {
 		}
 	},
 	computed: {
-		healthStatusList: function(){
-			return _.sortBy(this.health, (h) => h.index);
+		healthBarByNpcId: function(){
+			let maxHealth = this.npc.max_health;
+			let npcHealth = _.where(this.healthList, {npc: this.npc.id});
+			return _.map(_.range(maxHealth), (index) => {
+				let value = _.findWhere(npcHealth, {index: index});
+				if(isNullOrUndefinedOrEmpty(value)){
+					return {index: index, value: DAMAGE_CLEAN};
+				}
+				return value;
+			});
 		}
 	}
 });
@@ -779,6 +787,7 @@ var app = new Vue({
 		lastUpdate: new Date().toString(),
 		mainArea: NPC,
 		npcList: null,
+		healthList: null,
 		professionList: [],
 		npcProfessionList: [],
 		businessList: [],
@@ -988,7 +997,16 @@ var app = new Vue({
 		saveSelectedNpcHealthChange: function(event){
 			let self = this;
 			let i = event.health.index;
-			let h = self.selectedNpc.healthBar[i];
+			let npcId = self.selectedNpc.id;
+			let h = _.findWhere(this.healthList, {npc: npcId, index: i});
+			if(isNullOrUndefinedOrEmpty(h)){
+				h = {
+					npc: npcId,
+					index: i,
+					value: DAMAGE_CLEAN
+				};
+				this.healthList.push(h);
+			}
 			if(h.value == DAMAGE_CLEAN){
 				h.value = DAMAGE_SUPERFICIAL;
 			} else if(h.value == DAMAGE_AGGRAVATED){
@@ -996,7 +1014,6 @@ var app = new Vue({
 			} else if(h.value == DAMAGE_SUPERFICIAL){
 				h.value = DAMAGE_AGGRAVATED;
 			}
-			let npcId = self.selectedNpc.id;
 			this.log("Saving npc "+npcId+" health "+i+" value "+h.value);
 			this.addTask(new Task(
 				TASK_TYPES.SAVE_HEALTH,

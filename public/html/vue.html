@@ -30,6 +30,7 @@
 			v-bind:log-list="logList"
 			v-bind:main-area="mainArea"
 			v-bind:npc-list="npcList"
+			v-bind:health-list="healthList"
 			v-bind:profession-list="professionList"
 			v-bind:npc-profession-list="npcProfessionList"
 			v-bind:business-list="businessList"
@@ -66,6 +67,7 @@
 			v-bind:npc="selectedNpc"
 			v-bind:business="selectedBusiness"
 			v-bind:npc-list="npcList"
+			v-bind:health-list="healthList"
 			v-bind:home-list="homeList"
 			v-bind:ressonance-list="ressonanceList"
 			v-bind:npc-profession-list="npcProfessionList"
@@ -129,6 +131,8 @@
 				v-bind:business-list="businessList"
 				v-bind:profession-list="professionList"
 				v-bind:neighbourhood-list="neighbourhoodList"
+				v-bind:npc-list="npcList"
+				v-bind:health-list="healthList"
 				v-on:select-family="selectFamily"
 				v-on:click-npc="clickNpc"
 				v-on:clear-filter="clearFilter"
@@ -139,8 +143,7 @@
 				v-on:vampire-filter-change="vampireFilterChange"
 				v-on:alive-filter-change="aliveFilterChange"
 				v-on:sick-filter-change="sickFilterChange"
-				v-on:home-filter-change="homeFilterChange"
-				v-bind:npc-list="npcList"/>
+				v-on:home-filter-change="homeFilterChange"/>
 			<main-area-business
 				v-if="showBusiness"
 				v-on:click-npc="clickNpc"
@@ -211,7 +214,7 @@
 						<tr v-for="(npc, index) in npcFilteredOrderedList" class="npcTableDataRow"
 							v-on:click="clickNpc(npc)"
 							v-bind:class="{npcTableDataRowEven: (index+1)%2==0, npcTableDataRowOdd: (index+1)%2!=0}">
-							<td class="npcTableColumn npcTableColumnI">{{npc.id}}</td>
+							<td class="npcTableColumn npcTableColumnId">{{npc.id}}</td>
 							<td class="npcTableColumn npcTableColumnName"><span v-bind:class="{npcNameLabel: true, npcDead: !npc.alive}">{{npc.name}}</span> <clan-icon v-if="npc.clan != undefined" v-bind:clan="npc.clan"/></td>
 							<td class="npcTableColumn npcTableColumnNationality">{{npc.nationality}}</td>
 							<td class="npcTableColumn npcTableColumnGender">{{npc.gender}}</td>
@@ -230,7 +233,7 @@
 									</span>
 								</span>
 							</td>
-							<td class="npcTableColumn npcTableColumnHealth"><sick-icon v-bind:sick="npc.sick"/><health-bar  v-bind:health="npc.healthBar"/></td>
+							<td class="npcTableColumn npcTableColumnHealth"><sick-icon v-bind:sick="npc.sick"/><health-bar v-bind:npc="npc" v-bind:health-list="healthList"/></td>
 							<td class="npcTableColumn npcTableColumnRessonance"><ressonance v-bind:value="npc.ressonance" v-bind:ressonanceList="ressonanceList"/></td>
 						</tr>
 					</table>
@@ -388,6 +391,7 @@
 				v-bind:business-list="businessList"
 				v-bind:profession-list="professionList"
 				v-bind:home-list="homeList"
+				v-bind:health-list="healthList"
 				v-bind:npc-profession-list="npcProfessionList"
 				v-on:selected-npc-sick-change="selectedNpcSickChange"
 				v-on:selected-npc-alive-change="selectedNpcAliveChange"
@@ -435,6 +439,7 @@
 					v-bind:ressonance-list="ressonanceList"
 					v-bind:business-list="businessList"
 					v-bind:home-list="homeList"
+					v-bind:health-list="healthList"
 					v-bind:profession-list="professionList"
 					v-bind:npc-profession-list="npcProfessionList"
 					v-on:selected-npc-sick-change="selectedNpcSickChange"
@@ -463,7 +468,8 @@
 	<script type="text/x-template" id="npcInformationTemplate">
 		<div class="informationTableArea">
 			<span>Saúde: <sick-icon v-bind:sick="npc.sick"/><health-bar 
-				v-bind:health="npc.healthBar"
+				v-bind:npc="npc"
+				v-bind:health-list="healthList"
 				v-on:click-health="saveHealthBar"/></span>
 			<span v-if="!npc.alive"><img class="deathIcon" src="/img/death.jpg"></span>
 			<br/>
@@ -538,9 +544,10 @@
 
 	<script type="text/x-template" id="healthBar">
 		<span class="healthBar">
-			<img 
-			v-on:click="clickHealth(h)"
-			v-for="h in healthStatusList" class="healthIcon" v-bind:src="'/img/damage_'+h.value+'.png'">
+			<img class="healthIcon" 
+				v-on:click="clickHealth(h)"
+				v-for="h in healthBarByNpcId"
+				v-bind:src="'/img/damage_'+h.value+'.png'"/>
 		</span>
 	</script>
 
