@@ -733,6 +733,13 @@ Vue.component('npc-information', {
 		},
 		npcProfessionByNpc: function(){
 			return _.groupBy(this.npcProfessionList, (i) => i.npc);
+		},
+		homeNameById: function(){
+			let cache = [];
+			_.each(this.homeList, (h) => {
+				cache[h.id] = h.name;
+			});
+			return cache;
 		}
 	}
 });
