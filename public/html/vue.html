@@ -23,6 +23,7 @@
 			v-on:click-link="showMainArea">
 		</left-bar-menu>
 		<main-area
+			v-bind:night="night"
 			v-bind:last-update="lastUpdate"
 			v-on:click-npc="selectNpc"
 			v-on:click-business="selectBusiness"
@@ -148,6 +149,8 @@
 				v-if="showBusiness"
 				v-on:click-npc="clickNpc"
 				v-on:click-business="clickBusiness"
+				v-bind:npc-list="npcList"
+				v-bind:night="night"
 				v-bind:key="lastUpdate"
 				v-bind:business-list="businessList"
 				v-bind:ressonance-list="ressonanceList"
@@ -309,29 +312,12 @@
 									</neighbourhood-icon>
 								</td>
 							</tr>
-							<tr class="businessTableDataRowPeriod">
-								<td><open-closed-icon v-bind:value="business.n1"></open-closed-icon></td>
+							<tr class="businessTableDataRowPeriod" v-for="period in _.range(3)">
+								<td><open-closed-icon v-bind:value="business['n'+(period+1)]"></open-closed-icon></td>
 								<td colspan="2">
 									<npc-list v-on:click-npc="clickNpc"
-											  v-bind:npc-list="business.npcListN1"
-											  v-bind:ressonance-list="ressonanceList"
-											  v-bind:neighbourhood-list="neighbourhoodList"/>
-								</td>
-							</tr>
-							<tr class="businessTableDataRowPeriod">
-								<td><open-closed-icon v-bind:value="business.n2"></open-closed-icon></td>
-								<td colspan="2">
-									<npc-list v-on:click-npc="clickNpc"
-											  v-bind:npc-list="business.npcListN2"
-											  v-bind:ressonance-list="ressonanceList"
-											  v-bind:neighbourhood-list="neighbourhoodList"/>
-								</td>
-							</tr>
-							<tr class="businessTableDataRowPeriod">
-								<td><open-closed-icon v-bind:value="business.n3"></open-closed-icon></td>
-								<td colspan="2">
-									<npc-list v-on:click-npc="clickNpc"
-											  v-bind:npc-list="business.npcListN3"
+											  v-bind:npc-list="npcList"
+											  v-bind:business-activity="night.businessActivity[business.id]['n'+(period+1)]"
 											  v-bind:ressonance-list="ressonanceList"
 											  v-bind:neighbourhood-list="neighbourhoodList"/>
 								</td>
@@ -352,17 +338,22 @@
 	<script type="text/x-template" id="npcListTemplate">
 		<div class="npcTableContainer">
 			<table class="npcTable">
-				<tr v-for="(npc, index) in npcList" class="npcTableDataRow"
-					v-on:click="clickNpc(npc)"
+				<tr v-for="(npcAttendance, index) in orderedBusinessActivity" class="npcTableDataRow"
+					v-on:click="clickNpc(npcAttendance.npcId)"
 					v-bind:class="{npcTableDataRowEven: (index+1)%2==0, npcTableDataRowOdd: (index+1)%2!=0}">
 					<td class="npcTableColumn npcTableColumnName">
-						<span v-if="npc.working">(work)</span>
-						<span v-if="npc.sick">(sick)</span>
-						<span v-if="npc.sleeping">(zZzZ)</span>
-						{{npc.name}}
+						<span v-if="npcAttendance.working">(work)</span>
+						<span v-if="npcAttendance.sleeping">(zZzZ)</span>
+						{{npcById[npcAttendance.npcId].name}}
 					</td>
 					<td class="npcTableColumn npcTableColumnRessonance">
-						<ressonance v-bind:value="npc.ressonance" v-bind:ressonanceList="ressonanceList"/>
+						<clan-icon
+							v-if="npcById[npcAttendance.npcId].clan != undefined"
+							v-bind:clan="npcById[npcAttendance.npcId].clan"/>
+						<ressonance 
+							v-if="npcById[npcAttendance.npcId].clan == undefined"
+							v-bind:value="npcById[npcAttendance.npcId].ressonance" 
+							v-bind:ressonanceList="ressonanceList"/>
 					</td>
 				</tr>
 			</table>

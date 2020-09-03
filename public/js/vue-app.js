@@ -78,7 +78,7 @@ TASK_EXECUTIONS[TASK_TYPES.GENERATE_NIGHT] = function(self, data){
 		self.thenAction();
 	}
 	worker.postMessage([self.npcList, self.businessList, self.npcPreferencesList,
-					self.npcProfessionList, self.businessRulesList, self.homeList]);
+					self.npcProfessionList, self.professionList, self.businessRulesList, self.homeList]);
 };
 
 const Task = function(type, data){
@@ -162,7 +162,7 @@ Vue.component('clan-icon', {
 
 Vue.component('main-area', {
 	template: '#mainAreaTemplate',
-	props: ['mainArea', 'npcNameFilter', 'npcHomeFilter', 
+	props: [ 'night', 'mainArea', 'npcNameFilter', 'npcHomeFilter', 
 			'npcMinimunAgeFilter', 'npcMaximunAgeFilter',
 			'npcNeighbourhoodFilter', 'npcVampireFilter',
 			'npcAliveFilter', 'npcSickFilter', 'logList',
@@ -408,7 +408,7 @@ Vue.component('main-area-npc', {
 
 Vue.component('main-area-business', {
 	template: '#mainAreaBusinessTemplate',
-	props: ['businessList', 'neighbourhoodList', 'ressonanceList'],
+	props: ['night', 'businessList', 'neighbourhoodList', 'ressonanceList', 'npcList'],
 	data: function(){
 		return {
 			'nameFilter': null,
@@ -677,11 +677,28 @@ Vue.component('neighbourhood-icon', {
 });
 
 Vue.component('npc-list', {
-	props: ['npcList', 'neighbourhoodList', 'ressonanceList'],
+	props: ['npcList', 'neighbourhoodList', 
+		'ressonanceList', 'businessActivity'],
 	template: '#npcListTemplate',
 	methods: {
-		clickNpc: function(npc){
-			this.$emit("click-npc", npc);
+		clickNpc: function(npcId){
+			this.$emit("click-npc", npcId);
+		}
+	},
+	computed: {
+		npcById: function(){
+			let cache = [];
+			_.each(this.npcList, (npc) => {
+				cache[npc.id] = npc;
+			});
+			return cache;
+		},
+		orderedBusinessActivity: function(){
+			return _.sortBy(this.businessActivity, (attendance) =>{
+				if(attendance.working) return -1;
+				if(attendance.sleeping) return 1;
+				return 0;
+			});
 		}
 	}
 });
@@ -905,9 +922,9 @@ var app = new Vue({
 		clearLogs: function(){
 			this.logList = [];
 		},
-		selectNpc: function(npc){
+		selectNpc: function(npcId){
 			this.selectedBusiness = null;
-			this.selectedNpc = _.find(this.npcList, (n) => {return n.id == npc.id;});
+			this.selectedNpc = _.findWhere(this.npcList, {id: npcId});
 			this.lastUpdateDetails = new Date().toString();
 		},
 		selectBusiness: function(business){

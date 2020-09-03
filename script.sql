@@ -1526,3 +1526,4 @@ create table Health(
 	value varchar(255),
 	PRIMARY KEY (id)
 );
+

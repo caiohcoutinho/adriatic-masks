@@ -30,12 +30,16 @@ const MAGIC_NUMBERS = {
 }
 
 const setNpcLocation = function(night, period, npcId, locationId, homeId, working, sleeping){
-	night.npcActivity[npcId]["n"+period] = {location: locationId, home: homeId, working: working, sleeping: sleeping};
+	let result = {
+		npcId: npcId, location: locationId, home: homeId, 
+		working: working, sleeping: sleeping
+	};
+	night.npcActivity[npcId]["n"+period] = result;
 	if(!isNullOrUndefinedOrEmpty(locationId)){
-		night.businessActivity[locationId]["n"+period].push(npcId);
+		night.businessActivity[locationId]["n"+period].push(result);
 	}
 	if(!isNullOrUndefinedOrEmpty(homeId)){
-		night.homeActivity[homeId]["n"+period].push(npcId);
+		night.homeActivity[homeId]["n"+period].push(result)
 	}
 }
 
@@ -77,7 +81,7 @@ const mergeNpcPreferenceAndBusinessRules = function(night, npc, period, npcPrefe
 	);
 }
 
-const getWanderingLocation = function(night, npc, period, npcProfessionList, npcPreferencesList, businessList, businessRulesList, homeList){
+const getWanderingLocation = function(night, npc, period, npcProfessionList, professionList, npcPreferencesList, businessList, businessRulesList, homeList){
 	let npcId = npc.id;
 	let businessSeed = Math.random();
 	let sum = 0;
@@ -91,12 +95,13 @@ const getWanderingLocation = function(night, npc, period, npcProfessionList, npc
 	return businessId;
 }
 
-const peopleWorking = function(night, npc, period, npcProfessionList, npcPreferencesList, businessList, businessRulesList, homeList){
+const peopleWorking = function(night, npc, period, npcProfessionList, professionList, npcPreferencesList, businessList, businessRulesList, homeList){
 	let jobs = _.where(npcProfessionList, {npc: npc.id});
 
 	let openJobsAtPeriod = _.filter(jobs, (job) => {
 		let business = _.findWhere(businessList, {id: job.business});
-		return (business == null || business["n"+period]);
+		let profession = _.findWhere(professionList, {id: job.profession});
+		return !profession.nominal && (business == null || business["n"+period]);
 	});
 
 	if(!_.isEmpty(openJobsAtPeriod)){ // Hummm such a diligent person...
@@ -109,7 +114,7 @@ const peopleWorking = function(night, npc, period, npcProfessionList, npcPrefere
 				setNpcLocation(night, period, npc.id, jobLocationId, null, true, false); // At office
 				return true;
 			}
-			let locationId = getWanderingLocation(night, npc, period, npcProfessionList, npcPreferencesList, businessList, businessRulesList);
+			let locationId = getWanderingLocation(night, npc, period, npcProfessionList, professionList, npcPreferencesList, businessList, businessRulesList);
 			setNpcLocation(night, period, npc.id, locationId, null, true, false); //Out of office work
 			return true;
 		} else{ 
@@ -119,7 +124,7 @@ const peopleWorking = function(night, npc, period, npcProfessionList, npcPrefere
 	return false;
 }
 
-const peopleSleeping = function(night, npc, period, npcProfessionList, npcPreferencesList, businessList, businessRulesList, homeList){
+const peopleSleeping = function(night, npc, period, npcProfessionList, professionList, npcPreferencesList, businessList, businessRulesList, homeList){
 	if(Math.random() < MAGIC_NUMBERS["SLEEP_AT_"+period]){
 		setNpcLocation(night, period, npc.id, null, npc.home_id, false, true);
 		return true;
@@ -128,21 +133,21 @@ const peopleSleeping = function(night, npc, period, npcProfessionList, npcPrefer
 	return false;
 }
 
-const peopleWandering = function(night, npc, period, npcProfessionList, npcPreferencesList, businessList, businessRulesList, homeList){
+const peopleWandering = function(night, npc, period, npcProfessionList, professionList, npcPreferencesList, businessList, businessRulesList, homeList){
 	if(Math.random() < MAGIC_NUMBERS.WANDERING){
-		let locationId = getWanderingLocation(night, npc, period, npcProfessionList, npcPreferencesList, businessList, businessRulesList);
+		let locationId = getWanderingLocation(night, npc, period, npcProfessionList, professionList, npcPreferencesList, businessList, businessRulesList);
 		setNpcLocation(night, period, npc.id, locationId, null, false, false);
 		return true;
 	}
 	return false;
 }
 
-const peopleChillingAtHome = function(night, npc, period, npcProfessionList, npcPreferencesList, businessList, businessRulesList, homeList){
+const peopleChillingAtHome = function(night, npc, period, npcProfessionList, professionList, npcPreferencesList, businessList, businessRulesList, homeList){
 	setNpcLocation(night, period, npc.id, null, npc.home_id, false, false);
 	return true;
 }
 
-const peopleDead = function(night, npc, period, npcProfessionList, npcPreferencesList, businessList, businessRulesList, homeList, hospitalId, cemeteryId){
+const peopleDead = function(night, npc, period, npcProfessionList, professionList, npcPreferencesList, businessList, businessRulesList, homeList, hospitalId, cemeteryId){
 	if(npc.alive){
 		return false;
 	}
@@ -150,7 +155,7 @@ const peopleDead = function(night, npc, period, npcProfessionList, npcPreference
 	return true;
 }
 
-const peopleSickGoingToHospital = function(night, npc, period, npcProfessionList, npcPreferencesList, businessList, businessRulesList, homeList, hospitalId){
+const peopleSickGoingToHospital = function(night, npc, period, npcProfessionList, professionList, npcPreferencesList, businessList, businessRulesList, homeList, hospitalId){
 	if(!npc.sick){
 		return false;
 	}
@@ -165,7 +170,7 @@ const peopleSickGoingToHospital = function(night, npc, period, npcProfessionList
 	return false;
 }
 
-const peopleHospitalized = function(night, npc, period, npcProfessionList, npcPreferencesList, businessList, businessRulesList, homeList, hospitalId){
+const peopleHospitalized = function(night, npc, period, npcProfessionList, professionList, npcPreferencesList, businessList, businessRulesList, homeList, hospitalId){
 	if(!npc.hospitalized){
 		return false;
 	}
@@ -173,7 +178,7 @@ const peopleHospitalized = function(night, npc, period, npcProfessionList, npcPr
 	return true;
 }
 
-const peopleCallingInSick = function(night, npc, period, npcProfessionList, npcPreferencesList, businessList, businessRulesList, homeList){
+const peopleCallingInSick = function(night, npc, period, npcProfessionList, professionList, npcPreferencesList, businessList, businessRulesList, homeList){
 	if(!npc.sick){
 		return false;
 	}
@@ -184,7 +189,7 @@ const peopleCallingInSick = function(night, npc, period, npcProfessionList, npcP
 	}
 }
 
-const peopleThatBeKids = function(night, npc, period, npcProfessionList, npcPreferencesList, businessList, businessRulesList, homeList){
+const peopleThatBeKids = function(night, npc, period, npcProfessionList, professionList, npcPreferencesList, businessList, businessRulesList, homeList){
 	// TODO: They should be with their parents. For now, they're nowhere.
 	return npc.age < 6;
 }
@@ -207,7 +212,7 @@ const NPC_LOCATION_CASES = [
 ];
 
 
-const generateNight = function(npcList, businessList, npcPreferencesList, npcProfessionList, businessRulesList, homeList){
+const generateNight = function(npcList, businessList, npcPreferencesList, npcProfessionList, professionList, businessRulesList, homeList){
 	let night = {};
 	night.businessActivity = [];
 	_.each(businessList, (b) => {night.businessActivity[b.id] = {n1: [], n2: [], n3: []}});
@@ -227,7 +232,7 @@ const generateNight = function(npcList, businessList, npcPreferencesList, npcPro
 		});
 		_.each(npcList, (npc) => {
 			_.find(NPC_LOCATION_CASES, (locationCase) => {
-				if(locationCase.test(night, npc, period, npcProfessionList, npcPreferencesList, businessList, businessRulesList, homeList, hospitalId, cemeteryId)){
+				if(locationCase.test(night, npc, period, npcProfessionList, professionList, npcPreferencesList, businessList, businessRulesList, homeList, hospitalId, cemeteryId)){
 					stats[period][locationCase.name]++;
 					return true;
 				}
@@ -242,6 +247,6 @@ const generateNight = function(npcList, businessList, npcPreferencesList, npcPro
 
 onmessage = function(e){
 	let args = e.data;
-	let night = generateNight(args[0], args[1], args[2], args[3], args[4], args[5]);
+	let night = generateNight(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
 	postMessage(night);
 }
