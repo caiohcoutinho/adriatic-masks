@@ -80,6 +80,8 @@
 			v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
 			v-on:selected-npc-ressonance-change="selectedNpcRessonanceChange"
 			v-on:save-selected-npc-notes="saveSelectedNpcNotes"
+			v-on:save-selected-npc-description="saveSelectedNpcDescription"
+			v-on:save-selected-npc-story="saveSelectedNpcStory"
 			v-on:save-selected-npc-health-change="saveSelectedNpcHealthChange"
 			v-on:click-family="selectFamily">
 		</side-details>
@@ -390,6 +392,8 @@
 				v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
 				v-on:selected-npc-ressonance-change="selectedNpcRessonanceChange"
 				v-on:save-selected-npc-notes="saveSelectedNpcNotes"
+				v-on:save-selected-npc-description="saveSelectedNpcDescription"
+				v-on:save-selected-npc-story="saveSelectedNpcStory"
 				v-on:save-selected-npc-health-change="saveSelectedNpcHealthChange"
 				v-on:click-family="clickFamily">
 			</npc-details>
@@ -439,6 +443,8 @@
 					v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
 					v-on:selected-npc-ressonance-change="selectedNpcRessonanceChange"
 					v-on:save-selected-npc-notes="saveSelectedNpcNotes"
+					v-on:save-selected-npc-description="saveSelectedNpcDescription"
+					v-on:save-selected-npc-story="saveSelectedNpcStory"
 					v-on:click-family="clickFamily"
 					v-bind:npc="npc"/>
 			</div>
@@ -464,14 +470,20 @@
 				v-bind:health-list="healthList"
 				v-on:click-health="saveHealthBar"/></span><span v-if="!npc.alive"><img class="deathIcon" src="/img/death.jpg"></span>
 			<table class="informationTable">
-				<tr><td>Descrição</td></tr>
-				<tr><td>{{npc.description}}</td>
-				<tr><td colspan="2">Notas</td></tr>
+				<tr><td colspan="2">Descrição</td></tr>
 				<tr>
 					<td colspan="2">
-						<textarea class="npcInformationNotesTextArea"
-							v-model="npc.notes" 
-							v-on:input="saveSelectedNpcNotes"></textarea>
+						<textarea class="npcInformationDescriptionTextArea npcInformationTextArea"
+							v-model="npc.description" 
+							v-on:input="saveSelectedNpcDescription"></textarea>
+					</td>
+				</tr>
+				<tr><td colspan="2">História</td></tr>
+				<tr>
+					<td colspan="2">
+						<textarea class="npcInformationStoryTextArea npcInformationTextArea"
+							v-model="npc.story" 
+							v-on:input="saveSelectedNpcStory"></textarea>
 					</td>
 				</tr>
 				<tr v-if="npc.clan != undefined">
@@ -486,7 +498,7 @@
 					<td colspan="2"><span v-if="npc.family_id != undefined">Família <span v-on:click="clickFamily(npc.family_id)" class="clickableLink">{{npc.family_name}}</span>, </span>{{npc.age}} anos, de {{npc.nationality}}<span v-if="npc.nickname != undefined">, atende por "{{npc.nickname}}"</span></td>
 				</tr>
 				<tr>
-					<td colspan="2">${{npc.wealth}}<span v-if="npcProfessionByNpc[npc.id] != undefined && npcProfessionByNpc[npc.id].length > 0">, <span v-for="occupation in npcProfessionByNpc[npc.id]">{{professionById[occupation.profession]}}<span v-if="occupation.business != undefined"> em {{businessById[occupation.business]}}</span></span></span></td>
+					<td colspan="2">${{npc.wealth}}<span v-if="npcProfessionByNpc[npc.id] != undefined && npcProfessionByNpc[npc.id].length > 0"><span v-for="occupation in npcProfessionByNpc[npc.id]">, {{professionById[occupation.profession]}}<span v-if="occupation.business != undefined"> em {{businessById[occupation.business]}}</span></span></span></td>
 				</tr>
 				<tr>
 					<td colspan="2">{{npc.instinct}} ({{npc.humor}} / <ressonance v-bind:value="npc.ressonance" v-bind:ressonanceList="ressonanceList"/>), {{npc.oath}} por {{npc.oath_nature}}</td>
@@ -502,9 +514,16 @@
 				<tr><td>Attr(F/M/S)</td><td>{{npc.f}}/{{npc.m}}/{{npc.s}}</td></tr>
 				<tr><td colspan="2">Mora em {{homeNameById[npc.home_id]}} em {{npc.neighbourhood}}</td></tr>
 				<tr><td colspan="2">Pele {{npc.skin}}, olhos {{npc.eyes}}, cabelo {{npc.hair}}</td></tr>
-				<tr><td colspan="2">#{{npc.id}}: {{npc.name}}</td></tr>
+				<tr><td colspan="2">Notas</td></tr>
 				<tr>
-					<td>Editar Ressonância</td><td>
+					<td colspan="2">
+						<textarea class="npcInformationNotesTextArea npcInformationTextArea"
+							v-model="npc.notes" 
+							v-on:input="saveSelectedNpcNotes"></textarea>
+					</td>
+				</tr>
+				<tr>
+					<td>Ressonância</td><td>
 					<select class="ressonanceSelect"
 						v-model="npc.ressonance"
 						v-on:change="selectedNpcRessonanceChange">

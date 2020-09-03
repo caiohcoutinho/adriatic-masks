@@ -32,6 +32,8 @@ const HAIR = {
 const TASK_TYPES = {
 	SAVE_HEALTH: "saveHealth",
 	SAVE_NOTES: "saveNotes",
+	SAVE_DESCRIPTION: "saveDescription",
+	SAVE_STORY: "saveStory",
 	SAVE_ALIVE: "saveAlive",
 	SAVE_SICK: "saveSick",
 	SAVE_HOSPITALIZED: "saveHospitalized",
@@ -72,6 +74,8 @@ const createLoadListUrlAction = (url, fieldName, sortingFunction) => {
 const TASK_EXECUTIONS = {};
 TASK_EXECUTIONS[TASK_TYPES.SAVE_HEALTH] = createPostUrlAction("/health");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_NOTES] = createPostUrlAction("/notes");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_STORY] = createPostUrlAction("/story");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_DESCRIPTION] = createPostUrlAction("/description");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_ALIVE] = createPostUrlAction("/alive");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_SICK] = createPostUrlAction("/sick");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_HOSPITALIZED] = createPostUrlAction("/hospitalized");
@@ -562,6 +566,12 @@ Vue.component('side-details', {
 		saveSelectedNpcNotes: function(){
 			this.$emit('save-selected-npc-notes');
 		},
+		saveSelectedNpcDescription: function(){
+			this.$emit('save-selected-npc-description');
+		},
+		saveSelectedNpcStory: function(){
+			this.$emit('save-selected-npc-story');
+		},
 		saveSelectedNpcHealthChange: function(event){
 			this.$emit('save-selected-npc-health-change', event);
 		},
@@ -596,6 +606,12 @@ Vue.component('npc-details', {
 		},
 		saveSelectedNpcNotes: function(){
 			this.$emit('save-selected-npc-notes');
+		},
+		saveSelectedNpcDescription: function(){
+			this.$emit('save-selected-npc-description');
+		},
+		saveSelectedNpcStory: function(){
+			this.$emit('save-selected-npc-story');
 		},
 		saveSelectedNpcHealthChange: function(event){
 			this.$emit('save-selected-npc-health-change', event);
@@ -713,6 +729,12 @@ Vue.component('npc-information', {
 		},
 		saveSelectedNpcNotes: function(){
 			this.$emit('save-selected-npc-notes');
+		},
+		saveSelectedNpcDescription: function(){
+			this.$emit('save-selected-npc-description');
+		},
+		saveSelectedNpcStory: function(){
+			this.$emit('save-selected-npc-story');
 		},
 		selectedNpcAliveChange: function(){
 			this.$emit('selected-npc-alive-change');
@@ -941,6 +963,21 @@ var app = new Vue({
 			this.npcNeighbourhoodFilter = "";
 			this.mainArea = NPC;
 		},
+		saveSelectedNpcStory: (function(){
+			return _.debounce(function(){
+				let self = this;
+				let npcId = self.selectedNpc.id;
+				let value = self.selectedNpc.story;
+				this.log("Saving npc "+npcId+" story");
+				this.addTask(new Task(
+					TASK_TYPES.SAVE_STORY,
+					{
+						id: npcId,
+						story: value
+					}
+				));
+			}, 1500);
+		})(),
 		saveSelectedNpcNotes: (function(){
 			return _.debounce(function(){
 				let self = this;
@@ -952,6 +989,21 @@ var app = new Vue({
 					{
 						id: npcId,
 						notes: value
+					}
+				));
+			}, 1500);
+		})(),
+		saveSelectedNpcDescription: (function(){
+			return _.debounce(function(){
+				let self = this;
+				let npcId = self.selectedNpc.id;
+				let value = self.selectedNpc.description;
+				this.log("Saving npc "+npcId+" description");
+				this.addTask(new Task(
+					TASK_TYPES.SAVE_DESCRIPTION,
+					{
+						id: npcId,
+						description: value
 					}
 				));
 			}, 1500);

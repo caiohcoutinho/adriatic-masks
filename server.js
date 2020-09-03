@@ -65,6 +65,7 @@ app.get("/npc", (req, res, next) => {
 			ressonance,
 			h.name humor,
 			npc.description,
+			npc.story,
 			npc.notes,
 			v.generation,
 			clan.name clan,
@@ -228,6 +229,46 @@ app.post("/notes", (req, res, next) => {
 			return;
 		}
 		client.query("update npc set notes = '"+req.body.notes+"' where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+		  	if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}
+		});
+	});
+});
+
+app.post("/description", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set description = '"+req.body.description+"' where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+		  	if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}
+		});
+	});
+});
+
+app.post("/story", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set story = '"+req.body.story+"' where id = "+req.body.id,
 			 (err, result) => {
 	 		done()
 		  	if(err){

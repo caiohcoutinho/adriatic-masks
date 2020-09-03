@@ -344,9 +344,9 @@ table.informationTable{
 
 }
 
-textarea.npcInformationNotesTextArea{
+textarea.npcInformationTextArea{
 	width: 100%;
-	min-height: 150px;
+	height: 70px;
 }
 
 table.informationTable td{
