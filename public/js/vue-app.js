@@ -3,6 +3,32 @@ const BUSINESS = 'business';
 const NIGHT = 'night';
 const CONFIG = 'config';
 
+const SKIN = {
+	"Branco": "#dec6c6",
+	"Marrom": "#58473c",
+	"Mediterrâneo": "#a77e63",
+	"Cinza": "#737070"
+};
+
+const EYES = {
+	"Esquerdo Marrom, Direito Verde": "url(#eyeGradient)",
+	"Vermelho": "#710000",
+	"Cinza": "#737070",
+	"Azul": "#5e8dec",
+	"Verde": "#6ab567",
+	"Castanho": "#523b3b",
+	"Preto": "#171616"
+};
+
+const HAIR = {
+	"Branco": "#9a9898",
+	"Preto": "#171616",
+	"Loiro": "#e5f19b",
+	"Marrom": "#271d00",
+	"Vermelho": "#652525",
+	"Sem cabelo": "#737070"
+}
+
 const TASK_TYPES = {
 	SAVE_HEALTH: "saveHealth",
 	SAVE_NOTES: "saveNotes",
@@ -481,32 +507,6 @@ Vue.component('main-area-business', {
 		}
 	}
 });
-
-const SKIN = {
-	"Branco": "#dec6c6",
-	"Marrom": "#58473c",
-	"Mediterrâneo": "#a77e63",
-	"Cinza": "#737070"
-};
-
-const EYES = {
-	"Esquerdo Marrom, Direito Verde": "url(#eyeGradient)",
-	"Vermelho": "#710000",
-	"Cinza": "#737070",
-	"Azul": "#5e8dec",
-	"Verde": "#6ab567",
-	"Castanho": "#523b3b",
-	"Preto": "#171616"
-};
-
-const HAIR = {
-	"Branco": "#9a9898",
-	"Preto": "#171616",
-	"Loiro": "#e5f19b",
-	"Marrom": "#271d00",
-	"Vermelho": "#652525",
-	"Sem cabelo": "#737070"
-}
 
 Vue.component('portrait', {
 	template: '#portraitTemplate',

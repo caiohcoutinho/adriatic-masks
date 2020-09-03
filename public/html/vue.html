@@ -462,43 +462,49 @@
 			<span>Saúde: <sick-icon v-bind:sick="npc.sick"/><health-bar 
 				v-bind:npc="npc"
 				v-bind:health-list="healthList"
-				v-on:click-health="saveHealthBar"/></span>
-			<span v-if="!npc.alive"><img class="deathIcon" src="/img/death.jpg"></span>
-			<br/>
-			Doente: <bistate
-					v-on:bistate-change="selectedNpcSickChange"
-					v-bind:value="npc.sick"/><br>
-			Hospitalizado: <bistate
-					v-on:bistate-change="selectedNpcHospitalizedChange"
-					v-bind:value="npc.hospitalized"/><br>
-			Vivo: <bistate
-					v-on:bistate-change="selectedNpcAliveChange"
-					v-bind:value="npc.alive"/><br>
+				v-on:click-health="saveHealthBar"/></span><span v-if="!npc.alive"><img class="deathIcon" src="/img/death.jpg"></span>
 			<table class="informationTable">
-				<tr><td colspan="2"><textarea v-model="npc.notes" v-on:input="saveSelectedNpcNotes" class="npcInformationNotesTextArea"></textarea></td></tr>
-				<tr><td>Id</td><td>{{npc.id}}</td></tr>
-				<tr><td>Nome</td><td>{{npc.name}}</td></tr>
-				<tr><td>Clã</td><td>{{npc.clan}} <clan-icon v-if="npc.clan != undefined" v-bind:clan="npc.clan"/></td></tr>
-				<tr><td>Geração</td><td>{{npc.generation}}</td></tr>
-				<tr><td>Predador</td><td>{{npc.predator_type}}</td></tr>
-				<tr><td>Gênero</td><td>{{npc.gender}}</td></tr>
-				<tr><td>Nacionalidade</td><td>{{npc.nationality}}</td></tr>
-				<tr><td>Idade</td><td>{{npc.age}}</td></tr>
-				<tr><td>Apelido</td><td>{{npc.nickname}}</td></tr>
-				<tr><td>Pele</td><td>{{npc.skin}}</td></tr>
-				<tr><td>Olhos</td><td>{{npc.eyes}}</td></tr>
-				<tr><td>Cabelo</td><td>{{npc.hair}}</td></tr>
-				<tr><td>Moradia</td><td>{{homeNameById[npc.home_id]}}</td></tr>
-				<tr><td>Bairro</td><td>{{npc.neighbourhood}}</td></tr>
-				<tr><td>Físico</td><td>{{npc.f}}</td></tr>
-				<tr><td>Mental</td><td>{{npc.m}}</td></tr>
-				<tr><td>Social</td><td>{{npc.s}}</td></tr>
-				<tr><td>Família</td><td><span v-on:click="clickFamily(npc.family_id)" class="clickableLink">{{npc.family_name}}</span></td></tr>
-				<tr><td>Instinto</td><td>{{npc.instinct}}</td></tr>
-				<tr><td>Obrigacação</td><td>{{npc.oath}}</td></tr>
-				<tr><td>Natureza</td><td>{{npc.oath_nature}}</td></tr>
-				<tr><td>Riqueza</td><td>{{npc.wealth}}</td></tr>
-				<tr><td>Ressonância</td><td>
+				<tr><td>Descrição</td></tr>
+				<tr><td>{{npc.description}}</td>
+				<tr><td colspan="2">Notas</td></tr>
+				<tr>
+					<td colspan="2">
+						<textarea class="npcInformationNotesTextArea"
+							v-model="npc.notes" 
+							v-on:input="saveSelectedNpcNotes"></textarea>
+					</td>
+				</tr>
+				<tr v-if="npc.clan != undefined">
+					<td colspan="2">
+						{{npc.generation}}ª 
+						{{npc.clan}} 
+						<clan-icon v-if="npc.clan != undefined" v-bind:clan="npc.clan"/>, 
+						{{npc.predator_type}}
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><span v-if="npc.family_id != undefined">Família <span v-on:click="clickFamily(npc.family_id)" class="clickableLink">{{npc.family_name}}</span>, </span>{{npc.age}} anos, de {{npc.nationality}}<span v-if="npc.nickname != undefined">, atende por "{{npc.nickname}}"</span></td>
+				</tr>
+				<tr>
+					<td colspan="2">${{npc.wealth}}<span v-if="npcProfessionByNpc[npc.id] != undefined && npcProfessionByNpc[npc.id].length > 0">, <span v-for="occupation in npcProfessionByNpc[npc.id]">{{professionById[occupation.profession]}}<span v-if="occupation.business != undefined"> em {{businessById[occupation.business]}}</span></span></span></td>
+				</tr>
+				<tr>
+					<td colspan="2">{{npc.instinct}} ({{npc.humor}} / <ressonance v-bind:value="npc.ressonance" v-bind:ressonanceList="ressonanceList"/>), {{npc.oath}} por {{npc.oath_nature}}</td>
+				</tr>
+				<tr v-for="period in [1, 2, 3]">
+					<td>N{{period}}</td>
+					<td><npc-location-summary
+						v-if="night != null && night.npcActivity != undefined"
+						v-bind:business-list="businessList"
+						v-bind:home-list="homeList"
+						v-bind:attendance="night.npcActivity[npc.id]['n'+period]"/></td>
+				</tr>
+				<tr><td>Attr(F/M/S)</td><td>{{npc.f}}/{{npc.m}}/{{npc.s}}</td></tr>
+				<tr><td colspan="2">Mora em {{homeNameById[npc.home_id]}} em {{npc.neighbourhood}}</td></tr>
+				<tr><td colspan="2">Pele {{npc.skin}}, olhos {{npc.eyes}}, cabelo {{npc.hair}}</td></tr>
+				<tr><td colspan="2">#{{npc.id}}: {{npc.name}}</td></tr>
+				<tr>
+					<td>Editar Ressonância</td><td>
 					<select class="ressonanceSelect"
 						v-model="npc.ressonance"
 						v-on:change="selectedNpcRessonanceChange">
@@ -508,27 +514,28 @@
 							<ressonance v-bind:value="ressonance.id" v-bind:ressonanceList="ressonanceList"/>
 						</option>
 					</select>
-				</td></tr>
-				<tr><td>Humor</td><td>{{npc.humor}}</td></tr>
-				<tr>
-					<td>Profissão</td>
-					<td>
-						<span v-for="occupation in npcProfessionByNpc[npc.id]">
-							{{professionById[occupation.profession]}}
-							<span v-if="occupation.business != undefined">
-								 em {{businessById[occupation.business]}}
-							</span>
-						</span>
 					</td>
 				</tr>
-				<tr><td>Descrição</td><td>{{npc.description}}</td></tr>
-				<tr v-for="period in [1, 2, 3]">
-					<td>N{{period}}</td>
-					<td><npc-location-summary
-						v-if="night != null && night.npcActivity != undefined"
-						v-bind:business-list="businessList"
-						v-bind:home-list="homeList"
-						v-bind:attendance="night.npcActivity[npc.id]['n'+period]"/></td>
+				<tr>
+					<td>Doente</td>
+					<td>
+						<bistate v-on:bistate-change="selectedNpcSickChange"
+								 v-bind:value="npc.sick"/>
+					</td>
+				</tr>
+				<tr>
+					<td>Hospitalizado</td>
+					<td>
+						<bistate v-on:bistate-change="selectedNpcHospitalizedChange"
+								 v-bind:value="npc.hospitalized"/>
+					</td>
+				</tr>
+				<tr>
+					<td>Vivo</td>
+					<td>
+						<bistate v-on:bistate-change="selectedNpcAliveChange"
+								 v-bind:value="npc.alive"/>
+					</td>
 				</tr>
 			</table>
 		</div>
