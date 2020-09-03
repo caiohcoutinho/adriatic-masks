@@ -215,7 +215,7 @@
 							<th v-on:click="orderBy('Ressonance')" class="npcTableColumn clickable npcTableColumnRessonance">Ressonance<sorting-arrow v-bind:condition="orderByRessonance"></sorting-arrow></th>
 						</tr>
 						<tr v-for="(npc, index) in npcFilteredOrderedList" class="npcTableDataRow"
-							v-on:click="clickNpc(npc)"
+							v-on:click="clickNpc(npc.id)"
 							v-bind:class="{npcTableDataRowEven: (index+1)%2==0, npcTableDataRowOdd: (index+1)%2!=0}">
 							<td class="npcTableColumn npcTableColumnId">{{npc.id}}</td>
 							<td class="npcTableColumn npcTableColumnName"><span v-bind:class="{npcNameLabel: true, npcDead: !npc.alive}">{{npc.name}}</span> <clan-icon v-if="npc.clan != undefined" v-bind:clan="npc.clan"/></td>
@@ -316,6 +316,7 @@
 								<td><open-closed-icon v-bind:value="business['n'+(period+1)]"></open-closed-icon></td>
 								<td colspan="2">
 									<npc-list v-on:click-npc="clickNpc"
+											  v-if="night != undefined && night.businessActivity != undefined && night.businessActivity[business.id] != undefined"
 											  v-bind:npc-list="npcList"
 											  v-bind:business-activity="night.businessActivity[business.id]['n'+(period+1)]"
 											  v-bind:ressonance-list="ressonanceList"
