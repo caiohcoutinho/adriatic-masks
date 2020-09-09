@@ -347,7 +347,10 @@
 					<td class="npcTableColumn npcTableColumnName">
 						<span v-if="npcAttendance.working">(work)</span>
 						<span v-if="npcAttendance.sleeping">(zZzZ)</span>
-						{{npcById[npcAttendance.npcId].name}}
+						{{npcById[npcAttendance.npcId].name}}, {{npcById[npcAttendance.npcId].age}}
+					</td>
+					<td class="npcTableColumn npcTableColumnDescription">
+						{{npcById[npcAttendance.npcId].description}}
 					</td>
 					<td class="npcTableColumn npcTableColumnRessonance">
 						<clan-icon
@@ -501,7 +504,7 @@
 					<td colspan="2">${{npc.wealth}}<span v-if="npcProfessionByNpc[npc.id] != undefined && npcProfessionByNpc[npc.id].length > 0"><span v-for="occupation in npcProfessionByNpc[npc.id]">, {{professionById[occupation.profession]}}<span v-if="occupation.business != undefined"> em {{businessById[occupation.business]}}</span></span></span></td>
 				</tr>
 				<tr>
-					<td colspan="2">{{npc.instinct}} ({{npc.humor}} / <ressonance v-bind:value="npc.ressonance" v-bind:ressonanceList="ressonanceList"/>), {{npc.oath}} por {{npc.oath_nature}}</td>
+					<td colspan="2">{{npc.instinct}} ({{npc.humor}} <span v-if="npc.ressonance != undefined">/ <ressonance v-bind:value="npc.ressonance" v-bind:ressonanceList="ressonanceList"/></span>), {{npc.oath}} por {{npc.oath_nature}}</td>
 				</tr>
 				<tr v-for="period in [1, 2, 3]">
 					<td>N{{period}}</td>

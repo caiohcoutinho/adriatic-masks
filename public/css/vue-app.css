@@ -191,6 +191,10 @@ table.businessTable tr.businessTableHeaderRow th.clickable{
 	text-align: center;
 }
 
+td.npcTableColumnHealth{
+	line-height: 14px;
+}
+
 .npcTableColumn{
 	width: 100px;
 }
