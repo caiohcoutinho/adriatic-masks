@@ -34,7 +34,7 @@ const setNpcLocation = function(night, period, npcId, locationId, homeId, job, s
 		npcId: npcId, location: locationId, home: homeId, 
 		sleeping: sleeping,
 	};
-	if(!isNullOrUndefinedOrEmpty(job) && job != false){
+	if(!isNullOrUndefinedOrEmpty(job)){
 		result.job = job;
 	}
 	night.npcActivity[npcId]["n"+period] = result;
@@ -129,7 +129,7 @@ const peopleWorking = function(night, npc, period, npcProfessionList, profession
 
 const peopleSleeping = function(night, npc, period, npcProfessionList, professionList, npcPreferencesList, businessList, businessRulesList, homeList){
 	if(Math.random() < MAGIC_NUMBERS["SLEEP_AT_"+period]){
-		setNpcLocation(night, period, npc.id, null, npc.home_id, false, true);
+		setNpcLocation(night, period, npc.id, null, npc.home_id, null, true);
 		return true;
 	}
 
@@ -139,14 +139,14 @@ const peopleSleeping = function(night, npc, period, npcProfessionList, professio
 const peopleWandering = function(night, npc, period, npcProfessionList, professionList, npcPreferencesList, businessList, businessRulesList, homeList){
 	if(Math.random() < MAGIC_NUMBERS.WANDERING){
 		let locationId = getWanderingLocation(night, npc, period, npcProfessionList, professionList, npcPreferencesList, businessList, businessRulesList);
-		setNpcLocation(night, period, npc.id, locationId, null, false, false);
+		setNpcLocation(night, period, npc.id, locationId, null, null, false);
 		return true;
 	}
 	return false;
 }
 
 const peopleChillingAtHome = function(night, npc, period, npcProfessionList, professionList, npcPreferencesList, businessList, businessRulesList, homeList){
-	setNpcLocation(night, period, npc.id, null, npc.home_id, false, false);
+	setNpcLocation(night, period, npc.id, null, npc.home_id, null, false);
 	return true;
 }
 
@@ -154,7 +154,7 @@ const peopleDead = function(night, npc, period, npcProfessionList, professionLis
 	if(npc.alive){
 		return false;
 	}
-	setNpcLocation(night, period, npc.id, null, cemeteryId, false, false);
+	setNpcLocation(night, period, npc.id, null, cemeteryId, null, false);
 	return true;
 }
 
@@ -167,7 +167,7 @@ const peopleSickGoingToHospital = function(night, npc, period, npcProfessionList
 	let doctorCheck = Math.random();
 	let goesToDockor = doctorCheck < MAGIC_NUMBERS.GOES_TO_DOCTOR*seed;
 	if(goesToDockor){
-		setNpcLocation(night, period, npc.id, hospitalId, null, false, false);
+		setNpcLocation(night, period, npc.id, hospitalId, null, null, false);
 		return true;
 	}
 	return false;
@@ -177,7 +177,7 @@ const peopleHospitalized = function(night, npc, period, npcProfessionList, profe
 	if(!npc.hospitalized){
 		return false;
 	}
-	setNpcLocation(night, period, npc.id, hospitalId, null, false, false);
+	setNpcLocation(night, period, npc.id, hospitalId, null, null, false);
 	return true;
 }
 
@@ -187,7 +187,7 @@ const peopleCallingInSick = function(night, npc, period, npcProfessionList, prof
 	}
 	let stayHomeCheck = Math.random();
 	if(stayHomeCheck < MAGIC_NUMBERS.CALL_IN_SICK){
-		setNpcLocation(night, period, npc.id, null, _.findWhere(homeList, {id: npc.home_id}).id, false, false);
+		setNpcLocation(night, period, npc.id, null, _.findWhere(homeList, {id: npc.home_id}).id, null, false);
 		return true;	
 	}
 }
