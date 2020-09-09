@@ -154,6 +154,7 @@
 				v-bind:npc-list="npcList"
 				v-bind:night="night"
 				v-bind:key="lastUpdate"
+				v-bind:profession-list="professionList"
 				v-bind:business-list="businessList"
 				v-bind:ressonance-list="ressonanceList"
 				v-bind:neighbourhood-list="neighbourhoodList"/>
@@ -319,6 +320,7 @@
 								<td colspan="2">
 									<npc-list v-on:click-npc="clickNpc"
 											  v-if="night != undefined && night.businessActivity != undefined && night.businessActivity[business.id] != undefined"
+											  v-bind:profession-list="professionList"
 											  v-bind:npc-list="npcList"
 											  v-bind:business-activity="night.businessActivity[business.id]['n'+(period+1)]"
 											  v-bind:ressonance-list="ressonanceList"
@@ -345,7 +347,7 @@
 					v-on:click="clickNpc(npcAttendance.npcId)"
 					v-bind:class="{npcTableDataRowEven: (index+1)%2==0, npcTableDataRowOdd: (index+1)%2!=0}">
 					<td class="npcTableColumn npcTableColumnName">
-						<span v-if="npcAttendance.working">(work)</span>
+						<span v-if="npcAttendance.job != undefined">({{professionNameById[npcAttendance.job.profession]}} <span v-if="npcAttendance.job.business == npcAttendance.location">da casa</span><span v-if="npcAttendance.job.business != npcAttendance.location">passando</span>)</span>
 						<span v-if="npcAttendance.sleeping">(zZzZ)</span>
 						{{npcById[npcAttendance.npcId].name}}, {{npcById[npcAttendance.npcId].age}}
 					</td>

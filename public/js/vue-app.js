@@ -438,7 +438,8 @@ Vue.component('main-area-npc', {
 
 Vue.component('main-area-business', {
 	template: '#mainAreaBusinessTemplate',
-	props: ['night', 'businessList', 'neighbourhoodList', 'ressonanceList', 'npcList'],
+	props: ['night', 'businessList', 'neighbourhoodList', 
+			'professionList', 'ressonanceList', 'npcList'],
 	data: function(){
 		return {
 			'nameFilter': null,
@@ -694,7 +695,7 @@ Vue.component('neighbourhood-icon', {
 
 Vue.component('npc-list', {
 	props: ['npcList', 'neighbourhoodList', 
-		'ressonanceList', 'businessActivity'],
+		'ressonanceList', 'businessActivity', 'professionList'],
 	template: '#npcListTemplate',
 	methods: {
 		clickNpc: function(npcId){
@@ -709,10 +710,23 @@ Vue.component('npc-list', {
 			});
 			return cache;
 		},
+		professionNameById: function(){
+			let cache = [];
+			_.each(this.professionList, (p) => {
+				cache[p.id] = p.name;
+			});
+			return cache;
+		},
 		orderedBusinessActivity: function(){
 			return _.sortBy(this.businessActivity, (attendance) =>{
-				if(attendance.working) return -1;
-				if(attendance.sleeping) return 1;
+				let job = attendance.job;
+				if(!isNullOrUndefinedOrEmpty(job)){
+					if(job.business == attendance.location){
+						return -1;
+					}
+					return 1;
+				}
+				if(attendance.sleeping) return 2;
 				return 0;
 			});
 		}

@@ -29,11 +29,14 @@ const MAGIC_NUMBERS = {
 	WANDERING: 0.95
 }
 
-const setNpcLocation = function(night, period, npcId, locationId, homeId, working, sleeping){
+const setNpcLocation = function(night, period, npcId, locationId, homeId, job, sleeping){
 	let result = {
 		npcId: npcId, location: locationId, home: homeId, 
-		working: working, sleeping: sleeping
+		sleeping: sleeping,
 	};
+	if(!isNullOrUndefinedOrEmpty(job) && job != false){
+		result.job = job;
+	}
 	night.npcActivity[npcId]["n"+period] = result;
 	if(!isNullOrUndefinedOrEmpty(locationId)){
 		night.businessActivity[locationId]["n"+period].push(result);
@@ -111,11 +114,11 @@ const peopleWorking = function(night, npc, period, npcProfessionList, profession
 
 		if(Math.random() < MAGIC_NUMBERS.DONT_MISS_WORK){ // Bills ain't gonna pay themselves!
 			if(!isNullOrUndefinedOrEmpty(jobLocationId)){
-				setNpcLocation(night, period, npc.id, jobLocationId, null, true, false); // At office
+				setNpcLocation(night, period, npc.id, jobLocationId, null, job, false); // At office
 				return true;
 			}
 			let locationId = getWanderingLocation(night, npc, period, npcProfessionList, professionList, npcPreferencesList, businessList, businessRulesList);
-			setNpcLocation(night, period, npc.id, locationId, null, true, false); //Out of office work
+			setNpcLocation(night, period, npc.id, locationId, null, job, false); //Out of office work
 			return true;
 		} else{ 
 			// Skipping work...
