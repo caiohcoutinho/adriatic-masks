@@ -114,13 +114,19 @@ div.darkTheme div.leftBarMenu{
 	background-color: #1b0e10;
 }
 
+div.darkTheme div.mainAreaNpcListSection table.npcTable .npcTableDataRowEven{
+	background-color: #484646;
+	color: white;
+	border-color: #1b0e10;
+	border-right-color: #1b0e10;
+}
+
 div.darkTheme div.mainAreaNpcFilterForm, 
 div.darkTheme div.mainAreaBusinessFilterForm,
 div.darkTheme div.mainAreaNpcListSection, 
 div.darkTheme div.mainAreaBusinessListSection,
 div.darkTheme table.npcTable tr.npcTableHeaderRow th,
 div.darkTheme table.businessTable tr.businessTableHeaderRow th,
-div.darkTheme div.mainAreaNpcListSection table.npcTable .npcTableDataRowEven,
 div.darkTheme div.mainAreaNpcListSection table.npcTable .npcTableDataRowOdd,
 div.darkTheme div.mainAreaConfig,
 div.darkTheme div.mainAreaNpcListSection div.npcTableContainer,
