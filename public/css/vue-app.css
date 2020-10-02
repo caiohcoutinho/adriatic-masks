@@ -34,8 +34,8 @@ img.leftBarMenuLinkImg{
 	height: 30px;
 }
 
-body{
-	font-family: 'Alegreya Sans SC';
+body.appBody{
+	font-family: 'Times New Roman';
 }
 
 h1.logoText{
@@ -49,6 +49,22 @@ h1.leftBarMenuLinkImg{
 .leftBarMenuItem{
 	margin-left: auto;
 	margin-right: auto;
+}
+
+div.darkTheme div.background{
+	background-color: #313030;
+}
+
+div.background{
+    position:fixed;
+    padding:0;
+    margin:0;
+
+    top:0;
+    left:0;
+
+    width: 100%;
+    height: 100%;
 }
 
 div.leftBarMenu{
@@ -88,6 +104,35 @@ div.details{
 div.mainAreaNpc, div.mainAreaBusiness, div.mainAreaConfig{
 	height: 100%;
 	width: 100%;
+}
+
+div.darkTheme div.mainAreaNpcFilterForm, div.mainAreaBusinessFilterForm{
+	background-color: #313030;
+}
+
+div.darkTheme div.leftBarMenu{
+	background-color: #1b0e10;
+}
+
+div.darkTheme div.mainAreaNpcFilterForm, 
+div.darkTheme div.mainAreaBusinessFilterForm,
+div.darkTheme div.mainAreaNpcListSection, 
+div.darkTheme div.mainAreaBusinessListSection,
+div.darkTheme table.npcTable tr.npcTableHeaderRow th,
+div.darkTheme table.businessTable tr.businessTableHeaderRow th,
+div.darkTheme div.mainAreaNpcListSection table.npcTable .npcTableDataRowEven,
+div.darkTheme div.mainAreaNpcListSection table.npcTable .npcTableDataRowOdd,
+div.darkTheme div.mainAreaConfig,
+div.darkTheme div.mainAreaNpcListSection div.npcTableContainer,
+div.darkTheme tr.businessTableDataRowPeriod, 
+div.darkTheme div.npcDetailsPortrait, 
+div.darkTheme table.informationTable td, 
+div.darkTheme tr.businessTableDataRowPeriod,
+div.darkTheme div.details{
+	background-color: #313030;
+	color: white;
+	border-color: #1b0e10;
+	border-right-color: #1b0e10;
 }
 
 div.mainAreaNpcFilterForm, div.mainAreaBusinessFilterForm{
@@ -219,6 +264,14 @@ img.healthIcon{
 
 img.deathIcon{
 	height: 20px;
+}
+
+img.moveIcon{
+	height: 18px;	
+}
+
+img.moveIcon:hover{
+	cursor: pointer;
 }
 
 .npcTableColumnNationality{

@@ -3,6 +3,12 @@ const BUSINESS = 'business';
 const NIGHT = 'night';
 const CONFIG = 'config';
 
+const AUTO_COMPLETE_FILTER_SIZE = 5;
+
+const autoCompleteComparation = (a, b) => {
+	return a.indexOf(b) != -1;
+}
+
 const SKIN = {
 	"Branco": "#dec6c6",
 	"Marrom": "#58473c",
@@ -124,7 +130,7 @@ Vue.prototype.axios = axios;
 
 Vue.component('left-bar-menu', {
 	template: '#leftBarMenuTemplate',
-	props: ['warningList', 'working'],
+	props: ['warningList', 'working', 'darkTheme'],
 	computed: {
 		warningListSize: function(){
 			return _.size(this.warningList);
@@ -187,7 +193,7 @@ Vue.component('ressonance', {
 
 Vue.component('clan-icon', {
 	template: '#clanIconTemplate',
-	props: ['clan']
+	props: ['clan', 'darkTheme']
 });
 
 Vue.component('main-area', {
@@ -198,7 +204,7 @@ Vue.component('main-area', {
 			'npcAliveFilter', 'npcSickFilter', 'logList',
 			'warningList', 'npcProfessionList', 'professionList',
 			'npcList', 'neighbourhoodList', 'familyList', 'homeList',
-			'ressonanceList', 'healthList',
+			'ressonanceList', 'healthList', 'darkTheme',
 			'selectedFamily', 'businessList', 'lastUpdate', 'lastUpdateDetails'],
 	computed: {
 		showNpc: function(){
@@ -256,6 +262,9 @@ Vue.component('main-area', {
 		},
 		homeFilterChange: function(event){
 			this.$emit('home-filter-change', event);
+		},
+		changeDarkTheme: function(){
+			this.$emit('change-dark-theme');
 		}
 	}
 });
@@ -264,7 +273,7 @@ Vue.component('main-area-npc', {
 	template: '#mainAreaNpcTemplate',
 	props: ['npcList', 'nameFilter', 'homeFilter', 'minimunAgeFilter', 
 	'maximunAgeFilter', 'neighbourhoodFilter', 'vampireFilter',
-	'aliveFilter', 'sickFilter', 'ressonanceList',
+	'aliveFilter', 'sickFilter', 'ressonanceList', 'darkTheme',
 	'professionList', 'npcProfessionList', 'healthList',
 	'businessList', 'neighbourhoodList', 'familyList', 'familyFilter', 'homeList'],
 	data: function(){
@@ -439,7 +448,7 @@ Vue.component('main-area-npc', {
 Vue.component('main-area-business', {
 	template: '#mainAreaBusinessTemplate',
 	props: ['night', 'businessList', 'neighbourhoodList', 
-			'professionList', 'ressonanceList', 'npcList'],
+			'professionList', 'ressonanceList', 'npcList', 'darkTheme'],
 	data: function(){
 		return {
 			'nameFilter': null,
@@ -536,7 +545,7 @@ Vue.component('sorting-arrow', {
 
 Vue.component('main-area-config', {
 	template: '#mainAreaConfigTemplate',
-	props: ['warningList', 'logList'],
+	props: ['warningList', 'logList', 'darkTheme'],
 	computed: {
 		warningListSize: function(){
 			return _.size(this.warningList);
@@ -551,6 +560,9 @@ Vue.component('main-area-config', {
 		},
 		clickClearLogs: function(){
 			this.$emit('clear-logs');
+		},
+		changeDarkTheme: function(){
+			this.$emit('change-dark-theme');	
 		}
 	}
 });
@@ -558,7 +570,7 @@ Vue.component('main-area-config', {
 Vue.component('side-details', {
 	props: ['night', 'npc', 'business', 'working', 'homeList',
 		'npcList', 'npcProfessionList', 'businessList', 'healthList',
-		'professionList', 'ressonanceList'],
+		'professionList', 'ressonanceList', 'darkTheme'],
 	template: '#sideDetailsTemplate',
 	methods: {
 		clickFamily: function(familyId){
@@ -591,6 +603,39 @@ Vue.component('side-details', {
 	}
 });
 
+Vue.component('auto-complete', {
+	props: ['list', 'propertyName'],
+	data: function(){
+		return {
+			filter: ""
+		}
+	},
+	template: '#autoCompleteTemplate',
+	method: {
+		selectItem: function(){
+			alert("TODO item selected");
+		}
+	},
+	computed: {
+		filteredList: function(){
+			if(this.filter == ""){
+				return [];
+			}
+			return 
+				_.sortBy(
+					_.first(
+						_.filter(
+							this.list, 
+							(item) => autoCompleteComparation(item[this.propertyName], this.filter)
+						),
+						AUTO_COMPLETE_FILTER_SIZE
+					),
+					this.propertyName
+				);
+		}
+	}
+});
+
 Vue.component('open-closed-icon', {
 	props: ['value'],
 	template: '#openClosedIconTemplate',
@@ -598,7 +643,7 @@ Vue.component('open-closed-icon', {
 
 Vue.component('npc-details', {
 	props: ['night','npc', 'working', 'ressonanceList', 'homeList',
-		'healthList',
+		'healthList', 'darkTheme',
 		'businessList', 'professionList', 'npcProfessionList'],
 	template: '#npcDetailsTemplate',
 	methods: {
@@ -735,6 +780,7 @@ Vue.component('npc-list', {
 
 Vue.component('npc-information', {
 	props: ['night', 'npc', 'working', 'ressonanceList', 'healthList',
+		'darkTheme', 'neighbourhoodList',
 		'professionList', 'npcProfessionList', 'homeList', 'businessList',],
 	template: '#npcInformationTemplate',
 	methods: {
@@ -836,6 +882,7 @@ const Log = function(message){
 var app = new Vue({
 	el: '#app',
 	data: {
+		darkTheme: true,
 		lastUpdateDetails: new Date().toString(),
 		lastUpdate: new Date().toString(),
 		mainArea: NPC,
@@ -1118,6 +1165,9 @@ var app = new Vue({
 			this.npcSickFilter = null;
 			this.npcVampireFilter = null;
 			this.mainArea = NPC;
+		},
+		changeDarkTheme: function(){
+			this.darkTheme = !this.darkTheme;
 		}
 	},
 	mounted: function() {

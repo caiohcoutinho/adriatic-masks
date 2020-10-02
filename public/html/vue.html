@@ -16,77 +16,83 @@
 </head>
 
 <body>
-	<div id="app">
-		<left-bar-menu 
-			v-bind:working="working"
-			v-bind:warning-list="warningList"
-			v-on:click-link="showMainArea">
-		</left-bar-menu>
-		<main-area
-			v-bind:night="night"
-			v-bind:last-update="lastUpdate"
-			v-on:click-npc="selectNpc"
-			v-on:click-business="selectBusiness"
-			v-bind:warning-list="warningList"
-			v-bind:log-list="logList"
-			v-bind:main-area="mainArea"
-			v-bind:npc-list="npcList"
-			v-bind:health-list="healthList"
-			v-bind:profession-list="professionList"
-			v-bind:npc-profession-list="npcProfessionList"
-			v-bind:business-list="businessList"
-			v-bind:selected-family="selectedFamily"
-			v-bind:npc-name-filter="npcNameFilter"
-			v-bind:npc-home-filter="npcHomeFilter"
-			v-bind:npc-minimun-age-filter="npcMinimunAgeFilter"
-			v-bind:npc-maximun-age-filter="npcMaximunAgeFilter"
-			v-bind:npc-neighbourhood-filter="npcNeighbourhoodFilter"
-			v-bind:npc-vampire-filter="npcVampireFilter"
-			v-bind:npc-alive-filter="npcAliveFilter"
-			v-bind:npc-sick-filter="npcSickFilter"
-			v-bind:family-list="familyList"
-			v-bind:ressonance-list="ressonanceList"
-			v-bind:home-list="homeList"
-			v-bind:neighbourhood-list="neighbourhoodList"
-			v-on:clear-filter="clearFilter"
-			v-on:select-family="selectFamily"
-			v-on:clear-warnings="clearWarnings"
-			v-on:clear-logs="clearLogs"
-			v-on:vampire-filter-change="vampireFilterChange"
-			v-on:alive-filter-change="aliveFilterChange"
-			v-on:sick-filter-change="sickFilterChange"
-			v-on:name-filter-change="nameFilterChange"
-			v-on:minimun-age-filter-change="minimunAgeFilterChange"
-			v-on:maximun-age-filter-change="maximunAgeFilterChange"
-			v-on:neighbourhood-filter-change="neighbourhoodFilterChange"
-			v-on:home-filter-change="homeFilterChange"
-			>
-		</main-area>
-		<side-details
-			v-bind:night="night"
-			v-bind:working="working"
-			v-bind:npc="selectedNpc"
-			v-bind:business="selectedBusiness"
-			v-bind:npc-list="npcList"
-			v-bind:health-list="healthList"
-			v-bind:home-list="homeList"
-			v-bind:ressonance-list="ressonanceList"
-			v-bind:npc-profession-list="npcProfessionList"
-			v-bind:business-list="businessList"
-			v-bind:profession-list="professionList"
-			v-bind:key="lastUpdateDetails"
-			v-on:selected-npc-sick-change="selectedNpcSickChange"
-			v-on:selected-npc-alive-change="selectedNpcAliveChange"
-			v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
-			v-on:selected-npc-ressonance-change="selectedNpcRessonanceChange"
-			v-on:save-selected-npc-notes="saveSelectedNpcNotes"
-			v-on:save-selected-npc-description="saveSelectedNpcDescription"
-			v-on:save-selected-npc-story="saveSelectedNpcStory"
-			v-on:save-selected-npc-health-change="saveSelectedNpcHealthChange"
-			v-on:click-family="selectFamily">
-		</side-details>
+	<div id="app" v-bind:class="{'darkTheme': darkTheme}">
+		<div class="background"></div>
+		<div class="appBody">
+			<left-bar-menu 
+				v-bind:dark-theme="darkTheme"
+				v-bind:working="working"
+				v-bind:warning-list="warningList"
+				v-on:click-link="showMainArea">
+			</left-bar-menu>
+			<main-area
+				v-bind:night="night"
+				v-bind:last-update="lastUpdate"
+				v-on:click-npc="selectNpc"
+				v-on:click-business="selectBusiness"
+				v-on:change-dark-theme="changeDarkTheme"
+				v-bind:dark-theme="darkTheme"
+				v-bind:warning-list="warningList"
+				v-bind:log-list="logList"
+				v-bind:main-area="mainArea"
+				v-bind:npc-list="npcList"
+				v-bind:health-list="healthList"
+				v-bind:profession-list="professionList"
+				v-bind:npc-profession-list="npcProfessionList"
+				v-bind:business-list="businessList"
+				v-bind:selected-family="selectedFamily"
+				v-bind:npc-name-filter="npcNameFilter"
+				v-bind:npc-home-filter="npcHomeFilter"
+				v-bind:npc-minimun-age-filter="npcMinimunAgeFilter"
+				v-bind:npc-maximun-age-filter="npcMaximunAgeFilter"
+				v-bind:npc-neighbourhood-filter="npcNeighbourhoodFilter"
+				v-bind:npc-vampire-filter="npcVampireFilter"
+				v-bind:npc-alive-filter="npcAliveFilter"
+				v-bind:npc-sick-filter="npcSickFilter"
+				v-bind:family-list="familyList"
+				v-bind:ressonance-list="ressonanceList"
+				v-bind:home-list="homeList"
+				v-bind:neighbourhood-list="neighbourhoodList"
+				v-on:clear-filter="clearFilter"
+				v-on:select-family="selectFamily"
+				v-on:clear-warnings="clearWarnings"
+				v-on:clear-logs="clearLogs"
+				v-on:vampire-filter-change="vampireFilterChange"
+				v-on:alive-filter-change="aliveFilterChange"
+				v-on:sick-filter-change="sickFilterChange"
+				v-on:name-filter-change="nameFilterChange"
+				v-on:minimun-age-filter-change="minimunAgeFilterChange"
+				v-on:maximun-age-filter-change="maximunAgeFilterChange"
+				v-on:neighbourhood-filter-change="neighbourhoodFilterChange"
+				v-on:home-filter-change="homeFilterChange"
+				>
+			</main-area>
+			<side-details
+				v-bind:dark-theme="darkTheme"
+				v-bind:night="night"
+				v-bind:working="working"
+				v-bind:npc="selectedNpc"
+				v-bind:business="selectedBusiness"
+				v-bind:npc-list="npcList"
+				v-bind:health-list="healthList"
+				v-bind:home-list="homeList"
+				v-bind:ressonance-list="ressonanceList"
+				v-bind:npc-profession-list="npcProfessionList"
+				v-bind:business-list="businessList"
+				v-bind:profession-list="professionList"
+				v-bind:key="lastUpdateDetails"
+				v-on:selected-npc-sick-change="selectedNpcSickChange"
+				v-on:selected-npc-alive-change="selectedNpcAliveChange"
+				v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
+				v-on:selected-npc-ressonance-change="selectedNpcRessonanceChange"
+				v-on:save-selected-npc-notes="saveSelectedNpcNotes"
+				v-on:save-selected-npc-description="saveSelectedNpcDescription"
+				v-on:save-selected-npc-story="saveSelectedNpcStory"
+				v-on:save-selected-npc-health-change="saveSelectedNpcHealthChange"
+				v-on:click-family="selectFamily">
+			</side-details>
+		</div>
 	</div>
-
 	<!-- TEMPLATES -->
 	<script type="text/x-template" id="leftBarMenuTemplate">
 		<div class="leftBarMenu">
@@ -118,6 +124,7 @@
 		<div class="mainArea" v-if="mainArea != null">
 			<main-area-npc 
 				v-if="showNpc"
+				v-bind:dark-theme="darkTheme"
 				v-bind:family-filter="selectedFamily"
 				v-bind:name-filter="npcNameFilter"
 				v-bind:home-filter="npcHomeFilter"
@@ -149,6 +156,7 @@
 				v-on:home-filter-change="homeFilterChange"/>
 			<main-area-business
 				v-if="showBusiness"
+				v-bind:dark-theme="darkTheme"
 				v-on:click-npc="clickNpc"
 				v-on:click-business="clickBusiness"
 				v-bind:npc-list="npcList"
@@ -159,8 +167,10 @@
 				v-bind:ressonance-list="ressonanceList"
 				v-bind:neighbourhood-list="neighbourhoodList"/>
 			<main-area-config 
+				v-bind:dark-theme="darkTheme"
 				v-on:clear-warnings="clearWarnings"
 				v-on:clear-logs="clearLogs"
+				v-on:change-dark-theme="changeDarkTheme"
 				v-bind:warning-list="warningList"
 				v-bind:log-list="logList"
 				v-if="showConfig"/>
@@ -221,7 +231,7 @@
 							v-on:click="clickNpc(npc.id)"
 							v-bind:class="{npcTableDataRowEven: (index+1)%2==0, npcTableDataRowOdd: (index+1)%2!=0}">
 							<td class="npcTableColumn npcTableColumnId">{{npc.id}}</td>
-							<td class="npcTableColumn npcTableColumnName"><span v-bind:class="{npcNameLabel: true, npcDead: !npc.alive}">{{npc.name}}</span> <clan-icon v-if="npc.clan != undefined" v-bind:clan="npc.clan"/></td>
+							<td class="npcTableColumn npcTableColumnName"><span v-bind:class="{npcNameLabel: true, npcDead: !npc.alive}">{{npc.name}}</span> <clan-icon v-bind:dark-theme="darkTheme" v-if="npc.clan != undefined" v-bind:clan="npc.clan"/></td>
 							<td class="npcTableColumn npcTableColumnNationality">{{npc.nationality}}</td>
 							<td class="npcTableColumn npcTableColumnGender">{{npc.gender}}</td>
 							<td class="npcTableColumn npcTableColumnNeighbourhood">
@@ -275,7 +285,7 @@
 
 	<script type="text/x-template" id="clanIconTemplate">
 		<span class="clanIcon" v-bind:title="clan">
-			<img v-bind:src="'/img/'+clan+'-icon.png'">
+			<img v-bind:src="'/img/'+clan+'-icon'+(darkTheme?'-dark':'')+'.png'">
 		</span>
 	</script>
 
@@ -319,6 +329,7 @@
 								<td><open-closed-icon v-bind:value="business['n'+(period+1)]"></open-closed-icon></td>
 								<td colspan="2">
 									<npc-list v-on:click-npc="clickNpc"
+											  v-bind:dark-theme="darkTheme"
 											  v-if="night != undefined && night.businessActivity != undefined && night.businessActivity[business.id] != undefined"
 											  v-bind:profession-list="professionList"
 											  v-bind:npc-list="npcList"
@@ -357,6 +368,7 @@
 					<td class="npcTableColumn npcTableColumnRessonance">
 						<clan-icon
 							v-if="npcById[npcAttendance.npcId].clan != undefined"
+							v-bind:dark-theme="darkTheme"
 							v-bind:clan="npcById[npcAttendance.npcId].clan"/>
 						<ressonance 
 							v-if="npcById[npcAttendance.npcId].clan == undefined"
@@ -383,6 +395,7 @@
 		<div>
 			<npc-details
 				v-if="npc != null"
+				v-bind:dark-theme="darkTheme"
 				v-bind:night="night"
 				v-bind:working="working"
 				v-bind:npc="npc"
@@ -404,6 +417,7 @@
 			</npc-details>
 			<business-details
 				v-if="business != null"
+				v-bind:dark-theme="darkTheme"
 				v-bind:npc-list="npcList"
 				v-bind:home-list="homeList"
 				v-bind:npc-profession-list="npcProfessionList"
@@ -435,6 +449,7 @@
 			<div class="npcDetailsInformation">
 				<npc-information 
 					v-on:save-selected-npc-health-change="saveSelectedNpcHealthChange"
+					v-bind:dark-theme="darkTheme"
 					v-bind:night="night"
 					v-bind:working="working"
 					v-bind:ressonance-list="ressonanceList"
@@ -453,6 +468,13 @@
 					v-on:click-family="clickFamily"
 					v-bind:npc="npc"/>
 			</div>
+		</div>
+	</script>
+
+	<script type="text/x-template" id="autoCompleteTemplate">
+		<div>
+			<input type="text" v-model="filter"></input>
+			<span v-for="item in filteredList">{{item[propertyName]}}</span>
 		</div>
 	</script>
 
@@ -495,7 +517,7 @@
 					<td colspan="2">
 						{{npc.generation}}ª 
 						{{npc.clan}} 
-						<clan-icon v-if="npc.clan != undefined" v-bind:clan="npc.clan"/>, 
+						<clan-icon v-if="npc.clan != undefined" v-bind:dark-theme="darkTheme" v-bind:clan="npc.clan"/>, 
 						{{npc.predator_type}}
 					</td>
 				</tr>
@@ -510,7 +532,11 @@
 				</tr>
 				<tr v-for="period in [1, 2, 3]">
 					<td>N{{period}}</td>
-					<td><npc-location-summary
+					<td>
+						<option v-for="neighbourhood in neighbourhoodList" v-bind:value="neighbourhood.id">
+							{{neighbourhood.name}} <span v-html="neighbourhood.symbol"></span>
+						</option>
+						<npc-location-summary
 						v-if="night != null && night.npcActivity != undefined"
 						v-bind:business-list="businessList"
 						v-bind:home-list="homeList"
@@ -592,6 +618,9 @@
 
 	<script type="text/x-template" id="mainAreaConfigTemplate">
 		<div class="mainAreaConfig">
+			<div>
+				Tema escuro: <input type="checkbox" v-bind:checked="darkTheme" v-on:change="changeDarkTheme"/>
+			</div>
 			<h1>Notificações</h1>
 			<div>
 				<table>
