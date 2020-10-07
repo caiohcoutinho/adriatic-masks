@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <title>VaM5</title>
@@ -28,6 +28,7 @@
 			<main-area
 				v-bind:night="night"
 				v-bind:last-update="lastUpdate"
+				v-bind:working="working"
 				v-on:click-npc="selectNpc"
 				v-on:click-business="selectBusiness"
 				v-on:change-dark-theme="changeDarkTheme"
@@ -65,6 +66,10 @@
 				v-on:maximun-age-filter-change="maximunAgeFilterChange"
 				v-on:neighbourhood-filter-change="neighbourhoodFilterChange"
 				v-on:home-filter-change="homeFilterChange"
+				v-on:generate-night="generateNight"
+				v-on:generate-ressonance="generateRessonance"
+				v-on:save-batch-ressonance-update="saveBatchRessonanceUpdate"
+				v-bind:ressonance-update="ressonanceUpdate"
 				>
 			</main-area>
 			<side-details
@@ -174,6 +179,42 @@
 				v-bind:warning-list="warningList"
 				v-bind:log-list="logList"
 				v-if="showConfig"/>
+			<main-area-night
+				v-if="showNight"
+				v-bind:working="working"
+				v-bind:ressonance-update="ressonanceUpdate"
+				v-bind:npc-list="npcList"
+				v-bind:ressonance-list="ressonanceList"
+				v-on:generate-night="generateNight"
+				v-on:generate-ressonance="generateRessonance"
+				v-on:save-batch-ressonance-update="saveBatchRessonanceUpdate"
+				/>
+		</div>
+	</script>
+
+	<script type="text/x-template" id="mainAreaNightTemplate">	
+		<div class="mainAreaNight">
+			<h1>Noite</h1>
+			<div>Gerar noite: <button v-on:click="generateNight">Gerar</button></div>
+			<h1>Ressonância</h1>
+			<div>
+				<p v-for="ressonance in ressonanceList">{{ressonance.name}}: {{ressonanceCount[ressonance.id]}} ({{ Math.floor(100*(ressonanceCount[ressonance.id] / (1.0*nonVampireCount))) }}%)</p>
+			</div>
+			<div>Gerar ressonância: <button v-on:click="generateRessonance">Gerar</button></div>
+			<div v-if="ressonanceUpdate != null && ressonanceUpdate.length > 0">Aplicar alterações: <button v-on:click="saveBatchRessonanceUpdate">Aplicar</button></div>
+			<div>
+				<span v-if="ressonanceUpdate != null">{{updateCount}} alterações de ressonância.</span>
+			</div>
+			<div class="updateRessonanceTableDiv">
+				<table class="updateRessonanceTable">
+					<tr v-if="newRessonance != null" v-for="(newRessonance, npcId) in ressonanceUpdate">
+						<td>{{npcNameById[npcId]}}</td>
+						<td>{{ressonanceNameById[npcRessonanceById[npcId]]}}</td>
+						<td>--></td>
+						<td>{{ressonanceNameById[newRessonance]}}</td>
+					</tr>
+				</table>
+			</div>
 		</div>
 	</script>
 
@@ -618,31 +659,38 @@
 
 	<script type="text/x-template" id="mainAreaConfigTemplate">
 		<div class="mainAreaConfig">
-			<div>
-				Tema escuro: <input type="checkbox" v-bind:checked="darkTheme" v-on:change="changeDarkTheme"/>
+			<div class="darkThemeDiv">
+				<h1>Tema Escuro</h1>
+				<div>
+					Tema escuro: <input type="checkbox" v-bind:checked="darkTheme" v-on:change="changeDarkTheme"/>
+				</div>
 			</div>
-			<h1>Notificações</h1>
-			<div>
-				<table>
-					<tr v-for="warning in warningList">
-						{{warning.error}} - {{warning.response.data}}
-					</tr>
-				</table>
+			<div class="notificationsdiv">
+				<h1>Notificações</h1>
 				<div class="clearWarningButtonArea">
 					<span v-if="warningListSize > 0" class="clearWarningsButton" v-on:click="clickClearWarnings">Limpar notificações</span>
 					<span v-if="warningListSize == 0">Sem notificações</span>
 				</div>
+				<div class="scrollableDiv">
+					<table>
+						<tr v-for="warning in warningList">
+							{{warning.error}} - {{warning.response.data}}
+						</tr>
+					</table>
+				</div>
 			</div>
-			<h1>Registros</h1>
-			<div>
-				<table>
-					<tr v-for="log in logList">
-						{{log.time}} - {{log.message}}
-					</tr>
-				</table>
+			<div class="logDiv">
+				<h1>Registros</h1>
 				<div class="clearLogsButtonArea">
 					<span v-if="logListSize > 0" class="clearLogsButton" v-on:click="clickClearLogs">Limpar registros</span>
 					<span v-if="logListSize == 0">Sem registros</span>
+				</div>
+				<div class="scrollableDiv">
+					<table>
+						<tr v-for="log in logList">
+							{{log.time}} - {{log.message}}
+						</tr>
+					</table>
 				</div>
 			</div>
 		</div>

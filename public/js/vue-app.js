@@ -55,7 +55,8 @@ const TASK_TYPES = {
 	LOAD_NPC_PREFERENCES: "loadNpcPreferences",
 	LOAD_BUSINESS_RULES: "loadBusinessRules",
 	LOAD_HOME: "loadHome",
-	GENERATE_NIGHT: "generateNight"
+	GENERATE_NIGHT: "generateNight",
+	GENERATE_RESSONANCE: "generateRessonance"
 }
 
 const createPostUrlAction = (url) => {
@@ -75,6 +76,16 @@ const createLoadListUrlAction = (url, fieldName, sortingFunction) => {
 			self.thenAction(response);
 		});
 	}
+}
+
+// TODO: It might be worthy to make this mutable on the app.
+const RESSONANCE_UPDATE_CONFIGURATION = {
+	upToFleeting: 0.1,
+	downToNone: 0.25,
+	upToIntense: 0.1,
+	downToFleeting: 0.2,
+	upToDyscrasia: 0.1,
+	downToIntense: 0.4
 }
 
 const TASK_EXECUTIONS = {};
@@ -115,6 +126,24 @@ TASK_EXECUTIONS[TASK_TYPES.GENERATE_NIGHT] = function(self, data){
 	}
 	worker.postMessage([self.npcList, self.businessList, self.npcPreferencesList,
 					self.npcProfessionList, self.professionList, self.businessRulesList, self.homeList]);
+};
+TASK_EXECUTIONS[TASK_TYPES.GENERATE_RESSONANCE] = function(self, data){
+	if(!window.Worker){
+		alert("no support for web workers.");
+		self.thenAction();
+	}
+	let tic = new Date().getTime();
+	var worker = new Worker('../js/generateRessonance.js');
+	worker.onmessage = function(event){
+		let tac = new Date().getTime();
+		self.ressonanceUpdate = event.data;
+		self.lastUpdate = new Date().toString();
+		self.lastUpdateDetails = new Date().toString();
+		self.log("generateRessonance took "+((tac-tic)/1000)+"s.");
+		self.log("state = "+JSON.stringify(self.ressonanceUpdate));
+		self.thenAction();
+	}
+	worker.postMessage([self.npcList, self.ressonanceList, RESSONANCE_UPDATE_CONFIGURATION]);
 };
 
 const Task = function(type, data){
@@ -204,7 +233,8 @@ Vue.component('main-area', {
 			'npcAliveFilter', 'npcSickFilter', 'logList',
 			'warningList', 'npcProfessionList', 'professionList',
 			'npcList', 'neighbourhoodList', 'familyList', 'homeList',
-			'ressonanceList', 'healthList', 'darkTheme',
+			'ressonanceList', 'healthList', 'darkTheme', 'working',
+			'ressonanceUpdate',
 			'selectedFamily', 'businessList', 'lastUpdate', 'lastUpdateDetails'],
 	computed: {
 		showNpc: function(){
@@ -218,6 +248,9 @@ Vue.component('main-area', {
 		},
 		showConfig: function(){
 			return this.mainArea == CONFIG;
+		},
+		showNight: function(){
+			return this.mainArea == NIGHT;
 		}
 	},
 	methods: {
@@ -265,6 +298,80 @@ Vue.component('main-area', {
 		},
 		changeDarkTheme: function(){
 			this.$emit('change-dark-theme');
+		},
+		generateNight: function(){
+			this.$emit('generate-night');
+		},
+		generateRessonance: function(){
+			this.$emit('generate-ressonance');	
+		},
+		saveBatchRessonanceUpdate: function(){
+			this.$emit('save-batch-ressonance-update');	
+		}
+	}
+});
+
+Vue.component('main-area-night', {
+	template: '#mainAreaNightTemplate',
+	props: ['working', 'ressonanceUpdate', 'npcList', 'ressonanceList'],
+	data: function(){
+		return {};
+	},
+	computed: {
+		npcNameById: function(){
+			let cache = [];
+			_.each(this.npcList, (npc) => {
+				cache[npc.id] = npc.name;
+			});
+			return cache;
+		},
+		npcRessonanceById: function(){
+			let cache = [];
+			_.each(this.npcList, (npc) => {
+				cache[npc.id] = npc.ressonance;
+			});
+			return cache;
+		},
+		ressonanceNameById: function(){
+			let cache = [];
+			_.each(this.ressonanceList, (r) => {
+				cache[r.id] = r.name;
+			});
+			return cache;
+		},
+		updateCount: function(){
+			return _.size(
+				_.filter(
+					this.ressonanceUpdate, 
+					(r) => !isNullOrUndefinedOrEmpty(r))
+				);
+		},
+		ressonanceCount: function(){
+			return _.countBy(this.npcList, "ressonance");
+		},
+		nonVampireCount: function(){
+			return _.size(
+				_.filter(this.npcList, 
+					(npc) => isNullOrUndefinedOrEmpty(npc.clan)
+				)
+			);
+		}
+	},
+	methods: {
+		generateNight: function(){
+			if(this.working == true){
+				return;
+			}
+			if(!confirm("Tem certeza que deseja sobreescrever a noite atual?")){
+				return;
+			}
+			this.$emit('generate-night');
+		},
+		generateRessonance: function(){
+			this.$emit('generate-ressonance');	
+		},
+		saveBatchRessonanceUpdate: function(){
+			this.$emit('save-batch-ressonance-update');	
 		}
 	}
 });
@@ -739,7 +846,7 @@ Vue.component('neighbourhood-icon', {
 });
 
 Vue.component('npc-list', {
-	props: ['npcList', 'neighbourhoodList', 
+	props: ['npcList', 'neighbourhoodList', 'darkTheme',
 		'ressonanceList', 'businessActivity', 'professionList'],
 	template: '#npcListTemplate',
 	methods: {
@@ -910,7 +1017,8 @@ var app = new Vue({
 		npcAliveFilter: null,
 		npcSickFilter: null,
 		taskQueue: [],
-		night: {}
+		night: {},
+		ressonanceUpdate: []
 	},
 	methods: {
 		thenAction: function(response){
@@ -944,18 +1052,14 @@ var app = new Vue({
 		log: function(text){
 			this.logList.push(new Log(text));
 		},
+		generateNight: function(){
+			this.addTask(new Task(TASK_TYPES.GENERATE_NIGHT, {}));
+		},
+		generateRessonance: function(){
+			this.addTask(new Task(TASK_TYPES.GENERATE_RESSONANCE, {}));
+		},
 		showMainArea: function(mainArea){
-			if(mainArea == NIGHT){
-				if(this.working == true){
-					return;
-				}
-				if(!confirm("Tem certeza que deseja sobreescrever a noite atual?")){
-					return;
-				}
-				this.addTask(new Task(TASK_TYPES.GENERATE_NIGHT, {}));
-			} else{
-				this.mainArea = mainArea;
-			}
+			this.mainArea = mainArea;
 		},
 		vampireFilterChange: function(){
 			if(this.npcVampireFilter == null){
@@ -1124,6 +1228,32 @@ var app = new Vue({
 				}
 			));
 		},
+		saveBatchRessonanceUpdate: function(){
+			let self = this;
+			let tasks = [];
+			_.each(this.ressonanceUpdate, (newRessonance, npcId) => {
+				if(npcId <= 0){
+					return; // Ignore npcId == 0
+				}
+				let npc = _.findWhere(self.npcList, {id: npcId});
+				if(!isNullOrUndefinedOrEmpty(npc.clan)){
+					return; // Do not change vampires's ressonance.
+				}
+				if(isNullOrUndefinedOrEmpty(newRessonance)){
+					return; // Do not change this npc ressonance.
+				}
+				// Now we are good to go.
+				npc.ressonance = newRessonance;
+				this.log("Saving npc "+npcId+" ressonance "+newRessonance);
+				this.addTask(new Task(
+					TASK_TYPES.SAVE_RESSONANCE,
+					{
+						id: npcId,
+						ressonance: newRessonance
+					}
+				));
+			});
+		},
 		saveSelectedNpcHealthChange: function(event){
 			let self = this;
 			let i = event.health.index;
@@ -1182,37 +1312,3 @@ var app = new Vue({
 });
 
 
-/*
-const updateRessonance = function(npc){
-        let seed = Math.random();
-        if(npc.ressonancia == NONE){
-                if(seed > 1-$scope.upToFleeting){
-                        npc.ressonancia = FLEETING;
-                }
-        } else if(npc.ressonancia == FLEETING){
-                if(seed > 1-$scope.upToIntense){
-                        npc.ressonancia = INTENSE;
-                } else if(seed < $scope.downToNone){
-                        npc.ressonancia = NONE;
-                }
-        } else if(npc.ressonancia == INTENSE){
-                if(seed > 1-$scope.upToDyscrasia){
-                        npc.ressonancia = DYSCRASIA;
-                } else if(seed < $scope.downToFleeting){
-                        npc.ressonancia = FLEETING;
-                }
-        } else if(npc.ressonancia == DYSCRASIA){
-                if(seed < $scope.downToIntense){
-                        npc.ressonancia = INTENSE;
-                }
-        }
-}
-
-$scope.upToFleeting = 0.1;
-$scope.downToNone = 0.25;
-$scope.upToIntense = 0.1;
-$scope.downToFleeting = 0.2;
-$scope.upToDyscrasia = 0.1;
-$scope.downToIntense = 0.4;
-
-*/
