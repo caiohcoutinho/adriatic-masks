@@ -13,28 +13,30 @@ const generateRessonance = function(npcList, ressonanceList, configurations){
     _.each(npcList, (npc) => {
     	let seed = Math.random();
     	let result = null;
-    	let currentRessonance = npc.ressonance;
-		if(currentRessonance == none.id){
-	        if(seed > 1-configurations.upToFleeting){
-	            result = fleeting.id;
-	        }
-	    } else if(currentRessonance == fleeting.id){
-	        if(seed > 1-configurations.upToIntense){
-	            result = intense.id;
-	        } else if(seed < configurations.downToNone){
-	            result = none.id;
-	        }
-	    } else if(currentRessonance == intense.id){
-	        if(seed > 1-configurations.upToDyscrasia){
-	            result = dyscrasia.id;
-	        } else if(seed < configurations.downToFleeting){
-	            result = fleeting.id;
-	        }
-	    } else if(currentRessonance == dyscrasia.id){
-	        if(seed < configurations.downToIntense){
-	            result = intense.id;
-	        }
-	    }
+    	if(npc.alive && npc.clan == null){
+	    	let currentRessonance = npc.ressonance;
+			if(currentRessonance == none.id){
+		        if(seed > 1-configurations.upToFleeting){
+		            result = fleeting.id;
+		        }
+		    } else if(currentRessonance == fleeting.id){
+		        if(seed > 1-configurations.upToIntense){
+		            result = intense.id;
+		        } else if(seed < configurations.downToNone){
+		            result = none.id;
+		        }
+		    } else if(currentRessonance == intense.id){
+		        if(seed > 1-configurations.upToDyscrasia){
+		            result = dyscrasia.id;
+		        } else if(seed < configurations.downToFleeting){
+		            result = fleeting.id;
+		        }
+		    } else if(currentRessonance == dyscrasia.id){
+		        if(seed < configurations.downToIntense){
+		            result = intense.id;
+		        }
+		    }
+		}
 	    updates[npc.id] = result;
     });
     return updates;

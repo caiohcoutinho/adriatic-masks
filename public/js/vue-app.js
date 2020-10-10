@@ -1239,6 +1239,9 @@ var app = new Vue({
 				if(!isNullOrUndefinedOrEmpty(npc.clan)){
 					return; // Do not change vampires's ressonance.
 				}
+				if(!npc.alive){
+					return; // Do not change dead npc ressonance.
+				}
 				if(isNullOrUndefinedOrEmpty(newRessonance)){
 					return; // Do not change this npc ressonance.
 				}
