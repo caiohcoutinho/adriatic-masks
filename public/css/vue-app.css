@@ -101,7 +101,10 @@ div.details{
 	height: 100%;
 }
 
-div.mainAreaNpc, div.mainAreaBusiness, div.mainAreaConfig, div.mainAreaNight{
+div.mainAreaNpc,
+div.mainAreaBusiness,
+div.mainAreaConfig,
+div.mainAreaNight{
 	height: 100%;
 	width: 100%;
 }
@@ -133,6 +136,7 @@ div.darkTheme table.businessTable tr.businessTableHeaderRow th,
 div.darkTheme div.mainAreaNpcListSection table.npcTable .npcTableDataRowOdd,
 div.darkTheme div.mainAreaConfig,
 div.darkTheme div.mainAreaNight,
+div.darkTheme div.mainAreaCharacterSheet,
 div.darkTheme div.mainAreaNpcListSection div.npcTableContainer,
 div.darkTheme tr.businessTableDataRowPeriod, 
 div.darkTheme div.npcDetailsPortrait, 
@@ -169,11 +173,12 @@ div.mainAreaNpcListSection, div.mainAreaBusinessListSection{
 	border-right-width: 3px;
 }
 
-div.mainAreaConfig, div.mainAreaNight{
+div.mainAreaConfig, div.mainAreaNight, div.mainAreaCharacterSheet{
 	padding-left: 40px;
 	padding-top: 20px;
 	color: #4C0813;
 	width: 950px;
+	height: 100%;
 }
 
 span.badge{
@@ -206,7 +211,21 @@ table.npcTable{
 	border-spacing: 0px;
 }
 
-table.businessTable{
+table.characterSheetSeedsTable{
+	font-size: xx-small;
+}
+
+table.mainAreaCharacterSheetTable td.characterSheetLabelTd{
+	width: 130px;
+}
+
+table.mainAreaCharacterSheetTable td.characterSheetPortrait div.portrait{
+	position: relative;
+}
+
+table.businessTable, 
+table.mainAreaCharacterSheetTable, 
+table.characterSheetSeedsTable{
 	table-layout: fixed;
 	width: 99%;
 	border-collapse: collapse;
@@ -224,7 +243,15 @@ table.businessTable tr.businessTableDataRow:hover{
 	cursor:	pointer;
 }
 
-table.updateRessona
+div.darkTheme table.mainAreaCharacterSheetTable td{
+	border-color: #1b0e10;
+}
+
+table.mainAreaCharacterSheetTable td{
+	border-style: solid;
+	border-width: 3px;
+	border-color: #4C0813;
+}
 
 table.updateRessonanceTableDiv tr,
 table.npcTable tr.npcTableHeaderRow th,
@@ -417,6 +444,10 @@ div.npcDetailsInformation{
 
 table.informationTable{
 
+}
+
+div.mainAreaCharacterSheet div.scrollableDiv{
+	height: 90%;
 }
 
 div.scrollableDiv{

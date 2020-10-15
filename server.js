@@ -69,7 +69,18 @@ app.get("/npc", (req, res, next) => {
 			npc.notes,
 			v.generation,
 			clan.name clan,
-			pt.name predator_type
+			pt.name predator_type,
+			seed_nickname,
+			seed_age,
+			seed_eyes,
+			seed_hair,
+			seed_neighborhood,
+			seed_physical,
+			seed_social,
+			seed_mental,
+			seed_instinct,
+			seed_oath,
+			seed_oath_nature
 		from npc
 		join gender on npc.gender = gender.id
 		join nationality on nationality.id = npc.nationality

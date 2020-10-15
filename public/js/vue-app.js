@@ -1,4 +1,5 @@
 const NPC = 'npc';
+const CHARACTER_SHEET = 'characterSheet';
 const BUSINESS = 'business';
 const NIGHT = 'night';
 const CONFIG = 'config';
@@ -169,6 +170,9 @@ Vue.component('left-bar-menu', {
 		clickNpc: function(){
 			this.$emit('click-link', NPC);
 		},
+		clickCharacterSheet: function(){
+			this.$emit('click-link', CHARACTER_SHEET);
+		},
 		clickBusiness: function(){
 			this.$emit('click-link', BUSINESS);
 		},
@@ -234,7 +238,7 @@ Vue.component('main-area', {
 			'warningList', 'npcProfessionList', 'professionList',
 			'npcList', 'neighbourhoodList', 'familyList', 'homeList',
 			'ressonanceList', 'healthList', 'darkTheme', 'working',
-			'ressonanceUpdate',
+			'ressonanceUpdate', 'selectedCharacterSheetNpc',
 			'selectedFamily', 'businessList', 'lastUpdate', 'lastUpdateDetails'],
 	computed: {
 		showNpc: function(){
@@ -251,6 +255,9 @@ Vue.component('main-area', {
 		},
 		showNight: function(){
 			return this.mainArea == NIGHT;
+		},
+		showCharacterSheet: function(){
+			return this.mainArea == CHARACTER_SHEET;	
 		}
 	},
 	methods: {
@@ -307,6 +314,9 @@ Vue.component('main-area', {
 		},
 		saveBatchRessonanceUpdate: function(){
 			this.$emit('save-batch-ressonance-update');	
+		},
+		selectedCharacterSheetNpcChange: function(event){
+			this.$emit("selected-character-sheet-npc-change", event);
 		}
 	}
 });
@@ -628,6 +638,28 @@ Vue.component('main-area-business', {
 		}
 	}
 });
+
+Vue.component('main-area-character-sheet', {
+	template: '#mainAreaCharacterSheetTemplate',
+	props: ['npcList', 'selectedCharacterSheetNpc', 
+			'healthList'],
+	methods: {
+		selectedCharacterSheetNpcChange: function(npcId){
+			this.$emit("selected-character-sheet-npc-change", npcId);
+		}
+	},
+	computed: {
+		orderedNpcList: function(){
+			return _.sortBy(this.npcList, "name");
+		},
+		selectedNpc: function(){
+			if(isNullOrUndefinedOrEmpty(this.selectedCharacterSheetNpc)){
+				return null;
+			}
+			return _.findWhere(this.npcList, {id: this.selectedCharacterSheetNpc});
+		}
+	}
+})
 
 Vue.component('portrait', {
 	template: '#portraitTemplate',
@@ -1002,6 +1034,7 @@ var app = new Vue({
 		logList: [],
 		working:false,
 		selectedNpc: null,
+		selectedCharacterSheetNpc: null,
 		selectedBusiness: null,
 		neighbourhoodList: [],
 		familyList: [],
@@ -1286,6 +1319,13 @@ var app = new Vue({
 					value: h.value
 				}
 			));
+		},
+		selectedCharacterSheetNpcChange: function(event){
+			let npcIdText = event.target.value;
+			if(isNullOrUndefinedOrEmpty(npcIdText)){
+				return;
+			}
+			this.selectedCharacterSheetNpc = parseInt(npcIdText);
 		},
 		clearFilter: function(){
 			this.selectedFamily = null;

@@ -37,6 +37,7 @@
 				v-bind:log-list="logList"
 				v-bind:main-area="mainArea"
 				v-bind:npc-list="npcList"
+				v-bind:selected-character-sheet-npc="selectedCharacterSheetNpc"
 				v-bind:health-list="healthList"
 				v-bind:profession-list="professionList"
 				v-bind:npc-profession-list="npcProfessionList"
@@ -69,6 +70,7 @@
 				v-on:generate-night="generateNight"
 				v-on:generate-ressonance="generateRessonance"
 				v-on:save-batch-ressonance-update="saveBatchRessonanceUpdate"
+				v-on:selected-character-sheet-npc-change="selectedCharacterSheetNpcChange"
 				v-bind:ressonance-update="ressonanceUpdate"
 				>
 			</main-area>
@@ -108,6 +110,10 @@
 			<div class="leftBarMenuLinkBlock leftBarMenuNpcBlock" v-on:click="clickNpc">
 				<img class="leftBarMenuLinkImg leftBarMenuItem" src="/img/npc.png" >
 				<h1 class="leftBarMenuLinkImg leftBarMenuItem">NPC</h1>
+			</div>
+			<div class="leftBarMenuLinkBlock leftBarMenuCharacterSheetBlock" v-on:click="clickCharacterSheet">
+				<img class="leftBarMenuLinkImg leftBarMenuItem" src="/img/characterSheet.png" >
+				<h1 class="leftBarMenuLinkImg leftBarMenuItem">Planilha</h1>
 			</div>
 			<div class="leftBarMenuLinkBlock leftBarMenuNpcBlock" v-on:click="clickBusiness">
 				<img class="leftBarMenuLinkImg leftBarMenuItem" src="/img/location.png" >
@@ -159,6 +165,13 @@
 				v-on:alive-filter-change="aliveFilterChange"
 				v-on:sick-filter-change="sickFilterChange"
 				v-on:home-filter-change="homeFilterChange"/>
+			<main-area-character-sheet 
+				v-if="showCharacterSheet"
+				v-bind:npc-list="npcList"
+				v-bind:health-list="healthList"
+				v-bind:selected-character-sheet-npc="selectedCharacterSheetNpc"
+				v-on:selected-character-sheet-npc-change="selectedCharacterSheetNpcChange"
+				/>
 			<main-area-business
 				v-if="showBusiness"
 				v-bind:dark-theme="darkTheme"
@@ -201,7 +214,7 @@
 				<p v-for="ressonance in ressonanceList">{{ressonance.name}}: {{ressonanceCount[ressonance.id]}} ({{ Math.floor(100*(ressonanceCount[ressonance.id] / (1.0*nonVampireCount))) }}%)</p>
 			</div>
 			<div>Gerar ressonância: <button v-on:click="generateRessonance">Gerar</button></div>
-			<div v-if="ressonanceUpdate != null && ressonanceUpdate.length > 0">Aplicar alterações: <button v-on:click="saveBatchRessonanceUpdate">Aplicar</button></div>
+			<div v-if="ressonance-updatee != null && ressonanceUpdate.length > 0">Aplicar alterações: <button v-on:click="saveBatchRessonanceUpdate">Aplicar</button></div>
 			<div>
 				<span v-if="ressonanceUpdate != null">{{updateCount}} alterações de ressonância.</span>
 			</div>
@@ -295,6 +308,174 @@
 						</tr>
 					</table>
 				</div>
+			</div>
+		</div>
+	</script>
+
+	<script type="text/x-template" id="mainAreaCharacterSheetTemplate">
+		<div class="mainAreaCharacterSheet">
+			<h1>Planilha</h1>
+			<div>
+				NPC: 
+				<select class="characterSheetNpcSelect" v-bind:value="selectedCharacterSheetNpc" v-on:change="selectedCharacterSheetNpcChange">
+					<option value="">NPC</option>
+					<option v-for="npc in orderedNpcList" v-bind:value="npc.id">
+						{{npc.name}} (#{{npc.id}})
+					</option>
+				</select>
+			</div>
+			<div class="scrollableDiv">
+				<table v-if="selectedNpc != null"
+					class="mainAreaCharacterSheetTable">
+					<tr>
+						<td class="characterSheetPortrait" colspan="2">
+							<portrait v-bind:npc="selectedNpc"/>
+						</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Id</td>
+						<td>{{selectedNpc.id}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Nome</td>
+						<td>{{selectedNpc.name}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Nacionalidade</td>
+						<td>{{selectedNpc.nationality}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Idade</td>
+						<td>{{selectedNpc.age}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Apelido</td>
+						<td><span v-if="selectedNpc.nickname != null">"{{selectedNpc.nickname}}"</span></td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Pele</td>
+						<td>{{selectedNpc.skin}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Olhos</td>
+						<td>{{selectedNpc.eyes}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Bairro</td>
+						<td>{{selectedNpc.neighbourhood}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Físico</td>
+						<td>{{selectedNpc.f}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Mental</td>
+						<td>{{selectedNpc.m}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Social</td>
+						<td>{{selectedNpc.s}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Família</td>
+						<td>{{selectedNpc.family_name}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Moradia</td>
+						<td>{{selectedNpc.home}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Instinto</td>
+						<td>{{selectedNpc.instinct}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Desejo</td>
+						<td>{{selectedNpc.oath}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Natureza</td>
+						<td>{{selectedNpc.oath_nature}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Vivo</td>
+						<td>{{selectedNpc.alive}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Doente</td>
+						<td>{{selectedNpc.sick}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Hospitalizado</td>
+						<td>{{selectedNpc.hospitalized}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Descrição</td>
+						<td>{{selectedNpc.description}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Notas</td>
+						<td>{{selectedNpc.notes}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">História</td>
+						<td>{{selectedNpc.story}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Riqueza</td>
+						<td>{{selectedNpc.wealth}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Saúde Máxima</td>
+						<td>{{selectedNpc.max_health}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Ressonância</td>
+						<td>{{selectedNpc.ressonance}}</td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Saúde</td>
+						<td><health-bar 
+							v-bind:npc="selectedNpc"
+							v-bind:health-list="healthList"
+							v-on:click-health="saveHealthBar"/>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">Seeds</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<table class="characterSheetSeedsTable">
+								<tr>
+									<td>nickname</td>
+									<td>age</td>
+									<td>eyes</td>
+									<td>hair</td>
+									<td>neighborhood</td>
+									<td>physical</td>
+									<td>social</td>
+									<td>mental</td>
+									<td>instinct</td>
+									<td>oath</td>
+									<td>oath_nature</td>
+								</tr>
+								<tr>
+									<td>{{selectedNpc.seed_nickname}}</td>
+									<td>{{selectedNpc.seed_age}}</td>
+									<td>{{selectedNpc.seed_eyes}}</td>
+									<td>{{selectedNpc.seed_hair}}</td>
+									<td>{{selectedNpc.seed_neighborhood}}</td>
+									<td>{{selectedNpc.seed_physical}}</td>
+									<td>{{selectedNpc.seed_social}}</td>
+									<td>{{selectedNpc.seed_mental}}</td>
+									<td>{{selectedNpc.seed_instinct}}</td>
+									<td>{{selectedNpc.seed_oath}}</td>
+									<td>{{selectedNpc.seed_oath_nature}}</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
 			</div>
 		</div>
 	</script>
