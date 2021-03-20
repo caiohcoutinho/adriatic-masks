@@ -38,8 +38,7 @@ app.get("/npc", (req, res, next) => {
 		select  npc.id id,
 			npc.name, 
 			gender.symbol gender, 
-			nationality.id nationalityId, 
-			nationality.name nationality, 
+			nationality, 
 			npc.age, 
 			npc.nickname, 
 			skin_color.color skin, 
@@ -83,7 +82,6 @@ app.get("/npc", (req, res, next) => {
 			seed_oath_nature
 		from npc
 		join gender on npc.gender = gender.id
-		join nationality on nationality.id = npc.nationality
 		join skin_color on skin_color.id = npc.skin
 		join eye_color on eye_color.id = npc.eyes
 		join hair_color on hair_color.id = npc.hair
@@ -333,6 +331,26 @@ app.post("/story", (req, res, next) => {
 	});
 });
 
+app.post("/nationality", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set nationality = "+req.body.nationality+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+		  	if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}
+		});
+	});
+});
+
 app.post("/ressonance", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){
@@ -509,6 +527,31 @@ app.get("/home", (req, res, next) => {
 			select h.id, h.name, n.name neighbourhood
 			from home h
 			join neighbourhood n on n.id = h.neighbourhood
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows)
+			}
+		  
+		})
+	});
+});
+
+app.get("/nationality", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query(
+			`
+			select n.id, n.name
+			from nationality n
 			`,
 			 (err, result) => {
 		 	done()

@@ -39,8 +39,11 @@ const HAIR = {
 const TASK_TYPES = {
 	SAVE_HEALTH: "saveHealth",
 	SAVE_NOTES: "saveNotes",
+	SAVE_NAME: "saveName",
+	SAVE_NICKNAME: "saveNickname",
 	SAVE_DESCRIPTION: "saveDescription",
 	SAVE_STORY: "saveStory",
+	SAVE_NATIONALITY: "saveNationality",
 	SAVE_ALIVE: "saveAlive",
 	SAVE_SICK: "saveSick",
 	SAVE_HOSPITALIZED: "saveHospitalized",
@@ -56,6 +59,7 @@ const TASK_TYPES = {
 	LOAD_NPC_PREFERENCES: "loadNpcPreferences",
 	LOAD_BUSINESS_RULES: "loadBusinessRules",
 	LOAD_HOME: "loadHome",
+	LOAD_NATIONALITY: "loadNationality",
 	GENERATE_NIGHT: "generateNight",
 	GENERATE_RESSONANCE: "generateRessonance"
 }
@@ -95,6 +99,7 @@ TASK_EXECUTIONS[TASK_TYPES.SAVE_NAME] = createPostUrlAction("/name");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_NICKNAME] = createPostUrlAction("/nickname");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_NOTES] = createPostUrlAction("/notes");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_STORY] = createPostUrlAction("/story");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_NATIONALITY] = createPostUrlAction("/nationality");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_DESCRIPTION] = createPostUrlAction("/description");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_ALIVE] = createPostUrlAction("/alive");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_SICK] = createPostUrlAction("/sick");
@@ -107,8 +112,10 @@ TASK_EXECUTIONS[TASK_TYPES.LOAD_NPC_PROFESSION] = createLoadListUrlAction("/npcP
 TASK_EXECUTIONS[TASK_TYPES.LOAD_NPC] = createLoadListUrlAction("/npc", "npcList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_NEIGHBOURHOOD] = createLoadListUrlAction("/neighbourhood", "neighbourhoodList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_FAMILY] = createLoadListUrlAction("/family", "familyList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_NATIONALITY] = createLoadListUrlAction("/nationality", "nationalityList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_BUSINESS] = createLoadListUrlAction("/business", "businessList");
-TASK_EXECUTIONS[TASK_TYPES.LOAD_HEALTH] = createLoadListUrlAction("/health", "healthList");TASK_EXECUTIONS[TASK_TYPES.LOAD_NPC_PREFERENCES] = createLoadListUrlAction("/npcPreferences", "npcPreferencesList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_HEALTH] = createLoadListUrlAction("/health", "healthList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_NPC_PREFERENCES] = createLoadListUrlAction("/npcPreferences", "npcPreferencesList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_BUSINESS_RULES] = createLoadListUrlAction("/businessRules", "businessRulesList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_HOME] = createLoadListUrlAction("/home", "homeList", (h) => h.name);
 TASK_EXECUTIONS[TASK_TYPES.GENERATE_NIGHT] = function(self, data){
@@ -238,7 +245,7 @@ Vue.component('main-area', {
 			'npcNeighbourhoodFilter', 'npcVampireFilter',
 			'npcAliveFilter', 'npcSickFilter', 'logList',
 			'warningList', 'npcProfessionList', 'professionList',
-			'npcList', 'neighbourhoodList', 'familyList', 'homeList',
+			'npcList', 'neighbourhoodList', 'familyList', 'homeList', 'nationalityList',
 			'ressonanceList', 'healthList', 'darkTheme', 'working',
 			'ressonanceUpdate', 'selectedCharacterSheetNpc',
 			'selectedFamily', 'businessList', 'lastUpdate', 'lastUpdateDetails'],
@@ -334,6 +341,9 @@ Vue.component('main-area', {
 		},
 		characterSheetStoryChange: function(){
 			this.$emit("character-sheet-story-change");
+		},
+		characterSheetNationalityChange: function(event){
+			this.$emit("character-sheet-nationality-change", event);
 		}
 	}
 });
@@ -408,7 +418,7 @@ Vue.component('main-area-npc', {
 	props: ['npcList', 'nameFilter', 'homeFilter', 'minimunAgeFilter', 
 	'maximunAgeFilter', 'neighbourhoodFilter', 'vampireFilter',
 	'aliveFilter', 'sickFilter', 'ressonanceList', 'darkTheme',
-	'professionList', 'npcProfessionList', 'healthList',
+	'professionList', 'npcProfessionList', 'healthList', 'nationalityList',
 	'businessList', 'neighbourhoodList', 'familyList', 'familyFilter', 'homeList'],
 	data: function(){
 		return {
@@ -427,6 +437,13 @@ Vue.component('main-area-npc', {
 			let cache = [];
 			_.each(this.professionList, (p) => {
 				cache[p.id] = p.name;
+			});
+			return cache;
+		},
+		nationalityById: function(){
+			let cache = [];
+			_.each(this.nationalityList, (n) => {
+				cache[n.id] = n.name;
 			});
 			return cache;
 		},
@@ -659,7 +676,7 @@ Vue.component('main-area-business', {
 Vue.component('main-area-character-sheet', {
 	template: '#mainAreaCharacterSheetTemplate',
 	props: ['npcList', 'selectedCharacterSheetNpc', 
-			'healthList'],
+			'healthList', 'nationalityList'],
 	methods: {
 		selectedCharacterSheetNpcChange: function(npcId){
 			this.$emit("selected-character-sheet-npc-change", npcId);
@@ -678,6 +695,9 @@ Vue.component('main-area-character-sheet', {
 		},
 		characterSheetStoryChange: function(){
 			this.$emit("character-sheet-story-change");
+		},
+		characterSheetNationalityChange: function(event){
+			this.$emit("character-sheet-nationality-change", event);
 		}
 	},
 	computed: {
@@ -739,7 +759,7 @@ Vue.component('main-area-config', {
 });
 
 Vue.component('side-details', {
-	props: ['night', 'npc', 'business', 'working', 'homeList',
+	props: ['night', 'npc', 'business', 'working', 'homeList', 'nationalityList',
 		'npcList', 'npcProfessionList', 'businessList', 'healthList',
 		'professionList', 'ressonanceList', 'darkTheme'],
 	template: '#sideDetailsTemplate',
@@ -814,7 +834,7 @@ Vue.component('open-closed-icon', {
 
 Vue.component('npc-details', {
 	props: ['night','npc', 'working', 'ressonanceList', 'homeList',
-		'healthList', 'darkTheme',
+		'healthList', 'darkTheme', 'nationalityList',
 		'businessList', 'professionList', 'npcProfessionList'],
 	template: '#npcDetailsTemplate',
 	methods: {
@@ -951,7 +971,7 @@ Vue.component('npc-list', {
 
 Vue.component('npc-information', {
 	props: ['night', 'npc', 'working', 'ressonanceList', 'healthList',
-		'darkTheme', 'neighbourhoodList',
+		'darkTheme', 'neighbourhoodList', 'nationalityList',
 		'professionList', 'npcProfessionList', 'homeList', 'businessList',],
 	template: '#npcInformationTemplate',
 	methods: {
@@ -998,6 +1018,13 @@ Vue.component('npc-information', {
 			let cache = [];
 			_.each(this.businessList, (b) => {
 				cache[b.id] = b.name;
+			});
+			return cache;
+		},
+		nationalityById: function(){
+			let cache = [];
+			_.each(this.nationalityList, (n) => {
+				cache[n.id] = n.name;
 			});
 			return cache;
 		},
@@ -1072,6 +1099,7 @@ var app = new Vue({
 		familyList: [],
 		ressonanceList: [],
 		homeList: [],
+		nationalityList: [],
 		selectedFamily: "",
 		npcNameFilter: null,
 		npcHomeFilter: "",
@@ -1427,6 +1455,20 @@ var app = new Vue({
 				));
 			}, 1500);
 		})(),
+		characterSheetNationalityChange: function(event){
+			let self = this;
+			let npcId = this.selectedCharacterSheetNpc;
+			let newNationalityId = parseInt(event.target.value);
+			_.findWhere(this.npcList, {id: npcId}).nationality = newNationalityId;
+			this.log("Saving npc "+npcId+" nationality change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_NATIONALITY,
+				{
+					id: npcId,
+					nationality: newNationalityId
+				}
+			));
+		},
 		selectedCharacterSheetNpcChange: function(event){
 			let npcIdText = event.target.value;
 			if(isNullOrUndefinedOrEmpty(npcIdText)){
