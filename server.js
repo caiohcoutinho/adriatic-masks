@@ -253,6 +253,46 @@ app.post("/notes", (req, res, next) => {
 	});
 });
 
+app.post("/name", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set name = '"+req.body.name+"' where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+		  	if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}
+		});
+	});
+});
+
+app.post("/nickname", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set nickname = '"+req.body.nickname+"' where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+		  	if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}
+		});
+	});
+});
+
 app.post("/description", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){

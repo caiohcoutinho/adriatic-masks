@@ -71,6 +71,11 @@
 				v-on:generate-ressonance="generateRessonance"
 				v-on:save-batch-ressonance-update="saveBatchRessonanceUpdate"
 				v-on:selected-character-sheet-npc-change="selectedCharacterSheetNpcChange"
+				v-on:character-sheet-name-change="characterSheetNameInputChange"
+				v-on:character-sheet-nickname-change="characterSheetNicknameInputChange"
+				v-on:character-sheet-description-change="characterSheetDescriptionChange"
+				v-on:character-sheet-notes-change="characterSheetNotesChange"
+				v-on:character-sheet-story-change="characterSheetStoryChange"
 				v-bind:ressonance-update="ressonanceUpdate"
 				>
 			</main-area>
@@ -170,6 +175,11 @@
 				v-bind:npc-list="npcList"
 				v-bind:health-list="healthList"
 				v-bind:selected-character-sheet-npc="selectedCharacterSheetNpc"
+				v-on:character-sheet-name-change="characterSheetNameInputChange"
+				v-on:character-sheet-nickname-change="characterSheetNicknameInputChange"
+				v-on:character-sheet-description-change="characterSheetDescriptionChange"
+				v-on:character-sheet-notes-change="characterSheetNotesChange"
+				v-on:character-sheet-story-change="characterSheetStoryChange"
 				v-on:selected-character-sheet-npc-change="selectedCharacterSheetNpcChange"
 				/>
 			<main-area-business
@@ -338,7 +348,7 @@
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Nome</td>
-						<td>{{selectedNpc.name}}</td>
+						<td><input class="characterSheetNameInput" type="text" v-model="selectedNpc.name" v-on:input="characterSheetNameInputChange"/></td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Nacionalidade</td>
@@ -350,7 +360,7 @@
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Apelido</td>
-						<td><span v-if="selectedNpc.nickname != null">"{{selectedNpc.nickname}}"</span></td>
+						<td><input class="characterSheetNicknameInput" type="text" v-model="selectedNpc.nickname" v-on:input="characterSheetNicknameInputChange"/></td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Pele</td>
@@ -410,15 +420,15 @@
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Descrição</td>
-						<td>{{selectedNpc.description}}</td>
+						<td><textarea class="characterSheetTextArea characterSheetDescriptionTextArea" v-model="selectedNpc.description" v-on:input="characterSheetDescriptionChange"/></td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Notas</td>
-						<td>{{selectedNpc.notes}}</td>
+						<td><textarea class="characterSheetTextArea characterSheetNotesTextArea" v-model="selectedNpc.notes" v-on:input="characterSheetNotesChange"/></td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">História</td>
-						<td>{{selectedNpc.story}}</td>
+						<td><textarea class="characterSheetTextArea characterSheetStoryTextArea" v-model="selectedNpc.story" v-on:input="characterSheetStoryChange"/></td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Riqueza</td>
@@ -434,10 +444,13 @@
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Saúde</td>
-						<td><health-bar 
+						<td>
+							<!--
+								<health-bar 
 							v-bind:npc="selectedNpc"
 							v-bind:health-list="healthList"
 							v-on:click-health="saveHealthBar"/>
+							-->
 						</td>
 					</tr>
 					<tr>
@@ -744,7 +757,7 @@
 					</td>
 				</tr>
 				<tr>
-					<td colspan="2"><span v-if="npc.family_id != undefined">Família <span v-on:click="clickFamily(npc.family_id)" class="clickableLink">{{npc.family_name}}</span>, </span>{{npc.age}} anos, de {{npc.nationality}}<span v-if="npc.nickname != undefined">, atende por "{{npc.nickname}}"</span></td>
+					<td colspan="2"><span v-if="npc.family_id != undefined">Família <span v-on:click="clickFamily(npc.family_id)" class="clickableLink">{{npc.family_name}}</span>, </span>{{npc.age}} anos, de {{npc.nationality}}<span v-if="npc.nickname != undefined && npc.nickname != ''">, atende por "{{npc.nickname}}"</span></td>
 				</tr>
 				<tr>
 					<td colspan="2">${{npc.wealth}}<span v-if="npcProfessionByNpc[npc.id] != undefined && npcProfessionByNpc[npc.id].length > 0"><span v-for="occupation in npcProfessionByNpc[npc.id]">, {{professionById[occupation.profession]}}<span v-if="occupation.business != undefined"> em {{businessById[occupation.business]}}</span></span></span></td>

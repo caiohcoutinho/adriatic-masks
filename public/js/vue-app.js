@@ -91,6 +91,8 @@ const RESSONANCE_UPDATE_CONFIGURATION = {
 
 const TASK_EXECUTIONS = {};
 TASK_EXECUTIONS[TASK_TYPES.SAVE_HEALTH] = createPostUrlAction("/health");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_NAME] = createPostUrlAction("/name");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_NICKNAME] = createPostUrlAction("/nickname");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_NOTES] = createPostUrlAction("/notes");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_STORY] = createPostUrlAction("/story");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_DESCRIPTION] = createPostUrlAction("/description");
@@ -317,6 +319,21 @@ Vue.component('main-area', {
 		},
 		selectedCharacterSheetNpcChange: function(event){
 			this.$emit("selected-character-sheet-npc-change", event);
+		},
+		characterSheetNameInputChange: function(event){
+			this.$emit("character-sheet-name-change", event);
+		},
+		characterSheetNicknameInputChange: function(){
+			this.$emit("character-sheet-nickname-change");
+		},
+		characterSheetDescriptionChange: function(){
+			this.$emit("character-sheet-description-change");
+		},
+		characterSheetNotesChange: function(){
+			this.$emit("character-sheet-notes-change");
+		},
+		characterSheetStoryChange: function(){
+			this.$emit("character-sheet-story-change");
 		}
 	}
 });
@@ -646,6 +663,21 @@ Vue.component('main-area-character-sheet', {
 	methods: {
 		selectedCharacterSheetNpcChange: function(npcId){
 			this.$emit("selected-character-sheet-npc-change", npcId);
+		},
+		characterSheetNameInputChange: function(){
+			this.$emit("character-sheet-name-change");
+		},
+		characterSheetNicknameInputChange: function(){
+			this.$emit("character-sheet-nickname-change");
+		},
+		characterSheetDescriptionChange: function(){
+			this.$emit("character-sheet-description-change");
+		},
+		characterSheetNotesChange: function(){
+			this.$emit("character-sheet-notes-change");
+		},
+		characterSheetStoryChange: function(){
+			this.$emit("character-sheet-story-change");
 		}
 	},
 	computed: {
@@ -1320,6 +1352,81 @@ var app = new Vue({
 				}
 			));
 		},
+		characterSheetNameInputChange: (function(){
+			return _.debounce(function(){
+				let self = this;
+				let npcId = this.selectedCharacterSheetNpc;
+				let newName = _.findWhere(this.npcList, {id: npcId}).name;
+				this.log("Saving npc "+npcId+" name change");
+				this.addTask(new Task(
+					TASK_TYPES.SAVE_NAME,
+					{
+						id: npcId,
+						name: newName
+					}
+				));
+			}, 1500);
+		})(),
+		characterSheetNicknameInputChange: (function(){
+			return _.debounce(function(){
+				let self = this;
+				let npcId = this.selectedCharacterSheetNpc;
+				let newNickname = _.findWhere(this.npcList, {id: npcId}).nickname;
+				this.log("Saving npc "+npcId+" nickname change");
+				this.addTask(new Task(
+					TASK_TYPES.SAVE_NICKNAME,
+					{
+						id: npcId,
+						nickname: newNickname
+					}
+				));
+			}, 1500);
+		})(),
+		characterSheetDescriptionChange: (function(){
+			return _.debounce(function(){
+				let self = this;
+				let npcId = this.selectedCharacterSheetNpc;
+				let newDescription = _.findWhere(this.npcList, {id: npcId}).description;
+				this.log("Saving npc "+npcId+" description change (character sheet)");
+				this.addTask(new Task(
+					TASK_TYPES.SAVE_DESCRIPTION,
+					{
+						id: npcId,
+						description: newDescription
+					}
+				));
+			}, 1500);
+		})(),
+		characterSheetNotesChange: (function(){
+			return _.debounce(function(){
+				let self = this;
+				let npcId = this.selectedCharacterSheetNpc;
+				let newNotes = _.findWhere(this.npcList, {id: npcId}).notes;
+				this.log("Saving npc "+npcId+" notes change (character sheet)");
+				this.addTask(new Task(
+					TASK_TYPES.SAVE_NOTES,
+					{
+						id: npcId,
+						notes: newNotes
+					}
+				));
+			}, 1500);
+		})(),
+		characterSheetStoryChange: (function(){
+			return _.debounce(function(){
+				let self = this;
+				let npcId = this.selectedCharacterSheetNpc;
+				let newStory = _.findWhere(this.npcList, {id: npcId}).story;
+				this.log("Saving npc "+npcId+" story change (character sheet)");
+				this.addTask(new Task(
+					TASK_TYPES.SAVE_STORY,
+					{
+						id: npcId,
+						story: newStory
+					}
+				));
+			}, 1500);
+		})(),
 		selectedCharacterSheetNpcChange: function(event){
 			let npcIdText = event.target.value;
 			if(isNullOrUndefinedOrEmpty(npcIdText)){
