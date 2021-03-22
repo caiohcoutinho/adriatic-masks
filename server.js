@@ -41,9 +41,9 @@ app.get("/npc", (req, res, next) => {
 			nationality, 
 			npc.age, 
 			npc.nickname, 
-			skin_color.color skin, 
-			eye_color.color eyes, 
-			hair_color.color hair,
+			skin, 
+			eyes, 
+			hair,
 			home home_id, 
 			neighbourhood.name neighbourhood, 
 			neighbourhood.id neighbourhoodId, 
@@ -82,9 +82,6 @@ app.get("/npc", (req, res, next) => {
 			seed_oath_nature
 		from npc
 		join gender on npc.gender = gender.id
-		join skin_color on skin_color.id = npc.skin
-		join eye_color on eye_color.id = npc.eyes
-		join hair_color on hair_color.id = npc.hair
 		join neighbourhood on neighbourhood.id = npc.neighbourhood
 		left join family on family.id = npc.family
 		join oath on oath.id = npc.oath
@@ -552,6 +549,81 @@ app.get("/nationality", (req, res, next) => {
 			`
 			select n.id, n.name
 			from nationality n
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows)
+			}
+		  
+		})
+	});
+});
+
+app.get("/skin", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query(
+			`
+			select n.id, n.color
+			from skin_color n
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows)
+			}
+		  
+		})
+	});
+});
+
+app.get("/eyes", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query(
+			`
+			select n.id, n.color
+			from eye_color n
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows)
+			}
+		  
+		})
+	});
+});
+
+app.get("/hair", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query(
+			`
+			select n.id, n.color
+			from hair_color n
 			`,
 			 (err, result) => {
 		 	done()

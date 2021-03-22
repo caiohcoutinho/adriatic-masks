@@ -55,6 +55,9 @@
 				v-bind:ressonance-list="ressonanceList"
 				v-bind:home-list="homeList"
 				v-bind:nationality-list="nationalityList"
+				v-bind:skin-list="skinList"
+				v-bind:eyes-list="eyesList"
+				v-bind:hair-list="hairList"
 				v-bind:neighbourhood-list="neighbourhoodList"
 				v-on:clear-filter="clearFilter"
 				v-on:select-family="selectFamily"
@@ -96,6 +99,9 @@
 				v-bind:business-list="businessList"
 				v-bind:profession-list="professionList"
 				v-bind:key="lastUpdateDetails"
+				v-bind:skin-list="skinList"
+				v-bind:eyes-list="eyesList"
+				v-bind:hair-list="hairList"
 				v-on:selected-npc-sick-change="selectedNpcSickChange"
 				v-on:selected-npc-alive-change="selectedNpcAliveChange"
 				v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
@@ -179,6 +185,9 @@
 				v-bind:npc-list="npcList"
 				v-bind:health-list="healthList"
 				v-bind:nationality-list="nationalityList"
+				v-bind:skin-list="skinList"
+				v-bind:eyes-list="eyesList"
+				v-bind:hair-list="hairList"
 				v-bind:selected-character-sheet-npc="selectedCharacterSheetNpc"
 				v-on:character-sheet-name-change="characterSheetNameInputChange"
 				v-on:character-sheet-nickname-change="characterSheetNicknameInputChange"
@@ -375,7 +384,12 @@
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Pele</td>
-						<td>{{selectedNpc.skin}}</td>
+						<td><select class="characterSheetNationalitySelect" v-bind:value="selectedNpc.nationality" v-on:change="characterSheetNationalityChange">
+							<option value="">Nacionalidade</option>
+							<option v-for="nationality in nationalityList" v-bind:value="nationality.id">
+								{{nationality.name}}
+							</option>
+							</select>{{selectedNpc.skin}}</td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Olhos</td>
@@ -651,6 +665,9 @@
 				v-bind:home-list="homeList"
 				v-bind:nationality-list="nationalityList"
 				v-bind:health-list="healthList"
+				v-bind:skin-list="skinList"
+				v-bind:eyes-list="eyesList"
+				v-bind:hair-list="hairList"
 				v-bind:npc-profession-list="npcProfessionList"
 				v-on:selected-npc-sick-change="selectedNpcSickChange"
 				v-on:selected-npc-alive-change="selectedNpcAliveChange"
@@ -706,6 +723,9 @@
 					v-bind:health-list="healthList"
 					v-bind:profession-list="professionList"
 					v-bind:npc-profession-list="npcProfessionList"
+					v-bind:skin-list="skinList"
+					v-bind:eyes-list="eyesList"
+					v-bind:hair-list="hairList"
 					v-on:selected-npc-sick-change="selectedNpcSickChange"
 					v-on:selected-npc-alive-change="selectedNpcAliveChange"
 					v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
@@ -792,7 +812,7 @@
 				</tr>
 				<tr><td>Attr(F/M/S)</td><td>{{npc.f}}/{{npc.m}}/{{npc.s}}</td></tr>
 				<tr><td colspan="2">Mora em {{homeNameById[npc.home_id]}} em {{npc.neighbourhood}}</td></tr>
-				<tr><td colspan="2">Pele {{npc.skin}}, olhos {{npc.eyes}}, cabelo {{npc.hair}}</td></tr>
+				<tr><td colspan="2">Pele {{skinColorById[npc.skin]}}, olhos {{eyesColorById[npc.eyes]}}, cabelo {{hairColorById[npc.hair]}}</td></tr>
 				<tr><td colspan="2">Notas</td></tr>
 				<tr>
 					<td colspan="2">

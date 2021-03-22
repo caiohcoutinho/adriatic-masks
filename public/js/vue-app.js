@@ -60,6 +60,9 @@ const TASK_TYPES = {
 	LOAD_BUSINESS_RULES: "loadBusinessRules",
 	LOAD_HOME: "loadHome",
 	LOAD_NATIONALITY: "loadNationality",
+	LOAD_SKIN: "loadSkin",
+	LOAD_EYES: "loadEyes",
+	LOAD_HAIR: "loadHair",
 	GENERATE_NIGHT: "generateNight",
 	GENERATE_RESSONANCE: "generateRessonance"
 }
@@ -113,6 +116,9 @@ TASK_EXECUTIONS[TASK_TYPES.LOAD_NPC] = createLoadListUrlAction("/npc", "npcList"
 TASK_EXECUTIONS[TASK_TYPES.LOAD_NEIGHBOURHOOD] = createLoadListUrlAction("/neighbourhood", "neighbourhoodList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_FAMILY] = createLoadListUrlAction("/family", "familyList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_NATIONALITY] = createLoadListUrlAction("/nationality", "nationalityList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_SKIN] = createLoadListUrlAction("/skin", "skinList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_EYES] = createLoadListUrlAction("/eyes", "eyesList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_HAIR] = createLoadListUrlAction("/hair", "hairList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_BUSINESS] = createLoadListUrlAction("/business", "businessList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_HEALTH] = createLoadListUrlAction("/health", "healthList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_NPC_PREFERENCES] = createLoadListUrlAction("/npcPreferences", "npcPreferencesList");
@@ -248,7 +254,8 @@ Vue.component('main-area', {
 			'npcList', 'neighbourhoodList', 'familyList', 'homeList', 'nationalityList',
 			'ressonanceList', 'healthList', 'darkTheme', 'working',
 			'ressonanceUpdate', 'selectedCharacterSheetNpc',
-			'selectedFamily', 'businessList', 'lastUpdate', 'lastUpdateDetails'],
+			'selectedFamily', 'businessList', 'lastUpdate', 'lastUpdateDetails',
+			'skinList', 'eyesList', 'hairList'],
 	computed: {
 		showNpc: function(){
 			return this.mainArea == NPC;
@@ -715,17 +722,40 @@ Vue.component('main-area-character-sheet', {
 
 Vue.component('portrait', {
 	template: '#portraitTemplate',
-	props: ['npc'],
+	props: ['npc', 'skinList', 'eyesList', 'hairList'],
 	methods: {
 		eyeColor: function(npc){
-			return EYES[npc.eyes];
+			return EYES[eyesColorById[npc.eyes]];
 		},
 		skinColor: function(npc){
-			return SKIN[npc.skin];
+			return SKIN[skinColorById[npc.skin]];
 		},
 		hairColor: function(npc){
-			return HAIR[npc.hair];
+			return HAIR[hairColorById[npc.hair]];
 		},
+	},
+	computed: {
+		eyesColorById: function(){
+			let cache = [];
+			_.each(this.eyesList, (h) => {
+				cache[h.id] = h.color;
+			});
+			return cache;
+		},
+		skinColorById: function(){
+			let cache = [];
+			_.each(this.skinList, (h) => {
+				cache[h.id] = h.color;
+			});
+			return cache;
+		},
+		hairColorById: function(){
+			let cache = [];
+			_.each(this.hairList, (h) => {
+				cache[h.id] = h.color;
+			});
+			return cache;
+		}
 	}
 });
 
@@ -761,7 +791,8 @@ Vue.component('main-area-config', {
 Vue.component('side-details', {
 	props: ['night', 'npc', 'business', 'working', 'homeList', 'nationalityList',
 		'npcList', 'npcProfessionList', 'businessList', 'healthList',
-		'professionList', 'ressonanceList', 'darkTheme'],
+		'professionList', 'ressonanceList', 'darkTheme',
+		'skinList', 'eyesList', 'hairList'],
 	template: '#sideDetailsTemplate',
 	methods: {
 		clickFamily: function(familyId){
@@ -835,7 +866,8 @@ Vue.component('open-closed-icon', {
 Vue.component('npc-details', {
 	props: ['night','npc', 'working', 'ressonanceList', 'homeList',
 		'healthList', 'darkTheme', 'nationalityList',
-		'businessList', 'professionList', 'npcProfessionList'],
+		'businessList', 'professionList', 'npcProfessionList',
+		'skinList', 'eyesList', 'hairList'],
 	template: '#npcDetailsTemplate',
 	methods: {
 		clickFamily: function(familyId){
@@ -972,7 +1004,8 @@ Vue.component('npc-list', {
 Vue.component('npc-information', {
 	props: ['night', 'npc', 'working', 'ressonanceList', 'healthList',
 		'darkTheme', 'neighbourhoodList', 'nationalityList',
-		'professionList', 'npcProfessionList', 'homeList', 'businessList',],
+		'professionList', 'npcProfessionList', 'homeList', 'businessList',
+		'skinList', 'eyesList', 'hairList'],
 	template: '#npcInformationTemplate',
 	methods: {
 		clickFamily: function(familyId){
@@ -1035,6 +1068,27 @@ Vue.component('npc-information', {
 			let cache = [];
 			_.each(this.homeList, (h) => {
 				cache[h.id] = h.name;
+			});
+			return cache;
+		},
+		eyesColorById: function(){
+			let cache = [];
+			_.each(this.eyesList, (h) => {
+				cache[h.id] = h.color;
+			});
+			return cache;
+		},
+		skinColorById: function(){
+			let cache = [];
+			_.each(this.skinList, (h) => {
+				cache[h.id] = h.color;
+			});
+			return cache;
+		},
+		hairColorById: function(){
+			let cache = [];
+			_.each(this.hairList, (h) => {
+				cache[h.id] = h.color;
 			});
 			return cache;
 		}
@@ -1100,6 +1154,9 @@ var app = new Vue({
 		ressonanceList: [],
 		homeList: [],
 		nationalityList: [],
+		skinList: [],
+		eyesList: [],
+		hairList: [],
 		selectedFamily: "",
 		npcNameFilter: null,
 		npcHomeFilter: "",

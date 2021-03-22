@@ -1,0 +1,1 @@
+echo 'psql -U vam5 vam5 < backupfile.txt'
