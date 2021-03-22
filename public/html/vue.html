@@ -58,6 +58,8 @@
 				v-bind:skin-list="skinList"
 				v-bind:eyes-list="eyesList"
 				v-bind:hair-list="hairList"
+				v-bind:instinct-list="instinctList"
+				v-bind:humor-list="humorList"
 				v-bind:neighbourhood-list="neighbourhoodList"
 				v-on:clear-filter="clearFilter"
 				v-on:select-family="selectFamily"
@@ -81,6 +83,12 @@
 				v-on:character-sheet-notes-change="characterSheetNotesChange"
 				v-on:character-sheet-story-change="characterSheetStoryChange"
 				v-on:character-sheet-nationality-change="characterSheetNationalityChange"
+				v-on:character-sheet-skin-change="characterSheetSkinChange"
+				v-on:character-sheet-eyes-change="characterSheetEyesChange"
+				v-on:character-sheet-hair-change="characterSheetHairChange"
+				v-on:character-sheet-family-change="characterSheetFamilyChange"
+				v-on:character-sheet-home-change="characterSheetHomeChange"
+				v-on:character-sheet-instinct-change="characterSheetInstinctChange"
 				v-bind:ressonance-update="ressonanceUpdate"
 				>
 			</main-area>
@@ -94,6 +102,7 @@
 				v-bind:health-list="healthList"
 				v-bind:home-list="homeList"
 				v-bind:nationality-list="nationalityList"
+				v-bind:neighbourhood-list="neighbourhoodList"
 				v-bind:ressonance-list="ressonanceList"
 				v-bind:npc-profession-list="npcProfessionList"
 				v-bind:business-list="businessList"
@@ -102,6 +111,9 @@
 				v-bind:skin-list="skinList"
 				v-bind:eyes-list="eyesList"
 				v-bind:hair-list="hairList"
+				v-bind:family-list="familyList"
+				v-bind:instinct-list="instinctList"
+				v-bind:humor-list="humorList"
 				v-on:selected-npc-sick-change="selectedNpcSickChange"
 				v-on:selected-npc-alive-change="selectedNpcAliveChange"
 				v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
@@ -185,9 +197,14 @@
 				v-bind:npc-list="npcList"
 				v-bind:health-list="healthList"
 				v-bind:nationality-list="nationalityList"
+				v-bind:neighbourhood-list="neighbourhoodList"
 				v-bind:skin-list="skinList"
 				v-bind:eyes-list="eyesList"
 				v-bind:hair-list="hairList"
+				v-bind:home-list="homeList"
+				v-bind:family-list="familyList"
+				v-bind:instinct-list="instinctList"
+				v-bind:humor-list="humorList"
 				v-bind:selected-character-sheet-npc="selectedCharacterSheetNpc"
 				v-on:character-sheet-name-change="characterSheetNameInputChange"
 				v-on:character-sheet-nickname-change="characterSheetNicknameInputChange"
@@ -195,6 +212,12 @@
 				v-on:character-sheet-notes-change="characterSheetNotesChange"
 				v-on:character-sheet-story-change="characterSheetStoryChange"
 				v-on:character-sheet-nationality-change="characterSheetNationalityChange"
+				v-on:character-sheet-skin-change="characterSheetSkinChange"
+				v-on:character-sheet-eyes-change="characterSheetEyesChange"
+				v-on:character-sheet-hair-change="characterSheetHairChange"
+				v-on:character-sheet-family-change="characterSheetFamilyChange"
+				v-on:character-sheet-home-change="characterSheetHomeChange"
+				v-on:character-sheet-instinct-change="characterSheetInstinctChange"
 				v-on:selected-character-sheet-npc-change="selectedCharacterSheetNpcChange"
 				/>
 			<main-area-business
@@ -239,7 +262,7 @@
 				<p v-for="ressonance in ressonanceList">{{ressonance.name}}: {{ressonanceCount[ressonance.id]}} ({{ Math.floor(100*(ressonanceCount[ressonance.id] / (1.0*nonVampireCount))) }}%)</p>
 			</div>
 			<div>Gerar ressonância: <button v-on:click="generateRessonance">Gerar</button></div>
-			<div v-if="ressonance-updatee != null && ressonanceUpdate.length > 0">Aplicar alterações: <button v-on:click="saveBatchRessonanceUpdate">Aplicar</button></div>
+			<div v-if="ressonanceUpdate != null && ressonanceUpdate.length > 0">Aplicar alterações: <button v-on:click="saveBatchRessonanceUpdate">Aplicar</button></div>
 			<div>
 				<span v-if="ressonanceUpdate != null">{{updateCount}} alterações de ressonância.</span>
 			</div>
@@ -315,7 +338,7 @@
 							<td class="npcTableColumn npcTableColumnGender">{{npc.gender}}</td>
 							<td class="npcTableColumn npcTableColumnNeighbourhood">
 								<neighbourhood-icon	
-									v-bind:neighbourhood-id="npc.neighbourhoodid"
+									v-bind:neighbourhood-id="homeNeighbourhoodIdById[npc.home]"
 									v-bind:neighbourhood-list="neighbourhoodList"
 								>
 							</neighbourhood-icon></td>
@@ -354,7 +377,11 @@
 					class="mainAreaCharacterSheetTable">
 					<tr>
 						<td class="characterSheetPortrait" colspan="2">
-							<portrait v-bind:npc="selectedNpc"/>
+							<portrait 
+								v-bind:skin-list="skinList"
+								v-bind:eyes-list="eyesList"
+								v-bind:hair-list="hairList"
+								v-bind:npc="selectedNpc"/>
 						</td>
 					</tr>
 					<tr>
@@ -384,20 +411,34 @@
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Pele</td>
-						<td><select class="characterSheetNationalitySelect" v-bind:value="selectedNpc.nationality" v-on:change="characterSheetNationalityChange">
-							<option value="">Nacionalidade</option>
-							<option v-for="nationality in nationalityList" v-bind:value="nationality.id">
-								{{nationality.name}}
+						<td><select class="characterSheetSkinSelect" v-bind:value="selectedNpc.skin" v-on:change="characterSheetSkinChange">
+							<option value="">Pele</option>
+							<option v-for="skin in skinList" v-bind:value="skin.id">
+								{{skin.color}}
 							</option>
-							</select>{{selectedNpc.skin}}</td>
+							</select></td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Olhos</td>
-						<td>{{selectedNpc.eyes}}</td>
+						<td><select class="characterSheetEyesSelect" v-bind:value="selectedNpc.eyes" v-on:change="characterSheetEyesChange">
+							<option value="">Olhos</option>
+							<option v-for="eyes in eyesList" v-bind:value="eyes.id">
+								{{eyes.color}}
+							</option>
+							</select></td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Cabelo</td>
+						<td><select class="characterSheetHairSelect" v-bind:value="selectedNpc.hair" v-on:change="characterSheetHairChange">
+							<option value="">Cabelo</option>
+							<option v-for="hair in hairList" v-bind:value="hair.id">
+								{{hair.color}}
+							</option>
+							</select></td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Bairro</td>
-						<td>{{selectedNpc.neighbourhood}}</td>
+						<td>{{neighbourhoodById[homeNeighbourhoodIdById[selectedNpc.home]]}}</td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Físico</td>
@@ -413,15 +454,31 @@
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Família</td>
-						<td>{{selectedNpc.family_name}}</td>
+						<td><select class="characterSheetFamilySelect" v-bind:value="selectedNpc.family" v-on:change="characterSheetFamilyChange">
+							<option value="">Família</option>
+							<option v-for="family in familyList" v-bind:value="family.id">
+								{{family.name}}
+							</option>
+							</select></td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Moradia</td>
-						<td>{{selectedNpc.home}}</td>
+						<td><select class="characterSheetHomeSelect" v-bind:value="selectedNpc.home" v-on:change="characterSheetHomeChange">
+							<option value="">Moradia</option>
+							<option v-for="home in homeList" v-bind:value="home.id">
+								{{home.name}}
+							</option>
+							</select></td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Instinto</td>
-						<td>{{selectedNpc.instinct}}</td>
+						<td><select class="characterSheetInstinctSelect" v-bind:value="selectedNpc.instinct" v-on:change="characterSheetInstinctChange">
+							<option value="">Instinto</option>
+							<option v-for="instinct in instinctList" v-bind:value="instinct.id">
+								{{instinct.name}}
+							</option>
+							</select>
+						</td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Desejo</td>
@@ -660,6 +717,7 @@
 				v-bind:working="working"
 				v-bind:npc="npc"
 				v-bind:ressonance-list="ressonanceList"
+				v-bind:neighbourhood-list="neighbourhoodList"
 				v-bind:business-list="businessList"
 				v-bind:profession-list="professionList"
 				v-bind:home-list="homeList"
@@ -668,6 +726,9 @@
 				v-bind:skin-list="skinList"
 				v-bind:eyes-list="eyesList"
 				v-bind:hair-list="hairList"
+				v-bind:family-list="familyList"
+				v-bind:instinct-list="instinctList"
+				v-bind:humor-list="humorList"
 				v-bind:npc-profession-list="npcProfessionList"
 				v-on:selected-npc-sick-change="selectedNpcSickChange"
 				v-on:selected-npc-alive-change="selectedNpcAliveChange"
@@ -708,7 +769,11 @@
 		<div v-if="npc != null && npc != undefined" class="details">
 			<h5>{{npc.id}} - <span v-bind:class="{npcDead: !npc.alive}">{{npc.name}}</span></h5>
 			<div class="npcDetailsPortrait">
-				<portrait v-bind:npc="npc"/>
+				<portrait 
+					v-bind:skin-list="skinList"
+					v-bind:eyes-list="eyesList"
+					v-bind:hair-list="hairList"
+					v-bind:npc="npc"/>
 			</div>
 			<div class="npcDetailsInformation">
 				<npc-information 
@@ -720,12 +785,16 @@
 					v-bind:business-list="businessList"
 					v-bind:home-list="homeList"
 					v-bind:nationality-list="nationalityList"
+					v-bind:neighbourhood-list="neighbourhoodList"
 					v-bind:health-list="healthList"
 					v-bind:profession-list="professionList"
 					v-bind:npc-profession-list="npcProfessionList"
 					v-bind:skin-list="skinList"
 					v-bind:eyes-list="eyesList"
 					v-bind:hair-list="hairList"
+					v-bind:family-list="familyList"
+					v-bind:instinct-list="instinctList"
+					v-bind:humor-list="humorList"
 					v-on:selected-npc-sick-change="selectedNpcSickChange"
 					v-on:selected-npc-alive-change="selectedNpcAliveChange"
 					v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
@@ -790,20 +859,17 @@
 					</td>
 				</tr>
 				<tr>
-					<td colspan="2"><span v-if="npc.family_id != undefined">Família <span v-on:click="clickFamily(npc.family_id)" class="clickableLink">{{npc.family_name}}</span>, </span>{{npc.age}} anos, de {{nationalityById[npc.nationality]}}<span v-if="npc.nickname != undefined && npc.nickname != ''">, atende por "{{npc.nickname}}"</span></td>
+					<td colspan="2"><span v-if="npc.family != undefined">Família <span v-on:click="clickFamily(npc.family)" class="clickableLink">{{familyNameById[npc.family]}}</span>, </span>{{npc.age}} anos, de {{nationalityById[npc.nationality]}}<span v-if="npc.nickname != undefined && npc.nickname != ''">, atende por "{{npc.nickname}}"</span></td>
 				</tr>
 				<tr>
 					<td colspan="2">${{npc.wealth}}<span v-if="npcProfessionByNpc[npc.id] != undefined && npcProfessionByNpc[npc.id].length > 0"><span v-for="occupation in npcProfessionByNpc[npc.id]">, {{professionById[occupation.profession]}}<span v-if="occupation.business != undefined"> em {{businessById[occupation.business]}}</span></span></span></td>
 				</tr>
 				<tr>
-					<td colspan="2">{{npc.instinct}} ({{npc.humor}} <span v-if="npc.ressonance != undefined">/ <ressonance v-bind:value="npc.ressonance" v-bind:ressonanceList="ressonanceList"/></span>), {{npc.oath}} por {{npc.oath_nature}}</td>
+					<td colspan="2">{{instinctById[npc.instinct]}} ({{humorById[instinctHumorIdById[npc.instinct]]}} <span v-if="npc.ressonance != undefined">/ <ressonance v-bind:value="npc.ressonance" v-bind:ressonanceList="ressonanceList"/></span>), {{npc.oath}} por {{npc.oath_nature}}</td>
 				</tr>
 				<tr v-for="period in [1, 2, 3]">
 					<td>N{{period}}</td>
 					<td>
-						<option v-for="neighbourhood in neighbourhoodList" v-bind:value="neighbourhood.id">
-							{{neighbourhood.name}} <span v-html="neighbourhood.symbol"></span>
-						</option>
 						<npc-location-summary
 						v-if="night != null && night.npcActivity != undefined"
 						v-bind:business-list="businessList"
@@ -811,7 +877,7 @@
 						v-bind:attendance="night.npcActivity[npc.id]['n'+period]"/></td>
 				</tr>
 				<tr><td>Attr(F/M/S)</td><td>{{npc.f}}/{{npc.m}}/{{npc.s}}</td></tr>
-				<tr><td colspan="2">Mora em {{homeNameById[npc.home_id]}} em {{npc.neighbourhood}}</td></tr>
+				<tr><td colspan="2">Mora em {{homeNameById[npc.home]}} em {{neighbourhoodById[homeNeighbourhoodIdById[npc.home]]}}</td></tr>
 				<tr><td colspan="2">Pele {{skinColorById[npc.skin]}}, olhos {{eyesColorById[npc.eyes]}}, cabelo {{hairColorById[npc.hair]}}</td></tr>
 				<tr><td colspan="2">Notas</td></tr>
 				<tr>

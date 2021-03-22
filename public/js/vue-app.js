@@ -44,10 +44,17 @@ const TASK_TYPES = {
 	SAVE_DESCRIPTION: "saveDescription",
 	SAVE_STORY: "saveStory",
 	SAVE_NATIONALITY: "saveNationality",
+	SAVE_SKIN: "saveSkin",
+	SAVE_EYES: "saveEyes",
+	SAVE_HAIR: "saveHair",
+	SAVE_NEIGHBOURHOOD: "saveNeighbourhood",
 	SAVE_ALIVE: "saveAlive",
 	SAVE_SICK: "saveSick",
 	SAVE_HOSPITALIZED: "saveHospitalized",
 	SAVE_RESSONANCE: "saveRessonance",
+	SAVE_FAMILY: "saveFamily",
+	SAVE_HOME: "saveHome",
+	SAVE_INSTINCT: "saveInstinct",
 	LOAD_RESSONANCE: "loadRessonance",
 	LOAD_PROFESSION: "loadProfession",
 	LOAD_NPC_PROFESSION: "loadNpcProfession",
@@ -63,6 +70,8 @@ const TASK_TYPES = {
 	LOAD_SKIN: "loadSkin",
 	LOAD_EYES: "loadEyes",
 	LOAD_HAIR: "loadHair",
+	LOAD_INSTINCT: "loadInstinct",
+	LOAD_HUMOR: "loadHumor",
 	GENERATE_NIGHT: "generateNight",
 	GENERATE_RESSONANCE: "generateRessonance"
 }
@@ -103,6 +112,13 @@ TASK_EXECUTIONS[TASK_TYPES.SAVE_NICKNAME] = createPostUrlAction("/nickname");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_NOTES] = createPostUrlAction("/notes");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_STORY] = createPostUrlAction("/story");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_NATIONALITY] = createPostUrlAction("/nationality");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_FAMILY] = createPostUrlAction("/family");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_SKIN] = createPostUrlAction("/skin");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_EYES] = createPostUrlAction("/eyes");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_HAIR] = createPostUrlAction("/hair");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_HOME] = createPostUrlAction("/home");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_INSTINCT] = createPostUrlAction("/instinct");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_NEIGHBOURHOOD] = createPostUrlAction("/neighbourhood");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_DESCRIPTION] = createPostUrlAction("/description");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_ALIVE] = createPostUrlAction("/alive");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_SICK] = createPostUrlAction("/sick");
@@ -119,6 +135,8 @@ TASK_EXECUTIONS[TASK_TYPES.LOAD_NATIONALITY] = createLoadListUrlAction("/nationa
 TASK_EXECUTIONS[TASK_TYPES.LOAD_SKIN] = createLoadListUrlAction("/skin", "skinList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_EYES] = createLoadListUrlAction("/eyes", "eyesList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_HAIR] = createLoadListUrlAction("/hair", "hairList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_INSTINCT] = createLoadListUrlAction("/instinct", "instinctList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_HUMOR] = createLoadListUrlAction("/humor", "humorList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_BUSINESS] = createLoadListUrlAction("/business", "businessList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_HEALTH] = createLoadListUrlAction("/health", "healthList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_NPC_PREFERENCES] = createLoadListUrlAction("/npcPreferences", "npcPreferencesList");
@@ -255,7 +273,8 @@ Vue.component('main-area', {
 			'ressonanceList', 'healthList', 'darkTheme', 'working',
 			'ressonanceUpdate', 'selectedCharacterSheetNpc',
 			'selectedFamily', 'businessList', 'lastUpdate', 'lastUpdateDetails',
-			'skinList', 'eyesList', 'hairList'],
+			'skinList', 'eyesList', 'hairList',
+			'instinctList', 'humorList'],
 	computed: {
 		showNpc: function(){
 			return this.mainArea == NPC;
@@ -351,6 +370,24 @@ Vue.component('main-area', {
 		},
 		characterSheetNationalityChange: function(event){
 			this.$emit("character-sheet-nationality-change", event);
+		},
+		characterSheetSkinChange: function(event){
+			this.$emit("character-sheet-skin-change", event);
+		},
+		characterSheetEyesChange: function(event){
+			this.$emit("character-sheet-eyes-change", event);
+		},
+		characterSheetHairChange: function(event){
+			this.$emit("character-sheet-hair-change", event);
+		},
+		characterSheetFamilyChange: function(event){
+			this.$emit("character-sheet-family-change", event);
+		},
+		characterSheetHomeChange: function(event){
+			this.$emit("character-sheet-home-change", event);
+		},
+		characterSheetInstinctChange: function(event){
+			this.$emit("character-sheet-instinct-change", event);
 		}
 	}
 });
@@ -454,6 +491,20 @@ Vue.component('main-area-npc', {
 			});
 			return cache;
 		},
+		neighbourhoodById: function(){
+			let cache = [];
+			_.each(this.neighbourhoodList, (n) => {
+				cache[n.id] = n.name;
+			});
+			return cache;
+		},
+		homeNeighbourhoodIdById: function(){
+			let cache = [];
+			_.each(this.homeList, (h) => {
+				cache[h.id] = h.neighbourhood;
+			});
+			return cache;
+		},
 		businessById: function(){
 			let cache = [];
 			_.each(this.businessList, (b) => {
@@ -479,7 +530,7 @@ Vue.component('main-area-npc', {
 			}
 			if(!isNullOrUndefinedOrEmpty(this.familyFilter)){
 				list = _.filter(list, (npc) => {
-					return npc.family_id == this.familyFilter;
+					return npc.family == this.familyFilter;
 				});
 			}
 			if(!isNullOrUndefinedOrEmpty(this.nameFilter)){
@@ -491,7 +542,7 @@ Vue.component('main-area-npc', {
 			}
 			if(!isNullOrUndefinedOrEmpty(this.homeFilter)){
 				list = _.filter(list, (npc) => {
-					return npc.home_id == this.homeFilter;
+					return npc.home == this.homeFilter;
 				});
 			}
 			if(!isNullOrUndefinedOrEmpty(this.vampireFilter)){
@@ -683,7 +734,9 @@ Vue.component('main-area-business', {
 Vue.component('main-area-character-sheet', {
 	template: '#mainAreaCharacterSheetTemplate',
 	props: ['npcList', 'selectedCharacterSheetNpc', 
-			'healthList', 'nationalityList'],
+			'healthList', 'nationalityList', 'neighbourhoodList',
+			'skinList', 'eyesList', 'hairList', 'homeList', 'familyList',
+			'instinctList', 'humorList'],
 	methods: {
 		selectedCharacterSheetNpcChange: function(npcId){
 			this.$emit("selected-character-sheet-npc-change", npcId);
@@ -705,6 +758,24 @@ Vue.component('main-area-character-sheet', {
 		},
 		characterSheetNationalityChange: function(event){
 			this.$emit("character-sheet-nationality-change", event);
+		},
+		characterSheetSkinChange: function(event){
+			this.$emit("character-sheet-skin-change", event);
+		},
+		characterSheetEyesChange: function(event){
+			this.$emit("character-sheet-eyes-change", event);
+		},
+		characterSheetHairChange: function(event){
+			this.$emit("character-sheet-hair-change", event);
+		},
+		characterSheetFamilyChange: function(event){
+			this.$emit("character-sheet-family-change", event);
+		},
+		characterSheetHomeChange: function(event){
+			this.$emit("character-sheet-home-change", event);
+		},
+		characterSheetInstinctChange: function(event){
+			this.$emit("character-sheet-instinct-change", event);
 		}
 	},
 	computed: {
@@ -716,24 +787,27 @@ Vue.component('main-area-character-sheet', {
 				return null;
 			}
 			return _.findWhere(this.npcList, {id: this.selectedCharacterSheetNpc});
-		}
+		},
+		homeNeighbourhoodIdById: function(){
+			let cache = [];
+			_.each(this.homeList, (h) => {
+				cache[h.id] = h.neighbourhood;
+			});
+			return cache;
+		},
+		neighbourhoodById: function(){
+			let cache = [];
+			_.each(this.neighbourhoodList, (h) => {
+				cache[h.id] = h.name;
+			});
+			return cache;
+		},
 	}
 })
 
 Vue.component('portrait', {
 	template: '#portraitTemplate',
 	props: ['npc', 'skinList', 'eyesList', 'hairList'],
-	methods: {
-		eyeColor: function(npc){
-			return EYES[eyesColorById[npc.eyes]];
-		},
-		skinColor: function(npc){
-			return SKIN[skinColorById[npc.skin]];
-		},
-		hairColor: function(npc){
-			return HAIR[hairColorById[npc.hair]];
-		},
-	},
 	computed: {
 		eyesColorById: function(){
 			let cache = [];
@@ -756,6 +830,17 @@ Vue.component('portrait', {
 			});
 			return cache;
 		}
+	},
+	methods: {
+		eyeColor: function(npc){
+			return EYES[this.eyesColorById[npc.eyes]];
+		},
+		skinColor: function(npc){
+			return SKIN[this.skinColorById[npc.skin]];
+		},
+		hairColor: function(npc){
+			return HAIR[this.hairColorById[npc.hair]];
+		},
 	}
 });
 
@@ -791,8 +876,9 @@ Vue.component('main-area-config', {
 Vue.component('side-details', {
 	props: ['night', 'npc', 'business', 'working', 'homeList', 'nationalityList',
 		'npcList', 'npcProfessionList', 'businessList', 'healthList',
-		'professionList', 'ressonanceList', 'darkTheme',
-		'skinList', 'eyesList', 'hairList'],
+		'professionList', 'ressonanceList', 'darkTheme', 'familyList',
+		'skinList', 'eyesList', 'hairList', 'neighbourhoodList',
+		'instinctList', 'humorList'],
 	template: '#sideDetailsTemplate',
 	methods: {
 		clickFamily: function(familyId){
@@ -865,9 +951,10 @@ Vue.component('open-closed-icon', {
 
 Vue.component('npc-details', {
 	props: ['night','npc', 'working', 'ressonanceList', 'homeList',
-		'healthList', 'darkTheme', 'nationalityList',
+		'healthList', 'darkTheme', 'nationalityList', 'familyList',
 		'businessList', 'professionList', 'npcProfessionList',
-		'skinList', 'eyesList', 'hairList'],
+		'skinList', 'eyesList', 'hairList', 'neighbourhoodList', 
+		'instinctList', 'humorList'],
 	template: '#npcDetailsTemplate',
 	methods: {
 		clickFamily: function(familyId){
@@ -1005,7 +1092,8 @@ Vue.component('npc-information', {
 	props: ['night', 'npc', 'working', 'ressonanceList', 'healthList',
 		'darkTheme', 'neighbourhoodList', 'nationalityList',
 		'professionList', 'npcProfessionList', 'homeList', 'businessList',
-		'skinList', 'eyesList', 'hairList'],
+		'skinList', 'eyesList', 'hairList', 'familyList',
+		'instinctList', 'humorList'],
 	template: '#npcInformationTemplate',
 	methods: {
 		clickFamily: function(familyId){
@@ -1054,9 +1142,44 @@ Vue.component('npc-information', {
 			});
 			return cache;
 		},
+		neighbourhoodById: function(){
+			let cache = [];
+			_.each(this.neighbourhoodList, (b) => {
+				cache[b.id] = b.name;
+			});
+			return cache;
+		},
+		instinctById: function(){
+			let cache = [];
+			_.each(this.instinctList, (b) => {
+				cache[b.id] = b.name;
+			});
+			return cache;
+		},
+		instinctHumorIdById: function(){
+			let cache = [];
+			_.each(this.instinctList, (b) => {
+				cache[b.id] = b.humor;
+			});
+			return cache;
+		},
+		humorById: function(){
+			let cache = [];
+			_.each(this.humorList, (b) => {
+				cache[b.id] = b.name;
+			});
+			return cache;
+		},
 		nationalityById: function(){
 			let cache = [];
 			_.each(this.nationalityList, (n) => {
+				cache[n.id] = n.name;
+			});
+			return cache;
+		},
+		familyNameById: function(){
+			let cache = [];
+			_.each(this.familyList, (n) => {
 				cache[n.id] = n.name;
 			});
 			return cache;
@@ -1068,6 +1191,13 @@ Vue.component('npc-information', {
 			let cache = [];
 			_.each(this.homeList, (h) => {
 				cache[h.id] = h.name;
+			});
+			return cache;
+		},
+		homeNeighbourhoodIdById: function(){
+			let cache = [];
+			_.each(this.homeList, (h) => {
+				cache[h.id] = h.neighbourhood;
 			});
 			return cache;
 		},
@@ -1157,6 +1287,8 @@ var app = new Vue({
 		skinList: [],
 		eyesList: [],
 		hairList: [],
+		instinctList: [],
+		humorList: [],
 		selectedFamily: "",
 		npcNameFilter: null,
 		npcHomeFilter: "",
@@ -1523,6 +1655,90 @@ var app = new Vue({
 				{
 					id: npcId,
 					nationality: newNationalityId
+				}
+			));
+		},
+		characterSheetFamilyChange: function(event){
+			let self = this;
+			let npcId = this.selectedCharacterSheetNpc;
+			let newFamilyId = parseInt(event.target.value);
+			_.findWhere(this.npcList, {id: npcId}).family = newFamilyId;
+			this.log("Saving npc "+npcId+" family change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_FAMILY,
+				{
+					id: npcId,
+					family: newFamilyId
+				}
+			));
+		},
+		characterSheetSkinChange: function(event){
+			let self = this;
+			let npcId = this.selectedCharacterSheetNpc;
+			let newSkinId = parseInt(event.target.value);
+			_.findWhere(this.npcList, {id: npcId}).skin = newSkinId;
+			this.log("Saving npc "+npcId+" skin change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_SKIN,
+				{
+					id: npcId,
+					skin: newSkinId
+				}
+			));
+		},
+		characterSheetEyesChange: function(event){
+			let self = this;
+			let npcId = this.selectedCharacterSheetNpc;
+			let newEyesId = parseInt(event.target.value);
+			_.findWhere(this.npcList, {id: npcId}).eyes = newEyesId;
+			this.log("Saving npc "+npcId+" eyes change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_EYES,
+				{
+					id: npcId,
+					eyes: newEyesId
+				}
+			));
+		},
+		characterSheetHairChange: function(event){
+			let self = this;
+			let npcId = this.selectedCharacterSheetNpc;
+			let newHairId = parseInt(event.target.value);
+			_.findWhere(this.npcList, {id: npcId}).hair = newHairId;
+			this.log("Saving npc "+npcId+" hair change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_HAIR,
+				{
+					id: npcId,
+					hair: newHairId
+				}
+			));
+		},
+		characterSheetHomeChange: function(event){
+			let self = this;
+			let npcId = this.selectedCharacterSheetNpc;
+			let newHomeId = parseInt(event.target.value);
+			_.findWhere(this.npcList, {id: npcId}).home = newHomeId;
+			this.log("Saving npc "+npcId+" home change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_HOME,
+				{
+					id: npcId,
+					home: newHomeId
+				}
+			));
+		},
+		characterSheetInstinctChange: function(event){
+			let self = this;
+			let npcId = this.selectedCharacterSheetNpc;
+			let newInstinctId = parseInt(event.target.value);
+			_.findWhere(this.npcList, {id: npcId}).instinct = newInstinctId;
+			this.log("Saving npc "+npcId+" instinct change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_INSTINCT,
+				{
+					id: npcId,
+					instinct: newInstinctId
 				}
 			));
 		},

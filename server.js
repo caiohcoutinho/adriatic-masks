@@ -44,15 +44,12 @@ app.get("/npc", (req, res, next) => {
 			skin, 
 			eyes, 
 			hair,
-			home home_id, 
-			neighbourhood.name neighbourhood, 
-			neighbourhood.id neighbourhoodId, 
+			home,
 			npc.physical F, 
 			npc.social S, 
 			npc.mental M,
-			family.id family_id,
-			family.name family_name, 
-			instinct.name instinct, 
+			family, 
+			instinct, 
 			oath.name oath, 
 			oath_nature.name oath_nature,
 			wealth,
@@ -62,7 +59,6 @@ app.get("/npc", (req, res, next) => {
 			health,
 			max_health,
 			ressonance,
-			h.name humor,
 			npc.description,
 			npc.story,
 			npc.notes,
@@ -82,11 +78,7 @@ app.get("/npc", (req, res, next) => {
 			seed_oath_nature
 		from npc
 		join gender on npc.gender = gender.id
-		join neighbourhood on neighbourhood.id = npc.neighbourhood
-		left join family on family.id = npc.family
 		join oath on oath.id = npc.oath
-		join instinct on instinct.id = npc.instinct
-		join humor h on h.id = instinct.humor
 		join oath_nature on oath_nature.id = npc.oath_nature
 		left join vampire v on v.id = npc.id
 		left join clan on clan.id = v.clan
@@ -348,6 +340,126 @@ app.post("/nationality", (req, res, next) => {
 	});
 });
 
+app.post("/family", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set family = "+req.body.family+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+		  	if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}
+		});
+	});
+});
+
+app.post("/instinct", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set instinct = "+req.body.instinct+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+		  	if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}
+		});
+	});
+});
+
+app.post("/skin", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set skin = "+req.body.skin+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+		  	if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}
+		});
+	});
+});
+
+app.post("/hair", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set hair = "+req.body.hair+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+		  	if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}
+		});
+	});
+});
+
+app.post("/eyes", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set eyes = "+req.body.eyes+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+		  	if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}
+		});
+	});
+});
+
+app.post("/home", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set home = "+req.body.home+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+		  	if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}
+		});
+	});
+});
+
 app.post("/ressonance", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){
@@ -521,9 +633,8 @@ app.get("/home", (req, res, next) => {
 		}
 		client.query(
 			`
-			select h.id, h.name, n.name neighbourhood
+			select *
 			from home h
-			join neighbourhood n on n.id = h.neighbourhood
 			`,
 			 (err, result) => {
 		 	done()
@@ -798,6 +909,56 @@ app.get("/family", (req, res, next) => {
 			`
 			select *
 			from family 
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows)
+			}
+		  
+		})
+	});
+});
+
+app.get("/instinct", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query(
+			`
+			select *
+			from instinct 
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows)
+			}
+		  
+		})
+	});
+});
+
+app.get("/humor", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query(
+			`
+			select *
+			from humor 
 			`,
 			 (err, result) => {
 		 	done()

@@ -8,10 +8,10 @@
 # export PGDATABASE=wltzyxhf;
 # export PGPORT=5432;
 
-export PGUSER=postgres;
+export PGUSER=vam5;
 export PGHOST=localhost;
-export PGPASSWORD=postgres;
-export PGDATABASE=postgres;
+export PGPASSWORD=vam5;
+export PGDATABASE=vam5;
 export PGPORT=5432;
 
 node server.js;
