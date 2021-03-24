@@ -61,6 +61,7 @@
 				v-bind:instinct-list="instinctList"
 				v-bind:humor-list="humorList"
 				v-bind:neighbourhood-list="neighbourhoodList"
+				v-bind:ressonance-list="ressonanceList"
 				v-on:clear-filter="clearFilter"
 				v-on:select-family="selectFamily"
 				v-on:clear-warnings="clearWarnings"
@@ -89,6 +90,21 @@
 				v-on:character-sheet-family-change="characterSheetFamilyChange"
 				v-on:character-sheet-home-change="characterSheetHomeChange"
 				v-on:character-sheet-instinct-change="characterSheetInstinctChange"
+				v-on:character-sheet-oath-change="characterSheetOathChange"
+				v-on:character-sheet-oath-nature-change="characterSheetOathNatureChange"
+				v-on:character-sheet-alive-change="characterSheetAliveChange"
+				v-on:character-sheet-sick-change="characterSheetSickChange"
+				v-on:character-sheet-hospitalized-change="characterSheetHospitalizedChange"
+				v-on:character-sheet-age-change="characterSheetAgeChange"
+				v-on:character-sheet-f-change="characterSheetFChange"
+				v-on:character-sheet-m-change="characterSheetMChange"
+				v-on:character-sheet-s-change="characterSheetSChange"
+				v-on:character-sheet-wealth-change="characterSheetWealthChange"
+				v-on:character-sheet-max-health-change="characterSheetMaxHealthChange"
+				v-on:character-sheet-ressonance-change="characterSheetRessonanceChange"
+				v-on:character-sheet-health-bar-change="characterSheetHealthBarChange"
+				v-bind:oath-list="oathList"
+				v-bind:oath-nature-list="oathNatureList"
 				v-bind:ressonance-update="ressonanceUpdate"
 				>
 			</main-area>
@@ -114,6 +130,8 @@
 				v-bind:family-list="familyList"
 				v-bind:instinct-list="instinctList"
 				v-bind:humor-list="humorList"
+				v-bind:oath-list="oathList"
+				v-bind:oath-nature-list="oathNatureList"
 				v-on:selected-npc-sick-change="selectedNpcSickChange"
 				v-on:selected-npc-alive-change="selectedNpcAliveChange"
 				v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
@@ -205,6 +223,9 @@
 				v-bind:family-list="familyList"
 				v-bind:instinct-list="instinctList"
 				v-bind:humor-list="humorList"
+				v-bind:oath-list="oathList"
+				v-bind:oath-nature-list="oathNatureList"
+				v-bind:ressonance-list="ressonanceList"
 				v-bind:selected-character-sheet-npc="selectedCharacterSheetNpc"
 				v-on:character-sheet-name-change="characterSheetNameInputChange"
 				v-on:character-sheet-nickname-change="characterSheetNicknameInputChange"
@@ -218,6 +239,19 @@
 				v-on:character-sheet-family-change="characterSheetFamilyChange"
 				v-on:character-sheet-home-change="characterSheetHomeChange"
 				v-on:character-sheet-instinct-change="characterSheetInstinctChange"
+				v-on:character-sheet-oath-change="characterSheetOathChange"
+				v-on:character-sheet-oath-nature-change="characterSheetOathNatureChange"
+				v-on:character-sheet-alive-change="characterSheetAliveChange"
+				v-on:character-sheet-sick-change="characterSheetSickChange"
+				v-on:character-sheet-hospitalized-change="characterSheetHospitalizedChange"
+				v-on:character-sheet-age-change="characterSheetAgeChange"
+				v-on:character-sheet-f-change="characterSheetFChange"
+				v-on:character-sheet-m-change="characterSheetMChange"
+				v-on:character-sheet-s-change="characterSheetSChange"
+				v-on:character-sheet-wealth-change="characterSheetWealthChange"
+				v-on:character-sheet-max-health-change="characterSheetMaxHealthChange"
+				v-on:character-sheet-ressonance-change="characterSheetRessonanceChange"
+				v-on:character-sheet-health-bar-change="characterSheetHealthBarChange"
 				v-on:selected-character-sheet-npc-change="selectedCharacterSheetNpcChange"
 				/>
 			<main-area-business
@@ -403,7 +437,7 @@
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Idade</td>
-						<td>{{selectedNpc.age}}</td>
+						<td><input class="characterSheetAgeInput" type="number" v-bind:value="selectedNpc.age" v-on:input="characterSheetAgeChange"/></td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Apelido</td>
@@ -442,15 +476,15 @@
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Físico</td>
-						<td>{{selectedNpc.f}}</td>
+						<td><input class="characterSheetFInput" type="number" v-bind:value="selectedNpc.f" v-on:input="characterSheetFChange"/></td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Mental</td>
-						<td>{{selectedNpc.m}}</td>
+						<td><input class="characterSheetMInput" type="number" v-bind:value="selectedNpc.m" v-on:input="characterSheetMChange"/></td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Social</td>
-						<td>{{selectedNpc.s}}</td>
+						<td><input class="characterSheetSInput" type="number" v-bind:value="selectedNpc.s" v-on:input="characterSheetSChange"/></td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Família</td>
@@ -482,23 +516,36 @@
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Desejo</td>
-						<td>{{selectedNpc.oath}}</td>
+						<td><select class="characterSheetOathSelect" v-bind:value="selectedNpc.oath" v-on:change="characterSheetOathChange">
+							<option value="">Desejo</option>
+							<option v-for="oath in oathList" v-bind:value="oath.id">
+								{{oath.name}}
+							</option>
+							</select></td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Natureza</td>
-						<td>{{selectedNpc.oath_nature}}</td>
-					</tr>
-					<tr>
-						<td class="characterSheetLabelTd">Vivo</td>
-						<td>{{selectedNpc.alive}}</td>
+						<td><select class="characterSheetOathSelect" v-bind:value="selectedNpc.oath_nature" v-on:change="characterSheetOathNatureChange">
+							<option value="">Natureza</option>
+							<option v-for="oathNature in oathNatureList" v-bind:value="oathNature.id">
+								{{oathNature.name}}
+							</option>
+							</select></td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Doente</td>
-						<td>{{selectedNpc.sick}}</td>
+						<td><bistate v-on:bistate-change="characterSheetSickChange"
+								 v-bind:value="selectedNpc.sick"/></td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Hospitalizado</td>
-						<td>{{selectedNpc.hospitalized}}</td>
+						<td><bistate v-on:bistate-change="characterSheetHospitalizedChange"
+								 v-bind:value="selectedNpc.hospitalized"/></td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Vivo</td>
+						<td><bistate v-on:bistate-change="characterSheetAliveChange"
+								 v-bind:value="selectedNpc.alive"/></td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Descrição</td>
@@ -514,25 +561,27 @@
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Riqueza</td>
-						<td>{{selectedNpc.wealth}}</td>
+						<td><input class="characterSheetWealthInput" type="number" v-bind:value="selectedNpc.wealth" v-on:input="characterSheetWealthChange"/></td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Saúde Máxima</td>
-						<td>{{selectedNpc.max_health}}</td>
+						<td><input class="characterSheetMaxHealthInput" type="number" v-bind:value="selectedNpc.max_health" v-on:input="characterSheetMaxHealthChange"/></td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Ressonância</td>
-						<td>{{selectedNpc.ressonance}}</td>
+						<td><select class="characterSheetRessonanceSelect" v-bind:value="selectedNpc.ressonance" v-on:change="characterSheetRessonanceChange">
+							<option value="">Ressonância</option>
+							<option v-for="ressonance in ressonanceList" v-bind:value="ressonance.id">
+								{{ressonance.name}}
+							</option>
+							</select></td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Saúde</td>
-						<td>
-							<!--
-								<health-bar 
+						<td><health-bar 
 							v-bind:npc="selectedNpc"
 							v-bind:health-list="healthList"
-							v-on:click-health="saveHealthBar"/>
-							-->
+							v-on:click-health="characterSheetHealthBarChange"/>
 						</td>
 					</tr>
 					<tr>
@@ -730,6 +779,8 @@
 				v-bind:instinct-list="instinctList"
 				v-bind:humor-list="humorList"
 				v-bind:npc-profession-list="npcProfessionList"
+				v-bind:oath-list="oathList"
+				v-bind:oath-nature-list="oathNatureList"
 				v-on:selected-npc-sick-change="selectedNpcSickChange"
 				v-on:selected-npc-alive-change="selectedNpcAliveChange"
 				v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
@@ -795,6 +846,8 @@
 					v-bind:family-list="familyList"
 					v-bind:instinct-list="instinctList"
 					v-bind:humor-list="humorList"
+					v-bind:oath-list="oathList"
+					v-bind:oath-nature-list="oathNatureList"
 					v-on:selected-npc-sick-change="selectedNpcSickChange"
 					v-on:selected-npc-alive-change="selectedNpcAliveChange"
 					v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
@@ -865,7 +918,7 @@
 					<td colspan="2">${{npc.wealth}}<span v-if="npcProfessionByNpc[npc.id] != undefined && npcProfessionByNpc[npc.id].length > 0"><span v-for="occupation in npcProfessionByNpc[npc.id]">, {{professionById[occupation.profession]}}<span v-if="occupation.business != undefined"> em {{businessById[occupation.business]}}</span></span></span></td>
 				</tr>
 				<tr>
-					<td colspan="2">{{instinctById[npc.instinct]}} ({{humorById[instinctHumorIdById[npc.instinct]]}} <span v-if="npc.ressonance != undefined">/ <ressonance v-bind:value="npc.ressonance" v-bind:ressonanceList="ressonanceList"/></span>), {{npc.oath}} por {{npc.oath_nature}}</td>
+					<td colspan="2">{{instinctById[npc.instinct]}} ({{humorById[instinctHumorIdById[npc.instinct]]}} <span v-if="npc.ressonance != undefined">/ <ressonance v-bind:value="npc.ressonance" v-bind:ressonanceList="ressonanceList"/></span>), {{oathById[npc.oath]}} por {{oathNatureById[npc.oath_nature]}}</td>
 				</tr>
 				<tr v-for="period in [1, 2, 3]">
 					<td>N{{period}}</td>

@@ -50,8 +50,8 @@ app.get("/npc", (req, res, next) => {
 			npc.mental M,
 			family, 
 			instinct, 
-			oath.name oath, 
-			oath_nature.name oath_nature,
+			oath, 
+			oath_nature,
 			wealth,
 			alive,
 			sick,
@@ -78,8 +78,6 @@ app.get("/npc", (req, res, next) => {
 			seed_oath_nature
 		from npc
 		join gender on npc.gender = gender.id
-		join oath on oath.id = npc.oath
-		join oath_nature on oath_nature.id = npc.oath_nature
 		left join vampire v on v.id = npc.id
 		left join clan on clan.id = v.clan
 		left join predator_type pt on pt.id = v.predator_type
@@ -440,6 +438,46 @@ app.post("/eyes", (req, res, next) => {
 	});
 });
 
+app.post("/oath", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set oath = "+req.body.oath+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+		  	if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}
+		});
+	});
+});
+
+app.post("/oathnature", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set oath_nature = "+req.body.oath_nature+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+		  	if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}
+		});
+	});
+});
+
 app.post("/home", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){
@@ -527,6 +565,126 @@ app.post("/hospitalized", (req, res, next) => {
 			return;
 		}
 		client.query("update npc set hospitalized = "+req.body.hospitalized+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+			if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}		  
+		});
+	});
+});
+
+app.post("/age", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set age = "+req.body.age+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+			if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}		  
+		});
+	});
+});
+
+app.post("/f", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set physical = "+req.body.f+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+			if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}		  
+		});
+	});
+});
+
+app.post("/m", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set mental = "+req.body.m+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+			if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}		  
+		});
+	});
+});
+
+app.post("/s", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set social = "+req.body.s+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+			if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}		  
+		});
+	});
+});
+
+app.post("/wealth", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set wealth = "+req.body.wealth+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+			if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}		  
+		});
+	});
+});
+
+app.post("/maxHealth", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set max_health = "+req.body.max_health+" where id = "+req.body.id,
 			 (err, result) => {
 	 		done()
 			if(err){
@@ -959,6 +1117,56 @@ app.get("/humor", (req, res, next) => {
 			`
 			select *
 			from humor 
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows)
+			}
+		  
+		})
+	});
+});
+
+app.get("/oath", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query(
+			`
+			select *
+			from oath 
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows)
+			}
+		  
+		})
+	});
+});
+
+app.get("/oathnature", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query(
+			`
+			select *
+			from oath_nature 
 			`,
 			 (err, result) => {
 		 	done()

@@ -55,6 +55,14 @@ const TASK_TYPES = {
 	SAVE_FAMILY: "saveFamily",
 	SAVE_HOME: "saveHome",
 	SAVE_INSTINCT: "saveInstinct",
+	SAVE_OATH: "saveOath",
+	SAVE_OATH_NATURE: "saveOathNature",
+	SAVE_AGE: "saveAge",
+	SAVE_F: "saveF",
+	SAVE_M: "saveM",
+	SAVE_S: "saveS",
+	SAVE_WEALTH: "saveWealth",
+	SAVE_MAX_HEALTH: "saveMaxHealth",
 	LOAD_RESSONANCE: "loadRessonance",
 	LOAD_PROFESSION: "loadProfession",
 	LOAD_NPC_PROFESSION: "loadNpcProfession",
@@ -72,6 +80,8 @@ const TASK_TYPES = {
 	LOAD_HAIR: "loadHair",
 	LOAD_INSTINCT: "loadInstinct",
 	LOAD_HUMOR: "loadHumor",
+	LOAD_OATH: "loadOath",
+	LOAD_OATH_NATURE: "loadOathNature",
 	GENERATE_NIGHT: "generateNight",
 	GENERATE_RESSONANCE: "generateRessonance"
 }
@@ -118,11 +128,19 @@ TASK_EXECUTIONS[TASK_TYPES.SAVE_EYES] = createPostUrlAction("/eyes");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_HAIR] = createPostUrlAction("/hair");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_HOME] = createPostUrlAction("/home");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_INSTINCT] = createPostUrlAction("/instinct");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_OATH] = createPostUrlAction("/oath");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_OATH_NATURE] = createPostUrlAction("/oathnature");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_NEIGHBOURHOOD] = createPostUrlAction("/neighbourhood");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_DESCRIPTION] = createPostUrlAction("/description");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_ALIVE] = createPostUrlAction("/alive");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_SICK] = createPostUrlAction("/sick");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_HOSPITALIZED] = createPostUrlAction("/hospitalized");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_AGE] = createPostUrlAction("/age");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_F] = createPostUrlAction("/f");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_M] = createPostUrlAction("/m");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_S] = createPostUrlAction("/s");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_WEALTH] = createPostUrlAction("/wealth");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_MAX_HEALTH] = createPostUrlAction("/maxHealth");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_RESSONANCE] = createPostUrlAction("/ressonance");
 
 TASK_EXECUTIONS[TASK_TYPES.LOAD_RESSONANCE] = createLoadListUrlAction("/ressonance", "ressonanceList");
@@ -137,6 +155,8 @@ TASK_EXECUTIONS[TASK_TYPES.LOAD_EYES] = createLoadListUrlAction("/eyes", "eyesLi
 TASK_EXECUTIONS[TASK_TYPES.LOAD_HAIR] = createLoadListUrlAction("/hair", "hairList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_INSTINCT] = createLoadListUrlAction("/instinct", "instinctList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_HUMOR] = createLoadListUrlAction("/humor", "humorList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_OATH] = createLoadListUrlAction("/oath", "oathList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_OATH_NATURE] = createLoadListUrlAction("/oathnature", "oathNatureList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_BUSINESS] = createLoadListUrlAction("/business", "businessList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_HEALTH] = createLoadListUrlAction("/health", "healthList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_NPC_PREFERENCES] = createLoadListUrlAction("/npcPreferences", "npcPreferencesList");
@@ -274,7 +294,7 @@ Vue.component('main-area', {
 			'ressonanceUpdate', 'selectedCharacterSheetNpc',
 			'selectedFamily', 'businessList', 'lastUpdate', 'lastUpdateDetails',
 			'skinList', 'eyesList', 'hairList',
-			'instinctList', 'humorList'],
+			'instinctList', 'humorList', 'oathList', 'oathNatureList'],
 	computed: {
 		showNpc: function(){
 			return this.mainArea == NPC;
@@ -388,6 +408,45 @@ Vue.component('main-area', {
 		},
 		characterSheetInstinctChange: function(event){
 			this.$emit("character-sheet-instinct-change", event);
+		},
+		characterSheetOathChange: function(event){
+			this.$emit("character-sheet-oath-change", event);
+		},
+		characterSheetOathNatureChange: function(event){
+			this.$emit("character-sheet-oath-nature-change", event);
+		},
+		characterSheetAliveChange: function(event){
+			this.$emit("character-sheet-alive-change", event);
+		},
+		characterSheetSickChange: function(event){
+			this.$emit("character-sheet-sick-change", event);
+		},
+		characterSheetHospitalizedChange: function(event){
+			this.$emit("character-sheet-hospitalized-change", event);
+		},
+		characterSheetAgeChange: function(event){
+			this.$emit("character-sheet-age-change", event);
+		},
+		characterSheetFChange: function(event){
+			this.$emit("character-sheet-f-change", event);
+		},
+		characterSheetMChange: function(event){
+			this.$emit("character-sheet-m-change", event);
+		},
+		characterSheetSChange: function(event){
+			this.$emit("character-sheet-s-change", event);
+		},
+		characterSheetWealthChange: function(event){
+			this.$emit("character-sheet-wealth-change", event);
+		},
+		characterSheetMaxHealthChange: function(event){
+			this.$emit("character-sheet-max-health-change", event);
+		},
+		characterSheetRessonanceChange: function(event){
+			this.$emit("character-sheet-ressonance-change", event);
+		},
+		characterSheetHealthBarChange: function(event){
+			this.$emit("character-sheet-health-bar-change", event);
 		}
 	}
 });
@@ -736,7 +795,8 @@ Vue.component('main-area-character-sheet', {
 	props: ['npcList', 'selectedCharacterSheetNpc', 
 			'healthList', 'nationalityList', 'neighbourhoodList',
 			'skinList', 'eyesList', 'hairList', 'homeList', 'familyList',
-			'instinctList', 'humorList'],
+			'instinctList', 'humorList', 'oathList', 'oathNatureList',
+			'ressonanceList', 'healthList'],
 	methods: {
 		selectedCharacterSheetNpcChange: function(npcId){
 			this.$emit("selected-character-sheet-npc-change", npcId);
@@ -776,6 +836,48 @@ Vue.component('main-area-character-sheet', {
 		},
 		characterSheetInstinctChange: function(event){
 			this.$emit("character-sheet-instinct-change", event);
+		},
+		characterSheetOathChange: function(event){
+			this.$emit("character-sheet-oath-change", event);
+		},
+		characterSheetOathNatureChange: function(event){
+			this.$emit("character-sheet-oath-nature-change", event);
+		},
+		characterSheetAliveChange: function(event){
+			this.$emit("character-sheet-alive-change", event);
+		},
+		characterSheetSickChange: function(event){
+			this.$emit("character-sheet-sick-change", event);
+		},
+		characterSheetHospitalizedChange: function(event){
+			this.$emit("character-sheet-hospitalized-change", event);
+		},
+		characterSheetAgeChange: function(event){
+			this.$emit("character-sheet-age-change", event);
+		},
+		characterSheetFChange: function(event){
+			this.$emit("character-sheet-f-change", event);
+		},
+		characterSheetMChange: function(event){
+			this.$emit("character-sheet-m-change", event);
+		},
+		characterSheetSChange: function(event){
+			this.$emit("character-sheet-s-change", event);
+		},
+		characterSheetWealthChange: function(event){
+			this.$emit("character-sheet-wealth-change", event);
+		},
+		characterSheetMaxHealthChange: function(event){
+			this.$emit("character-sheet-max-health-change", event);
+		},
+		characterSheetRessonanceChange: function(event){
+			this.$emit("character-sheet-ressonance-change", event);
+		},
+		characterSheetHealthBarChange: function(health){
+			this.$emit('character-sheet-health-bar-change', {
+				npc: this.selectedCharacterSheetNpc,
+				health: health
+			});
 		}
 	},
 	computed: {
@@ -878,7 +980,7 @@ Vue.component('side-details', {
 		'npcList', 'npcProfessionList', 'businessList', 'healthList',
 		'professionList', 'ressonanceList', 'darkTheme', 'familyList',
 		'skinList', 'eyesList', 'hairList', 'neighbourhoodList',
-		'instinctList', 'humorList'],
+		'instinctList', 'humorList', 'oathList', 'oathNatureList'],
 	template: '#sideDetailsTemplate',
 	methods: {
 		clickFamily: function(familyId){
@@ -954,7 +1056,7 @@ Vue.component('npc-details', {
 		'healthList', 'darkTheme', 'nationalityList', 'familyList',
 		'businessList', 'professionList', 'npcProfessionList',
 		'skinList', 'eyesList', 'hairList', 'neighbourhoodList', 
-		'instinctList', 'humorList'],
+		'instinctList', 'humorList', 'oathList', 'oathNatureList'],
 	template: '#npcDetailsTemplate',
 	methods: {
 		clickFamily: function(familyId){
@@ -1093,7 +1195,7 @@ Vue.component('npc-information', {
 		'darkTheme', 'neighbourhoodList', 'nationalityList',
 		'professionList', 'npcProfessionList', 'homeList', 'businessList',
 		'skinList', 'eyesList', 'hairList', 'familyList',
-		'instinctList', 'humorList'],
+		'instinctList', 'humorList', 'oathList', 'oathNatureList'],
 	template: '#npcInformationTemplate',
 	methods: {
 		clickFamily: function(familyId){
@@ -1145,6 +1247,20 @@ Vue.component('npc-information', {
 		neighbourhoodById: function(){
 			let cache = [];
 			_.each(this.neighbourhoodList, (b) => {
+				cache[b.id] = b.name;
+			});
+			return cache;
+		},
+		oathById: function(){
+			let cache = [];
+			_.each(this.oathList, (b) => {
+				cache[b.id] = b.name;
+			});
+			return cache;
+		},
+		oathNatureById: function(){
+			let cache = [];
+			_.each(this.oathNatureList, (b) => {
 				cache[b.id] = b.name;
 			});
 			return cache;
@@ -1287,6 +1403,8 @@ var app = new Vue({
 		skinList: [],
 		eyesList: [],
 		hairList: [],
+		oathList: [],
+		oathNatureList: [],
 		instinctList: [],
 		humorList: [],
 		selectedFamily: "",
@@ -1569,6 +1687,36 @@ var app = new Vue({
 				}
 			));
 		},
+		characterSheetHealthBarChange: function(event){
+			let self = this;
+			let i = event.health.index;
+			let npcId = self.selectedCharacterSheetNpc;
+			let h = _.findWhere(this.healthList, {npc: npcId, index: i});
+			if(isNullOrUndefinedOrEmpty(h)){
+				h = {
+					npc: npcId,
+					index: i,
+					value: DAMAGE_CLEAN
+				};
+				this.healthList.push(h);
+			}
+			if(h.value == DAMAGE_CLEAN){
+				h.value = DAMAGE_SUPERFICIAL;
+			} else if(h.value == DAMAGE_AGGRAVATED){
+				h.value = DAMAGE_CLEAN;
+			} else if(h.value == DAMAGE_SUPERFICIAL){
+				h.value = DAMAGE_AGGRAVATED;
+			}
+			this.log("Saving npc "+npcId+" health "+i+" value "+h.value+" (characte sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_HEALTH,
+				{
+					npc: npcId,
+					index: i,
+					value: h.value
+				}
+			));
+		},
 		characterSheetNameInputChange: (function(){
 			return _.debounce(function(){
 				let self = this;
@@ -1739,6 +1887,184 @@ var app = new Vue({
 				{
 					id: npcId,
 					instinct: newInstinctId
+				}
+			));
+		},
+		characterSheetOathChange: function(event){
+			let self = this;
+			let npcId = this.selectedCharacterSheetNpc;
+			let newOathId = parseInt(event.target.value);
+			_.findWhere(this.npcList, {id: npcId}).oath = newOathId;
+			this.log("Saving npc "+npcId+" oath change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_OATH,
+				{
+					id: npcId,
+					oath: newOathId
+				}
+			));
+		},
+		characterSheetOathNatureChange: function(event){
+			let self = this;
+			let npcId = this.selectedCharacterSheetNpc;
+			let newOathNatureId = parseInt(event.target.value);
+			_.findWhere(this.npcList, {id: npcId}).oath_nature = newOathNatureId;
+			this.log("Saving npc "+npcId+" oath nature change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_OATH_NATURE,
+				{
+					id: npcId,
+					oath_nature: newOathNatureId
+				}
+			));
+		},
+		characterSheetAliveChange: function(event){
+			let self = this;
+			let npcId = self.selectedCharacterSheetNpc;
+			let npc = _.findWhere(this.npcList, {id: npcId});
+			npc.alive = !npc.alive;
+			let value = npc.alive;
+			this.log("Saving npc "+npcId+" alive "+value+" change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_ALIVE,
+				{
+					id: npcId,
+					alive: value
+				}
+			));
+		},
+		characterSheetSickChange: function(event){
+			let self = this;
+			let npcId = self.selectedCharacterSheetNpc;
+			let npc = _.findWhere(this.npcList, {id: npcId});
+			npc.sick = !npc.sick;
+			let value = npc.sick;
+			this.log("Saving npc "+npcId+" sick "+value+" change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_SICK,
+				{
+					id: npcId,
+					sick: value
+				}
+			));
+		},
+		characterSheetHospitalizedChange: function(event){
+			let self = this;
+			let npcId = self.selectedCharacterSheetNpc;
+			let npc = _.findWhere(this.npcList, {id: npcId});
+			npc.hospitalized = !npc.hospitalized;
+			let value = npc.hospitalized;
+			this.log("Saving npc "+npcId+" hospitalized "+value+" change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_HOSPITALIZED,
+				{
+					id: npcId,
+					hospitalized: value
+				}
+			));
+		},
+		characterSheetAgeChange: function(event){
+			let self = this;
+			let npcId = self.selectedCharacterSheetNpc;
+			let npc = _.findWhere(this.npcList, {id: npcId});
+			npc.age = parseInt(event.target.value);
+			let value = npc.age;
+			this.log("Saving npc "+npcId+" age "+value+" change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_AGE,
+				{
+					id: npcId,
+					age: value
+				}
+			));
+		},
+		characterSheetFChange: function(event){
+			let self = this;
+			let npcId = self.selectedCharacterSheetNpc;
+			let npc = _.findWhere(this.npcList, {id: npcId});
+			npc.f = parseInt(event.target.value);
+			let value = npc.f;
+			this.log("Saving npc "+npcId+" f "+value+" change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_F,
+				{
+					id: npcId,
+					f: value
+				}
+			));
+		},
+		characterSheetMChange: function(event){
+			let self = this;
+			let npcId = self.selectedCharacterSheetNpc;
+			let npc = _.findWhere(this.npcList, {id: npcId});
+			npc.m = parseInt(event.target.value);
+			let value = npc.m;
+			this.log("Saving npc "+npcId+" m "+value+" change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_M,
+				{
+					id: npcId,
+					m: value
+				}
+			));
+		},
+		characterSheetSChange: function(event){
+			let self = this;
+			let npcId = self.selectedCharacterSheetNpc;
+			let npc = _.findWhere(this.npcList, {id: npcId});
+			npc.s = parseInt(event.target.value);
+			let value = npc.s;
+			this.log("Saving npc "+npcId+" s "+value+" change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_S,
+				{
+					id: npcId,
+					s: value
+				}
+			));
+		},
+		characterSheetWealthChange: function(event){
+			let self = this;
+			let npcId = self.selectedCharacterSheetNpc;
+			let npc = _.findWhere(this.npcList, {id: npcId});
+			npc.wealth = parseInt(event.target.value);
+			let value = npc.wealth;
+			this.log("Saving npc "+npcId+" wealth "+value+" change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_WEALTH,
+				{
+					id: npcId,
+					wealth: value
+				}
+			));
+		},
+		characterSheetMaxHealthChange: function(event){
+			let self = this;
+			let npcId = self.selectedCharacterSheetNpc;
+			let npc = _.findWhere(this.npcList, {id: npcId});
+			npc.max_health = parseInt(event.target.value);
+			let value = npc.max_health;
+			this.log("Saving npc "+npcId+" max_health "+value+" change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_MAX_HEALTH,
+				{
+					id: npcId,
+					max_health: value
+				}
+			));
+		},
+		characterSheetRessonanceChange: function(event){
+			let self = this;
+			let npcId = self.selectedCharacterSheetNpc;
+			let npc = _.findWhere(this.npcList, {id: npcId});
+			npc.ressonance = parseInt(event.target.value);
+			let value = npc.ressonance;
+			this.log("Saving npc "+npcId+" ressonance "+value+" change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_RESSONANCE,
+				{
+					id: npcId,
+					ressonance: value
 				}
 			));
 		},
