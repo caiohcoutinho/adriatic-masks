@@ -1,5 +1,5 @@
 var express = require("express");
-var { Pool } = require('pg');
+var { Pool, Client } = require('pg');
 var app = express();
 var bodyParser = require('body-parser');
 var _ = require('underscore');
@@ -14,12 +14,7 @@ app.use(express.static('public'))
 
 const PORT = process.env.PORT || 3000;
 
-const pool = new Pool()
-
-pool.on('error', (err, client) => {
-  console.error('Unexpected error on idle client', err)
-  process.exit(-1)
-})
+const pool = new Pool();
 
 app.listen(PORT, () => {
 	console.log("Server running on port "+PORT);
@@ -786,6 +781,7 @@ app.get("/business", (req, res, next) => {
 app.get("/home", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){
+			console.log("Error: "+JSON.stringify(err));
 			res.json(err);
 			return;
 		}
@@ -803,7 +799,6 @@ app.get("/home", (req, res, next) => {
 			} else{
 			  res.json(result.rows)
 			}
-		  
 		})
 	});
 });

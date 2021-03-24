@@ -10,10 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.19.0",
-    "express": "^4.17.1",
-    "pg": "^7.15.1",
-    "underscore": "^1.9.2"
+    "body-parser": "1.19.0",
+    "express": "4.17.1",
+    "pg": "8.2.x",
+    "underscore": "1.9.2"
   },
   "engine": {
     "node": "10.x"
