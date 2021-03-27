@@ -76,6 +76,7 @@
 				v-on:home-filter-change="homeFilterChange"
 				v-on:generate-night="generateNight"
 				v-on:generate-ressonance="generateRessonance"
+				v-on:generate-new-npc="generateNewNpc"				
 				v-on:save-batch-ressonance-update="saveBatchRessonanceUpdate"
 				v-on:selected-character-sheet-npc-change="selectedCharacterSheetNpcChange"
 				v-on:character-sheet-name-change="characterSheetNameInputChange"
@@ -282,6 +283,7 @@
 				v-bind:ressonance-list="ressonanceList"
 				v-on:generate-night="generateNight"
 				v-on:generate-ressonance="generateRessonance"
+				v-on:generate-new-npc="generateNewNpc"
 				v-on:save-batch-ressonance-update="saveBatchRessonanceUpdate"
 				/>
 		</div>
@@ -291,6 +293,7 @@
 		<div class="mainAreaNight">
 			<h1>Noite</h1>
 			<div>Gerar noite: <button v-on:click="generateNight">Gerar</button></div>
+			<div>Gerar NPC aleatório: <button v-on:click="generateNewNpc">Gerar</button></div>
 			<h1>Ressonância</h1>
 			<div>
 				<p v-for="ressonance in ressonanceList">{{ressonance.name}}: {{ressonanceCount[ressonance.id]}} ({{ Math.floor(100*(ressonanceCount[ressonance.id] / (1.0*nonVampireCount))) }}%)</p>

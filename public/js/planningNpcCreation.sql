@@ -80,3 +80,18 @@ INSERT INTO public.npc(
 		?, /* hospitalized, */
 		? /* story */
 	);
+
+
+"Itália", 65
+"Albânia", 5
+"Áustria", 2
+"Marrocos", 5
+"Romênia", 5
+"Judeu", 5
+"Espanha", 2
+"Bulgária", 3
+"França", 2
+"Grécia", 2
+"Sérvia", 2
+"Suíça", 2
+"Alemanha", 5

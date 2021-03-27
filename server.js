@@ -1176,3 +1176,76 @@ app.get("/oathnature", (req, res, next) => {
 		})
 	});
 });
+
+app.get("/distribution", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query(
+			`
+			select *
+			from distribution 
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows)
+			}
+		})
+	});
+});
+
+app.get("/gender", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query(
+			`
+			select *
+			from gender 
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows)
+			}
+		})
+	});
+});
+
+app.get("/randomname", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query(
+			`
+			select *
+			from random_name 
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows)
+			}
+		})
+	});
+});
+

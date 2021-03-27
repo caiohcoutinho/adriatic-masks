@@ -82,8 +82,12 @@ const TASK_TYPES = {
 	LOAD_HUMOR: "loadHumor",
 	LOAD_OATH: "loadOath",
 	LOAD_OATH_NATURE: "loadOathNature",
+	LOAD_DISTRIBUTION: "loadDistribution",
+	LOAD_GENDER: "loadGender",
+	LOAD_RANDOM_NAME: "loadRandomName",
 	GENERATE_NIGHT: "generateNight",
-	GENERATE_RESSONANCE: "generateRessonance"
+	GENERATE_RESSONANCE: "generateRessonance",
+	GENERATE_NEW_NPC: "generateNewNpc"
 }
 
 const createPostUrlAction = (url) => {
@@ -161,7 +165,11 @@ TASK_EXECUTIONS[TASK_TYPES.LOAD_BUSINESS] = createLoadListUrlAction("/business",
 TASK_EXECUTIONS[TASK_TYPES.LOAD_HEALTH] = createLoadListUrlAction("/health", "healthList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_NPC_PREFERENCES] = createLoadListUrlAction("/npcPreferences", "npcPreferencesList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_BUSINESS_RULES] = createLoadListUrlAction("/businessRules", "businessRulesList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_DISTRIBUTION] = createLoadListUrlAction("/distribution", "distributionList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_GENDER] = createLoadListUrlAction("/gender", "genderList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_HOME] = createLoadListUrlAction("/home", "homeList", (h) => h.name);
+TASK_EXECUTIONS[TASK_TYPES.LOAD_RANDOM_NAME] = createLoadListUrlAction("/randomname", "randomNameList");
+
 TASK_EXECUTIONS[TASK_TYPES.GENERATE_NIGHT] = function(self, data){
 	if(!window.Worker){
 		alert("no support for web workers.");
@@ -198,6 +206,44 @@ TASK_EXECUTIONS[TASK_TYPES.GENERATE_RESSONANCE] = function(self, data){
 		self.thenAction();
 	}
 	worker.postMessage([self.npcList, self.ressonanceList, RESSONANCE_UPDATE_CONFIGURATION]);
+};
+
+let crazyIdGeneratorDeleteMe = 9000;
+
+TASK_EXECUTIONS[TASK_TYPES.GENERATE_NEW_NPC] = function(self, data){
+	if(!window.Worker){
+		alert("no support for web workers.");
+		self.thenAction();
+	}
+	let tic = new Date().getTime();
+	var worker = new Worker('../js/generateNewNpc.js');
+	worker.onmessage = function(event){
+		let tac = new Date().getTime();
+		let data = event.data;
+		let npc = data.npc;
+		let profession = data.professionId;
+		let business = data.businessId;
+
+		npc.id = crazyIdGeneratorDeleteMe++;
+		self.selectedCharacterSheetNpc = npc.id;
+		self.npcList.push(npc);
+
+		self.lastUpdate = new Date().toString();
+		self.lastUpdateDetails = new Date().toString();
+
+		self.log("generateNewNpc took "+((tac-tic)/1000)+"s.");
+		self.log("data = "+JSON.stringify(data));
+
+		self.thenAction();
+	}
+
+	let args = [self.distributionList, self.genderList, self.nationalityList, 
+ 		self.skinList, self.eyesList, self.hairList, 
+ 		self.neighbourhoodList, self.homeList, self.instinctList, 
+ 		self.oathList, self.oathNatureList, self.ressonanceList, 
+ 		self.professionList, self.businessList, self.randomNameList];
+
+	worker.postMessage(args);
 };
 
 const Task = function(type, data){
@@ -367,6 +413,9 @@ Vue.component('main-area', {
 		generateRessonance: function(){
 			this.$emit('generate-ressonance');	
 		},
+		generateNewNpc: function(){
+			this.$emit('generate-new-npc');	
+		},
 		saveBatchRessonanceUpdate: function(){
 			this.$emit('save-batch-ressonance-update');	
 		},
@@ -509,6 +558,9 @@ Vue.component('main-area-night', {
 		},
 		generateRessonance: function(){
 			this.$emit('generate-ressonance');	
+		},
+		generateNewNpc: function(){
+			this.$emit('generate-new-npc');	
 		},
 		saveBatchRessonanceUpdate: function(){
 			this.$emit('save-batch-ressonance-update');	
@@ -1418,6 +1470,8 @@ var app = new Vue({
 		npcSickFilter: null,
 		taskQueue: [],
 		night: {},
+		distributionList: [],
+		randomNameList: [],
 		ressonanceUpdate: []
 	},
 	methods: {
@@ -1457,6 +1511,9 @@ var app = new Vue({
 		},
 		generateRessonance: function(){
 			this.addTask(new Task(TASK_TYPES.GENERATE_RESSONANCE, {}));
+		},
+		generateNewNpc: function(){
+			this.addTask(new Task(TASK_TYPES.GENERATE_NEW_NPC, {}));	
 		},
 		showMainArea: function(mainArea){
 			this.mainArea = mainArea;

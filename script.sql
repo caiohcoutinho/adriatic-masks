@@ -1527,3 +1527,411 @@ create table Health(
 	PRIMARY KEY (id)
 );
 
+create sequence distribution_id_seq;
+
+create table distribution(
+	id int NOT NULL DEFAULT nextval('distribution_id_seq'), 
+	weight int NOT NULL,
+	concept varchar(255) NOT NULL,
+	referenceId int NOT NULL, 
+	PRIMARY KEY (id)
+);
+
+create unique index idx_distribution_referenceid_concept
+	on distribution(concept, referenceId);
+
+
+insert into distribution(weight, concept, referenceId)
+	values 
+(10, 'nationality', (select id from nationality where name = 'Albânia')),
+(1, 'nationality', (select id from nationality where name = 'Alemanha')),
+(4, 'nationality', (select id from nationality where name = 'Áustria')),
+(6, 'nationality', (select id from nationality where name = 'Bulgária')),
+(4, 'nationality', (select id from nationality where name = 'Espanha')),
+(4, 'nationality', (select id from nationality where name = 'França')),
+(4, 'nationality', (select id from nationality where name = 'Grécia')),
+(130, 'nationality', (select id from nationality where name = 'Itália')),
+(10, 'nationality', (select id from nationality where name = 'Judeu')),
+(10, 'nationality', (select id from nationality where name = 'Marrocos')),
+(10, 'nationality', (select id from nationality where name = 'Romênia')),
+(4, 'nationality', (select id from nationality where name = 'Sérvia')),
+(4, 'nationality', (select id from nationality where name = 'Suíça'));
+
+
+
+
+
+insert into distribution(weight, concept, referenceId)
+	values 
+(1, 'skin', (select id from skin_color where color = 'Branco')),
+(0, 'skin', (select id from skin_color where color = 'Cinza')),
+(1, 'skin', (select id from skin_color where color = 'Marrom')),
+(1, 'skin', (select id from skin_color where color = 'Mediterrâneo'));
+
+insert into distribution(weight, concept, referenceId)
+	values 
+(15, 'eyes', (select id from eye_color where color = 'Azul')),
+(40, 'eyes', (select id from eye_color where color = 'Castanho')),
+(5, 'eyes', (select id from eye_color where color = 'Cinza')),
+(1, 'eyes', (select id from eye_color where color = 'Esquerdo Marrom, Direito Verde')),
+(20, 'eyes', (select id from eye_color where color = 'Preto')),
+(15, 'eyes', (select id from eye_color where color = 'Verde')),
+(4, 'eyes', (select id from eye_color where color = 'Vermelho'));
+
+insert into distribution(weight, concept, referenceId)
+	values 
+(1, 'hair', (select id from hair_color where color = 'Branco')),
+(30, 'hair', (select id from hair_color where color = 'Loiro')),
+(30, 'hair', (select id from hair_color where color = 'Marrom')),
+(30, 'hair', (select id from hair_color where color = 'Preto')),
+(1, 'hair', (select id from hair_color where color = 'Sem cabelo')),
+(10, 'hair', (select id from hair_color where color = 'Vermelho'));
+
+insert into distribution(weight, concept, referenceId)
+	values 
+(57, 'neighbourhood', (select id from neighbourhood where name = 'Cannaregio')),
+(52, 'neighbourhood', (select id from neighbourhood where name = 'Castello')),
+(59, 'neighbourhood', (select id from neighbourhood where name = 'Dorsoduro')),
+(26, 'neighbourhood', (select id from neighbourhood where name = 'San Marco')),
+(20, 'neighbourhood', (select id from neighbourhood where name = 'San Polo')),
+(23, 'neighbourhood', (select id from neighbourhood where name = 'Santa Croce'));
+
+insert into distribution(weight, concept, referenceId)
+(select count(1), 'profession', profession from npc_profession group by profession);
+
+insert into distribution(weight, concept, referenceId)
+(select count(1) as weight, 'business', business from npc_profession where business is not null group by business)
+
+
+create sequence random_name_id_seq;
+
+create table random_name(
+	id int NOT NULL DEFAULT nextval('random_name_id_seq'), 
+	nationality int NOT NULL references nationality(id),
+	gender int NOT NULL references gender(id),
+	name varchar(255) NOT NULL,
+	PRIMARY KEY (id)
+);
+
+insert into random_name(nationality, gender, name)
+	values
+((select id from nationality where name = ''), (select id from gender where symbol = ''), ''),
+
+
+
+-- Albania
+insert into random_name(nationality, gender, name) values
+((select id from nationality where name = 'Albânia'), (select id from gender where symbol = 'M'), 'Pishak Meksi'),
+((select id from nationality where name = 'Albânia'), (select id from gender where symbol = 'M'), 'Ushtim Ziberi'),
+((select id from nationality where name = 'Albânia'), (select id from gender where symbol = 'M'), 'Bestar Ristani'),
+((select id from nationality where name = 'Albânia'), (select id from gender where symbol = 'M'), 'Shtjefën Mishaxhi'),
+((select id from nationality where name = 'Albânia'), (select id from gender where symbol = 'M'), 'Bardhush Useni'),
+((select id from nationality where name = 'Albânia'), (select id from gender where symbol = 'M'), 'Erdet Hysi'),
+((select id from nationality where name = 'Albânia'), (select id from gender where symbol = 'M'), 'Afraz Kadare'),
+((select id from nationality where name = 'Albânia'), (select id from gender where symbol = 'M'), 'Zëdlir Latifi'),
+((select id from nationality where name = 'Albânia'), (select id from gender where symbol = 'M'), 'Thëllëzor Fakaj'),
+((select id from nationality where name = 'Albânia'), (select id from gender where symbol = 'M'), 'Ahdan Luga'),
+((select id from nationality where name = 'Albânia'), (select id from gender where symbol = 'F'), 'Albulena Gjebrea'),
+((select id from nationality where name = 'Albânia'), (select id from gender where symbol = 'F'), 'Pezare Cobaj'),
+((select id from nationality where name = 'Albânia'), (select id from gender where symbol = 'F'), 'Hare Jasari'),
+((select id from nationality where name = 'Albânia'), (select id from gender where symbol = 'F'), 'Ylberore Pllumi'),
+((select id from nationality where name = 'Albânia'), (select id from gender where symbol = 'F'), 'Sardiana Jusufi'),
+((select id from nationality where name = 'Albânia'), (select id from gender where symbol = 'F'), 'Bejka Paloka'),
+((select id from nationality where name = 'Albânia'), (select id from gender where symbol = 'F'), 'Tatuja Pipa'),
+((select id from nationality where name = 'Albânia'), (select id from gender where symbol = 'F'), 'Bjeshka Ceka'),
+((select id from nationality where name = 'Albânia'), (select id from gender where symbol = 'F'), 'Taulante Berisha'),
+((select id from nationality where name = 'Albânia'), (select id from gender where symbol = 'F'), 'Gugushe Sopa');
+
+
+
+-- Alemanha
+insert into random_name(nationality, gender, name) values
+((select id from nationality where name = 'Alemanha'), (select id from gender where symbol = 'M'), 'Emil Braunbeck'),
+((select id from nationality where name = 'Alemanha'), (select id from gender where symbol = 'M'), 'Lasse Gerstäcker'),
+((select id from nationality where name = 'Alemanha'), (select id from gender where symbol = 'M'), 'Johann Waibel'),
+((select id from nationality where name = 'Alemanha'), (select id from gender where symbol = 'M'), 'Nico Ehrenberg'),
+((select id from nationality where name = 'Alemanha'), (select id from gender where symbol = 'M'), 'Levi Heinrich'),
+((select id from nationality where name = 'Alemanha'), (select id from gender where symbol = 'M'), 'Falco Knoerr'),
+((select id from nationality where name = 'Alemanha'), (select id from gender where symbol = 'M'), 'Niko Hartmann'),
+((select id from nationality where name = 'Alemanha'), (select id from gender where symbol = 'M'), 'Liam Niehaus'),
+((select id from nationality where name = 'Alemanha'), (select id from gender where symbol = 'M'), 'Kim Hencke'),
+((select id from nationality where name = 'Alemanha'), (select id from gender where symbol = 'M'), 'Marius Albrecht'),
+((select id from nationality where name = 'Alemanha'), (select id from gender where symbol = 'F'), 'Svea Kümmel'),
+((select id from nationality where name = 'Alemanha'), (select id from gender where symbol = 'F'), 'Gwen Lilienthal'),
+((select id from nationality where name = 'Alemanha'), (select id from gender where symbol = 'F'), 'Mira Knauer'),
+((select id from nationality where name = 'Alemanha'), (select id from gender where symbol = 'F'), 'Gloria Eichenwald'),
+((select id from nationality where name = 'Alemanha'), (select id from gender where symbol = 'F'), 'Daniela Ochs'),
+((select id from nationality where name = 'Alemanha'), (select id from gender where symbol = 'F'), 'Amanda Dietrich'),
+((select id from nationality where name = 'Alemanha'), (select id from gender where symbol = 'F'), 'Natalie Kornhäusel'),
+((select id from nationality where name = 'Alemanha'), (select id from gender where symbol = 'F'), 'Fee Hilbert'),
+((select id from nationality where name = 'Alemanha'), (select id from gender where symbol = 'F'), 'Elea Wentzel'),
+((select id from nationality where name = 'Alemanha'), (select id from gender where symbol = 'F'), 'Elisa Kottmann');
+
+
+-- Áustria
+
+insert into random_name(nationality, gender, name) values						
+((select id from nationality where name = 'Áustria'), (select id from gender where symbol = 'M'), 'Filip Klestil'),
+((select id from nationality where name = 'Áustria'), (select id from gender where symbol = 'M'), 'Christian Hamerling'),
+((select id from nationality where name = 'Áustria'), (select id from gender where symbol = 'M'), 'Adrian Fischer'),
+((select id from nationality where name = 'Áustria'), (select id from gender where symbol = 'M'), 'Paul Happel'),
+((select id from nationality where name = 'Áustria'), (select id from gender where symbol = 'M'), 'Jonas Ebner'),
+((select id from nationality where name = 'Áustria'), (select id from gender where symbol = 'M'), 'Luis Kogler'),
+((select id from nationality where name = 'Áustria'), (select id from gender where symbol = 'M'), 'Jan Burger'),
+((select id from nationality where name = 'Áustria'), (select id from gender where symbol = 'M'), 'Matteo Brunner'),
+((select id from nationality where name = 'Áustria'), (select id from gender where symbol = 'M'), 'Tim Renner'),
+((select id from nationality where name = 'Áustria'), (select id from gender where symbol = 'M'), 'Matheo Morath'),
+((select id from nationality where name = 'Áustria'), (select id from gender where symbol = 'F'), 'Lara Bahr'),
+((select id from nationality where name = 'Áustria'), (select id from gender where symbol = 'F'), 'Isabel Sandmeier'),
+((select id from nationality where name = 'Áustria'), (select id from gender where symbol = 'F'), 'Klara Cella'),
+((select id from nationality where name = 'Áustria'), (select id from gender where symbol = 'F'), 'Paulina Abel'),
+((select id from nationality where name = 'Áustria'), (select id from gender where symbol = 'F'), 'Annika Bauer'),
+((select id from nationality where name = 'Áustria'), (select id from gender where symbol = 'F'), 'Helena Esmann'),
+((select id from nationality where name = 'Áustria'), (select id from gender where symbol = 'F'), 'Caroline Hofer'),
+((select id from nationality where name = 'Áustria'), (select id from gender where symbol = 'F'), 'Hannah Galishoff'),
+((select id from nationality where name = 'Áustria'), (select id from gender where symbol = 'F'), 'Lilli Kronecker'),
+((select id from nationality where name = 'Áustria'), (select id from gender where symbol = 'F'), 'Laureen Zippe');
+
+
+-- Bulgária
+
+insert into random_name(nationality, gender, name) values						
+((select id from nationality where name = 'Bulgária'), (select id from gender where symbol = 'M'), 'Dragoy Hristov Cristov'),
+((select id from nationality where name = 'Bulgária'), (select id from gender where symbol = 'M'), 'Grigori Evgeniev Kirilov'),
+((select id from nationality where name = 'Bulgária'), (select id from gender where symbol = 'M'), 'Mladen Desislavov Bliznakov'),
+((select id from nationality where name = 'Bulgária'), (select id from gender where symbol = 'M'), 'Zhelyasko Stanislavov Cristov'),
+((select id from nationality where name = 'Bulgária'), (select id from gender where symbol = 'M'), 'Troyan Ivailov Cherganski'),
+((select id from nationality where name = 'Bulgária'), (select id from gender where symbol = 'M'), 'Valko Ivov Avramov'),
+((select id from nationality where name = 'Bulgária'), (select id from gender where symbol = 'M'), 'Devesil Momchilov Kynev'),
+((select id from nationality where name = 'Bulgária'), (select id from gender where symbol = 'M'), 'Naso Radkov Kostov'),
+((select id from nationality where name = 'Bulgária'), (select id from gender where symbol = 'M'), 'Yankul Antonov Tinchev'),
+((select id from nationality where name = 'Bulgária'), (select id from gender where symbol = 'M'), 'Devesil Momchilov Iliev'),
+((select id from nationality where name = 'Bulgária'), (select id from gender where symbol = 'F'), 'Tzona Andreyeva Ganeva'),
+((select id from nationality where name = 'Bulgária'), (select id from gender where symbol = 'F'), 'Stoyanka Antonova Pingova'),
+((select id from nationality where name = 'Bulgária'), (select id from gender where symbol = 'F'), 'Ablenka Pavelova Dimitrova'),
+((select id from nationality where name = 'Bulgária'), (select id from gender where symbol = 'F'), 'Kosena Stanislavova Zaikova'),
+((select id from nationality where name = 'Bulgária'), (select id from gender where symbol = 'F'), 'Dara Petrova Kyneva'),
+((select id from nationality where name = 'Bulgária'), (select id from gender where symbol = 'F'), 'Huba Zlatkova Nakova'),
+((select id from nationality where name = 'Bulgária'), (select id from gender where symbol = 'F'), 'Nevena Radkova Karavelova'),
+((select id from nationality where name = 'Bulgária'), (select id from gender where symbol = 'F'), 'Dimitrinka Petrova Vankova'),
+((select id from nationality where name = 'Bulgária'), (select id from gender where symbol = 'F'), 'Nikolina Stanislavova Vasileva'),
+((select id from nationality where name = 'Bulgária'), (select id from gender where symbol = 'F'), 'Ivelina Pavelova Ivanova');
+
+-- Espanha
+
+insert into random_name(nationality, gender, name) values						
+((select id from nationality where name = 'Espanha'), (select id from gender where symbol = 'M'), 'Julian Rodríguez'),
+((select id from nationality where name = 'Espanha'), (select id from gender where symbol = 'M'), 'David Enríquez'),
+((select id from nationality where name = 'Espanha'), (select id from gender where symbol = 'M'), 'Pablo Labrador'),
+((select id from nationality where name = 'Espanha'), (select id from gender where symbol = 'M'), 'Gonzalo Labrador'),
+((select id from nationality where name = 'Espanha'), (select id from gender where symbol = 'M'), 'Aimar Castillero'),
+((select id from nationality where name = 'Espanha'), (select id from gender where symbol = 'M'), 'Mario Cueva'),
+((select id from nationality where name = 'Espanha'), (select id from gender where symbol = 'M'), 'Emilio Castrillón'),
+((select id from nationality where name = 'Espanha'), (select id from gender where symbol = 'M'), 'Adrian Díaz'),
+((select id from nationality where name = 'Espanha'), (select id from gender where symbol = 'M'), 'Ivan Barceló'),
+((select id from nationality where name = 'Espanha'), (select id from gender where symbol = 'M'), 'Yago Verdugo'),
+((select id from nationality where name = 'Espanha'), (select id from gender where symbol = 'F'), 'Eva Maria Páez'),
+((select id from nationality where name = 'Espanha'), (select id from gender where symbol = 'F'), 'Ana Isabel Melero'),
+((select id from nationality where name = 'Espanha'), (select id from gender where symbol = 'F'), 'Rosa Carnicero'),
+((select id from nationality where name = 'Espanha'), (select id from gender where symbol = 'F'), 'Elia Batanero'),
+((select id from nationality where name = 'Espanha'), (select id from gender where symbol = 'F'), 'Maria Isabel Balderas'),
+((select id from nationality where name = 'Espanha'), (select id from gender where symbol = 'F'), 'Uxue Velázquez'),
+((select id from nationality where name = 'Espanha'), (select id from gender where symbol = 'F'), 'Elisa Pedrero'),
+((select id from nationality where name = 'Espanha'), (select id from gender where symbol = 'F'), 'Gloria Rodríguez'),
+((select id from nationality where name = 'Espanha'), (select id from gender where symbol = 'F'), 'Olivia Tudela'),
+((select id from nationality where name = 'Espanha'), (select id from gender where symbol = 'F'), 'Mariona Ramos');
+
+-- França
+
+insert into random_name(nationality, gender, name) values						
+((select id from nationality where name = 'França'), (select id from gender where symbol = 'M'), 'Samuel Clérico'),
+((select id from nationality where name = 'França'), (select id from gender where symbol = 'M'), 'Félix Allemand'),
+((select id from nationality where name = 'França'), (select id from gender where symbol = 'M'), 'Jacob Millet'),
+((select id from nationality where name = 'França'), (select id from gender where symbol = 'M'), 'Jean-Christophe Derocles'),
+((select id from nationality where name = 'França'), (select id from gender where symbol = 'M'), 'Florian Devereaux'),
+((select id from nationality where name = 'França'), (select id from gender where symbol = 'M'), 'Sacha Poullain'),
+((select id from nationality where name = 'França'), (select id from gender where symbol = 'M'), 'Laurent Bernier'),
+((select id from nationality where name = 'França'), (select id from gender where symbol = 'M'), 'Jean-Yves Nee'),
+((select id from nationality where name = 'França'), (select id from gender where symbol = 'M'), 'Ladislas Chéreau'),
+((select id from nationality where name = 'França'), (select id from gender where symbol = 'M'), 'Gabriel Nicollier'),
+((select id from nationality where name = 'França'), (select id from gender where symbol = 'F'), 'Fiona Bourbeau'),
+((select id from nationality where name = 'França'), (select id from gender where symbol = 'F'), 'Hélène Dieudonné'),
+((select id from nationality where name = 'França'), (select id from gender where symbol = 'F'), 'Marie-Christine Cerfbeer'),
+((select id from nationality where name = 'França'), (select id from gender where symbol = 'F'), 'Adrienne Baillairgé'),
+((select id from nationality where name = 'França'), (select id from gender where symbol = 'F'), 'Eugénie Grosjean'),
+((select id from nationality where name = 'França'), (select id from gender where symbol = 'F'), 'Lucrèce Jacquemoud'),
+((select id from nationality where name = 'França'), (select id from gender where symbol = 'F'), 'Angèle Marchand'),
+((select id from nationality where name = 'França'), (select id from gender where symbol = 'F'), 'Clara Rousseau'),
+((select id from nationality where name = 'França'), (select id from gender where symbol = 'F'), 'Adrienne Hauet'),
+((select id from nationality where name = 'França'), (select id from gender where symbol = 'F'), 'Céleste Frère');
+
+-- Grécia
+
+insert into random_name(nationality, gender, name) values						
+((select id from nationality where name = 'Grécia'), (select id from gender where symbol = 'M'), 'Apostolos Kritikas'),
+((select id from nationality where name = 'Grécia'), (select id from gender where symbol = 'M'), 'Prokopos Riniades'),
+((select id from nationality where name = 'Grécia'), (select id from gender where symbol = 'M'), 'Vladimiros Laskarou'),
+((select id from nationality where name = 'Grécia'), (select id from gender where symbol = 'M'), 'Themistoklis Maniatakis'),
+((select id from nationality where name = 'Grécia'), (select id from gender where symbol = 'M'), 'Matthaios Manotis'),
+((select id from nationality where name = 'Grécia'), (select id from gender where symbol = 'M'), 'Myron Palaiolis'),
+((select id from nationality where name = 'Grécia'), (select id from gender where symbol = 'M'), 'Eros Sarantas'),
+((select id from nationality where name = 'Grécia'), (select id from gender where symbol = 'M'), 'Venizelos Galanakos'),
+((select id from nationality where name = 'Grécia'), (select id from gender where symbol = 'M'), 'Chrysanthos Stratakos'),
+((select id from nationality where name = 'Grécia'), (select id from gender where symbol = 'M'), 'Konstantinos Pipeas'),
+((select id from nationality where name = 'Grécia'), (select id from gender where symbol = 'F'), 'Andriana Vasilelli'),
+((select id from nationality where name = 'Grécia'), (select id from gender where symbol = 'F'), 'Avgi Kontotzi'),
+((select id from nationality where name = 'Grécia'), (select id from gender where symbol = 'F'), 'Medea Alanoti'),
+((select id from nationality where name = 'Grécia'), (select id from gender where symbol = 'F'), 'Cassandra Boosaliadi'),
+((select id from nationality where name = 'Grécia'), (select id from gender where symbol = 'F'), 'Kyriake Contoglou'),
+((select id from nationality where name = 'Grécia'), (select id from gender where symbol = 'F'), 'Thekla Stathoti'),
+((select id from nationality where name = 'Grécia'), (select id from gender where symbol = 'F'), 'Electra Balliade'),
+((select id from nationality where name = 'Grécia'), (select id from gender where symbol = 'F'), 'Efterpi Georgoglou'),
+((select id from nationality where name = 'Grécia'), (select id from gender where symbol = 'F'), 'Violeta Ralla'),
+((select id from nationality where name = 'Grécia'), (select id from gender where symbol = 'F'), 'Keti Cosmouli');
+
+-- Itália
+
+insert into random_name(nationality, gender, name) values						
+((select id from nationality where name = 'Itália'), (select id from gender where symbol = 'M'), 'Clemente Pellegrin'),
+((select id from nationality where name = 'Itália'), (select id from gender where symbol = 'M'), 'Clodoveo Marzullo'),
+((select id from nationality where name = 'Itália'), (select id from gender where symbol = 'M'), 'Otello Cancellieri'),
+((select id from nationality where name = 'Itália'), (select id from gender where symbol = 'M'), 'Beltramo Rosamilia'),
+((select id from nationality where name = 'Itália'), (select id from gender where symbol = 'M'), 'Nunzio Giannuzzi'),
+((select id from nationality where name = 'Itália'), (select id from gender where symbol = 'M'), 'Protasio Merlini'),
+((select id from nationality where name = 'Itália'), (select id from gender where symbol = 'M'), 'Ruperto Burgi'),
+((select id from nationality where name = 'Itália'), (select id from gender where symbol = 'M'), 'Serviliano Nenni'),
+((select id from nationality where name = 'Itália'), (select id from gender where symbol = 'M'), 'Vinfrido Dena'),
+((select id from nationality where name = 'Itália'), (select id from gender where symbol = 'M'), 'Venerando Bordonaro'),
+((select id from nationality where name = 'Itália'), (select id from gender where symbol = 'F'), 'Beata Marone'),
+((select id from nationality where name = 'Itália'), (select id from gender where symbol = 'F'), 'Minerva Cariello'),
+((select id from nationality where name = 'Itália'), (select id from gender where symbol = 'F'), 'Floriana Tomaino'),
+((select id from nationality where name = 'Itália'), (select id from gender where symbol = 'F'), 'Filippa Provenzano'),
+((select id from nationality where name = 'Itália'), (select id from gender where symbol = 'F'), 'Trasea Zappia'),
+((select id from nationality where name = 'Itália'), (select id from gender where symbol = 'F'), 'Cloe Rampulla'),
+((select id from nationality where name = 'Itália'), (select id from gender where symbol = 'F'), 'Grazia Pezzino'),
+((select id from nationality where name = 'Itália'), (select id from gender where symbol = 'F'), 'Simona Mangone'),
+((select id from nationality where name = 'Itália'), (select id from gender where symbol = 'F'), 'Rufina De Filippis'),
+((select id from nationality where name = 'Itália'), (select id from gender where symbol = 'F'), 'Fiordaliso Cimo');
+
+-- Judeu
+
+insert into random_name(nationality, gender, name) values						
+((select id from nationality where name = 'Judeu'), (select id from gender where symbol = 'M'), 'Ichabod Weizman'),
+((select id from nationality where name = 'Judeu'), (select id from gender where symbol = 'M'), 'Mathew Kahn'),
+((select id from nationality where name = 'Judeu'), (select id from gender where symbol = 'M'), 'Benjy Fraenkel'),
+((select id from nationality where name = 'Judeu'), (select id from gender where symbol = 'M'), 'Judas Feldshuh'),
+((select id from nationality where name = 'Judeu'), (select id from gender where symbol = 'M'), 'Cale Neuberger'),
+((select id from nationality where name = 'Judeu'), (select id from gender where symbol = 'M'), 'Gabi Hart'),
+((select id from nationality where name = 'Judeu'), (select id from gender where symbol = 'M'), 'Samuel Kahn'),
+((select id from nationality where name = 'Judeu'), (select id from gender where symbol = 'M'), 'Zan Jacobs'),
+((select id from nationality where name = 'Judeu'), (select id from gender where symbol = 'M'), 'Kalb Sandler'),
+((select id from nationality where name = 'Judeu'), (select id from gender where symbol = 'M'), 'Bela Deutsch'),
+((select id from nationality where name = 'Judeu'), (select id from gender where symbol = 'F'), 'Nira Krausz'),
+((select id from nationality where name = 'Judeu'), (select id from gender where symbol = 'F'), 'Agam Mendel'),
+((select id from nationality where name = 'Judeu'), (select id from gender where symbol = 'F'), 'Abirit Frank'),
+((select id from nationality where name = 'Judeu'), (select id from gender where symbol = 'F'), 'Elmaz Kuttab'),
+((select id from nationality where name = 'Judeu'), (select id from gender where symbol = 'F'), 'Neta Ganani'),
+((select id from nationality where name = 'Judeu'), (select id from gender where symbol = 'F'), 'Carmel Susser'),
+((select id from nationality where name = 'Judeu'), (select id from gender where symbol = 'F'), 'Natalia Ran'),
+((select id from nationality where name = 'Judeu'), (select id from gender where symbol = 'F'), 'Carmit Lowy'),
+((select id from nationality where name = 'Judeu'), (select id from gender where symbol = 'F'), 'Osnat Hodesmann'),
+((select id from nationality where name = 'Judeu'), (select id from gender where symbol = 'F'), 'Karmina Tschkenow');
+
+
+-- Marrocos
+
+insert into random_name(nationality, gender, name) values						
+((select id from nationality where name = 'Marrocos'), (select id from gender where symbol = 'M'), 'Iyas Ben Jelloun'),
+((select id from nationality where name = 'Marrocos'), (select id from gender where symbol = 'M'), 'Jamaldine Nissaboury'),
+((select id from nationality where name = 'Marrocos'), (select id from gender where symbol = 'M'), 'Barkad Mejjati'),
+((select id from nationality where name = 'Marrocos'), (select id from gender where symbol = 'M'), 'Kadeen Azaykou'),
+((select id from nationality where name = 'Marrocos'), (select id from gender where symbol = 'M'), 'Quraishi Mourad'),
+((select id from nationality where name = 'Marrocos'), (select id from gender where symbol = 'M'), 'Aqil Al-Jabri'),
+((select id from nationality where name = 'Marrocos'), (select id from gender where symbol = 'M'), 'Ismail Kabbal'),
+((select id from nationality where name = 'Marrocos'), (select id from gender where symbol = 'M'), 'Thawab Tobji'),
+((select id from nationality where name = 'Marrocos'), (select id from gender where symbol = 'M'), 'El Hassan Benchemsi'),
+((select id from nationality where name = 'Marrocos'), (select id from gender where symbol = 'M'), 'Ikrimah Al-Habib'),
+((select id from nationality where name = 'Marrocos'), (select id from gender where symbol = 'F'), 'Laila Al-Madini'),
+((select id from nationality where name = 'Marrocos'), (select id from gender where symbol = 'F'), 'Choumicha Ferhat'),
+((select id from nationality where name = 'Marrocos'), (select id from gender where symbol = 'F'), 'Mumina Serghini'),
+((select id from nationality where name = 'Marrocos'), (select id from gender where symbol = 'F'), 'Azhar El Aoufi'),
+((select id from nationality where name = 'Marrocos'), (select id from gender where symbol = 'F'), 'Samaira Boukous'),
+((select id from nationality where name = 'Marrocos'), (select id from gender where symbol = 'F'), 'Soumaya El Haloui'),
+((select id from nationality where name = 'Marrocos'), (select id from gender where symbol = 'F'), 'Ghazal El Ouazzani'),
+((select id from nationality where name = 'Marrocos'), (select id from gender where symbol = 'F'), 'Sara Ben Abdelaziz'),
+((select id from nationality where name = 'Marrocos'), (select id from gender where symbol = 'F'), 'Sayeda Haddani'),
+((select id from nationality where name = 'Marrocos'), (select id from gender where symbol = 'F'), 'Samima Bikri');
+
+
+-- Romênia
+
+insert into random_name(nationality, gender, name) values						
+((select id from nationality where name = 'Romênia'), (select id from gender where symbol = 'M'), 'Valerian Hurgoi'),
+((select id from nationality where name = 'Romênia'), (select id from gender where symbol = 'M'), 'Ivan Poénaru'),
+((select id from nationality where name = 'Romênia'), (select id from gender where symbol = 'M'), 'Mario Movila'),
+((select id from nationality where name = 'Romênia'), (select id from gender where symbol = 'M'), 'George Moldovanu'),
+((select id from nationality where name = 'Romênia'), (select id from gender where symbol = 'M'), 'Anton Marcovici'),
+((select id from nationality where name = 'Romênia'), (select id from gender where symbol = 'M'), 'Mihaita Stanasila'),
+((select id from nationality where name = 'Romênia'), (select id from gender where symbol = 'M'), 'Ionache Puiu'),
+((select id from nationality where name = 'Romênia'), (select id from gender where symbol = 'M'), 'Sergiu Vulpes'),
+((select id from nationality where name = 'Romênia'), (select id from gender where symbol = 'M'), 'Claudiu Stoenescu'),
+((select id from nationality where name = 'Romênia'), (select id from gender where symbol = 'M'), 'Constantin Amanar'),
+((select id from nationality where name = 'Romênia'), (select id from gender where symbol = 'F'), 'Rodika Vlaicu'),
+((select id from nationality where name = 'Romênia'), (select id from gender where symbol = 'F'), 'Gabriela Morosanu'),
+((select id from nationality where name = 'Romênia'), (select id from gender where symbol = 'F'), 'Varduhi Mironescu'),
+((select id from nationality where name = 'Romênia'), (select id from gender where symbol = 'F'), 'Ilena Martinescu'),
+((select id from nationality where name = 'Romênia'), (select id from gender where symbol = 'F'), 'Daria Cosovei'),
+((select id from nationality where name = 'Romênia'), (select id from gender where symbol = 'F'), 'Lia Pârvulescu'),
+((select id from nationality where name = 'Romênia'), (select id from gender where symbol = 'F'), 'Mara Antonescu'),
+((select id from nationality where name = 'Romênia'), (select id from gender where symbol = 'F'), 'Lizuca Ioveanu'),
+((select id from nationality where name = 'Romênia'), (select id from gender where symbol = 'F'), 'Ioana Banica'),
+((select id from nationality where name = 'Romênia'), (select id from gender where symbol = 'F'), 'Aurica Mandruleanu');
+
+-- Sérvia
+
+insert into random_name(nationality, gender, name) values						
+((select id from nationality where name = 'Sérvia'), (select id from gender where symbol = 'M'), 'Avram Golubović'),
+((select id from nationality where name = 'Sérvia'), (select id from gender where symbol = 'M'), 'Đuro Pajić'),
+((select id from nationality where name = 'Sérvia'), (select id from gender where symbol = 'M'), 'Nebojša Živić'),
+((select id from nationality where name = 'Sérvia'), (select id from gender where symbol = 'M'), 'Boža Kostić'),
+((select id from nationality where name = 'Sérvia'), (select id from gender where symbol = 'M'), 'Ranko Marković'),
+((select id from nationality where name = 'Sérvia'), (select id from gender where symbol = 'M'), 'Slavoljub Zebić'),
+((select id from nationality where name = 'Sérvia'), (select id from gender where symbol = 'M'), 'Ilija Janković'),
+((select id from nationality where name = 'Sérvia'), (select id from gender where symbol = 'M'), 'Mikica Moldovan'),
+((select id from nationality where name = 'Sérvia'), (select id from gender where symbol = 'M'), 'Dalibor Marinković'),
+((select id from nationality where name = 'Sérvia'), (select id from gender where symbol = 'M'), 'Dabiživ Brkić'),
+((select id from nationality where name = 'Sérvia'), (select id from gender where symbol = 'F'), 'Gorana Tasić'),
+((select id from nationality where name = 'Sérvia'), (select id from gender where symbol = 'F'), 'Petrija Blagojević'),
+((select id from nationality where name = 'Sérvia'), (select id from gender where symbol = 'F'), 'Branka Grgurović'),
+((select id from nationality where name = 'Sérvia'), (select id from gender where symbol = 'F'), 'Natasa Hristov'),
+((select id from nationality where name = 'Sérvia'), (select id from gender where symbol = 'F'), 'Nevena Vasić'),
+((select id from nationality where name = 'Sérvia'), (select id from gender where symbol = 'F'), 'Danijela Bojević'),
+((select id from nationality where name = 'Sérvia'), (select id from gender where symbol = 'F'), 'Dobrila Vukomanović'),
+((select id from nationality where name = 'Sérvia'), (select id from gender where symbol = 'F'), 'Nađa Gišić'),
+((select id from nationality where name = 'Sérvia'), (select id from gender where symbol = 'F'), 'Tatjana Rajković'),
+((select id from nationality where name = 'Sérvia'), (select id from gender where symbol = 'F'), 'Anica Andrić');
+
+
+-- Suíça
+
+insert into random_name(nationality, gender, name) values						
+((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'M'), 'Ramun Ursenbacher'),
+((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'M'), 'Hänggi Soom'),
+((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'M'), 'Filippo Züst'),
+((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'M'), 'Timo Felber'),
+((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'M'), 'Christian Welter'),
+((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'M'), 'Babacar Fischer'),
+((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'M'), 'Florus Zeller'),
+((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'M'), 'Fridolin Gut'),
+((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'M'), 'Raphaël Ragetli'),
+((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'M'), 'Fabio Thaler'),
+((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'F'), 'Kaja Lanz'),
+((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'F'), 'Nathalie Marchion'),
+((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'F'), 'Aila Hugi'),
+((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'F'), 'Enja Scheuren'),
+((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'F'), 'Amrei Gartmann'),
+((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'F'), 'Nadine Streit'),
+((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'F'), 'Hedi Murri'),
+((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'F'), 'Aurora Zesiger'),
+((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'F'), 'Seraina Weiss'),
+((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'F'), 'Lumi Trachsler');
