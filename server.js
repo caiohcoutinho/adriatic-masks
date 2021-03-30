@@ -754,6 +754,55 @@ app.post("/occupation", (req, res, next) => {
 	});
 });
 
+app.post("/npc", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		let npc = req.body;
+
+		let theQuery = "insert into npc(name, gender, nationality, age, nickname, skin, eyes, hair, physical, social, mental, family, home, instinct, oath, oath_nature, seed_nickname, seed_age, seed_eyes, seed_hair, seed_neighborhood, seed_physical, seed_social, seed_mental, seed_instinct, seed_oath, seed_oath_nature, notes, wealth, max_health, ressonance, description, alive, sick, hospitalized, story) values ('"+npc.name+"', (select id from gender where symbol = '"+npc.gender+"'), "+npc.nationality+", "+npc.age+", "+(isNullOrUndefinedOrEmpty(npc.nickname) ? "null": "'"+npc.nickname+"'" )+", "+npc.skin+", "+npc.eyes+", "+npc.hair+", "+npc.f+", "+npc.s+", "+npc.m+", "+(isNullOrUndefinedOrEmpty(npc.family) ? "null": ""+npc.family+"" )+", "+npc.home+", "+npc.instinct+", "+npc.oath+", "+npc.oath_nature+", "+npc.seed_nickname+", "+npc.seed_age+", "+npc.seed_eyes+", "+npc.seed_hair+", "+npc.seed_neighborhood+", "+npc.seed_physical+", "+npc.seed_social+", "+npc.seed_mental+", "+npc.seed_instinct+", "+npc.seed_oath+", "+npc.seed_oath_nature+", "+(isNullOrUndefinedOrEmpty(npc.notes) ? "null": "'"+npc.notes+"'" )+", "+npc.wealth+", "+npc.max_health+", "+npc.ressonance+", "+(isNullOrUndefinedOrEmpty(npc.description) ? "null": "'"+npc.description+"'" )+", "+npc.alive+", "+npc.sick+", "+npc.hospitalized+", "+(isNullOrUndefinedOrEmpty(npc.story) ? "null": "'"+npc.story+"'" )+") returning id";
+		
+		client.query(theQuery,
+		 (err, result) => {
+	 		done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows[0].id)
+			}
+		  
+		});
+		
+	});
+});
+
+app.delete("/npc", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		let npcId = req.body.id;
+		let theQuery = "delete from npc where id = "+npcId;
+		client.query(theQuery,
+		 (err, result) => {
+	 		done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json("ok");
+			}
+		});
+	});
+});
+
+
 app.delete("/occupation", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){
@@ -761,7 +810,6 @@ app.delete("/occupation", (req, res, next) => {
 			return;
 		}
 		let occupation = req.body;
-		console.log("occupation = "+JSON.stringify(occupation));
 		client.query("delete from npc_profession where id = "+occupation.id,
 		 (err, result) => {
 		 	console.log("delete 5");

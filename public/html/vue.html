@@ -105,6 +105,7 @@
 				v-on:character-sheet-ressonance-change="characterSheetRessonanceChange"
 				v-on:character-sheet-occupation-change="characterSheetOccupationChange"
 				v-on:character-sheet-delete-occupation="characterSheetDeleteOccupation"
+				v-on:character-sheet-delete-npc="characterSheetDeleteNpc"
 				v-on:character-sheet-add-occupation="characterSheetAddOccupation"
 				v-on:character-sheet-health-bar-change="characterSheetHealthBarChange"
 				v-bind:oath-list="oathList"
@@ -260,6 +261,7 @@
 				v-on:character-sheet-ressonance-change="characterSheetRessonanceChange"
 				v-on:character-sheet-occupation-change="characterSheetOccupationChange"
 				v-on:character-sheet-delete-occupation="characterSheetDeleteOccupation"
+				v-on:character-sheet-delete-npc="characterSheetDeleteNpc"
 				v-on:character-sheet-add-occupation="characterSheetAddOccupation"
 				v-on:character-sheet-health-bar-change="characterSheetHealthBarChange"
 				v-on:selected-character-sheet-npc-change="selectedCharacterSheetNpcChange"
@@ -417,6 +419,7 @@
 						{{npc.name}} (#{{npc.id}})
 					</option>
 				</select>
+				<span v-if="selectedNpc != null" class="characterSheetDeleteNpcButton clickable" v-on:click="characterSheetDeleteNpc">&#10060;</span>
 			</div>
 			<div class="scrollableDiv">
 				<table v-if="selectedNpc != null"

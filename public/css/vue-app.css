@@ -266,7 +266,8 @@ table.businessTable tr.businessTableHeaderRow th{
 
 table.npcTable tr.npcTableHeaderRow th.clickable,
 table.businessTable tr.businessTableHeaderRow th.clickable,
-span.characterSheetDeleteOccupationButton.clickable{
+span.characterSheetDeleteOccupationButton.clickable,
+span.characterSheetDeleteNpcButton.clickable{
 	cursor:	pointer;
 }
 

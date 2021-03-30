@@ -65,6 +65,7 @@ const TASK_TYPES = {
 	SAVE_MAX_HEALTH: "saveMaxHealth",
 	SAVE_OCCUPATION: "saveOccupation",
 	DELETE_OCCUPATION: "deleteOccupation",
+	DELETE_NPC: "deleteNpc",
 	LOAD_RESSONANCE: "loadRessonance",
 	LOAD_PROFESSION: "loadProfession",
 	LOAD_NPC_PROFESSION: "loadNpcProfession",
@@ -162,6 +163,7 @@ TASK_EXECUTIONS[TASK_TYPES.SAVE_OCCUPATION] = function(self, occupation){
 };
 
 TASK_EXECUTIONS[TASK_TYPES.DELETE_OCCUPATION] = createDeleteUrlAction("/occupation");
+TASK_EXECUTIONS[TASK_TYPES.DELETE_NPC] = createDeleteUrlAction("/npc");
 
 TASK_EXECUTIONS[TASK_TYPES.LOAD_RESSONANCE] = createLoadListUrlAction("/ressonance", "ressonanceList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_PROFESSION] = createLoadListUrlAction("/profession", "professionList");
@@ -242,17 +244,32 @@ TASK_EXECUTIONS[TASK_TYPES.GENERATE_NEW_NPC] = function(self, data){
 		let profession = data.professionId;
 		let business = data.businessId;
 
-		npc.id = crazyIdGeneratorDeleteMe++;
-		self.selectedCharacterSheetNpc = npc.id;
-		self.npcList.push(npc);
+		self.axios.post("/npc", npc).then(function(response){
+			let npcId = parseInt(response.data);
+			npc.id = npcId;
 
-		self.lastUpdate = new Date().toString();
-		self.lastUpdateDetails = new Date().toString();
+			let occupation = {
+				npc: npcId,
+				business: business,
+				profession: profession
+			};
 
-		self.log("generateNewNpc took "+((tac-tic)/1000)+"s.");
-		self.log("data = "+JSON.stringify(data));
+			self.npcProfessionList.push(occupation);
 
-		self.thenAction();
+			self.addTask(new Task(
+				TASK_TYPES.SAVE_OCCUPATION, occupation
+			));
+
+			self.selectedCharacterSheetNpc = npc.id;
+			self.npcList.push(npc);
+
+			self.lastUpdate = new Date().toString();
+			self.lastUpdateDetails = new Date().toString();
+
+			self.log("generateNewNpc took "+((tac-tic)/1000)+"s.");
+
+			self.thenAction();
+		}).catch(self.errorAction);
 	}
 
 	let args = [self.distributionList, self.genderList, self.nationalityList, 
@@ -523,6 +540,9 @@ Vue.component('main-area', {
 		},
 		characterSheetAddOccupation: function(npcId){
 			this.$emit("character-sheet-add-occupation", npcId);
+		},
+		characterSheetDeleteNpc: function(){
+			this.$emit("character-sheet-delete-npc");
 		}
 	}
 });
@@ -984,6 +1004,9 @@ Vue.component('main-area-character-sheet', {
 		},
 		characterSheetAddOccupation: function(npcId){
 			this.$emit("character-sheet-add-occupation", npcId);
+		},
+		characterSheetDeleteNpc: function(){
+			this.$emit("character-sheet-delete-npc");
 		}
 	},
 	computed: {
@@ -2239,6 +2262,44 @@ var app = new Vue({
 				npc: npcId,
 				tempId: tempIdForOccupation++
 			});
+		},
+		characterSheetDeleteNpc: function(){
+			let self = this;
+			let npcId = self.selectedCharacterSheetNpc;
+			let npc = _.findWhere(this.npcList, {id: npcId});
+			let npcName = npc.name;
+			if(!confirm("Você tem certeza que deseja remover permanentemente "+npcName+"?")){
+				return;
+			}
+			let promptedNpcId = parseInt(prompt("Para confirmar, por favor digite o id do npc ("+npcId+")."));
+			if(promptedNpcId != npcId){
+				alert("O valor do id digitado ("+promptedNpcId+") não confere com o id do npc selecionado ("+npcId+").")
+				return;
+			}
+			_.each(_.filter(self.npcProfessionList, (occ) => occ.npc == npcId), (occ) => {
+				this.addTask(new Task(
+					TASK_TYPES.DELETE_OCCUPATION, occ
+				));
+				let index = _.findIndex(this.npcProfessionList, (occ) => {
+					return occ.npc == npcId;
+				});
+				if(index != -1){
+					this.npcProfessionList.splice(index, 1);
+				}
+			});
+			this.addTask(new Task(
+				TASK_TYPES.DELETE_NPC, npc
+			));
+			delete self.selectedCharacterSheetNpc;
+			if(!isNullOrUndefinedOrEmpty(self.selectedNpc) && self.selectedNpc.id == npcId){
+				delete self.selectedNpc;
+			}
+			let index = _.findIndex(this.npcList, (npc) => {
+				return npc.id == npcId;
+			});
+			if(index != -1){
+				this.npcList.splice(index, 1);
+			}
 		}
 	},
 	mounted: function() {
