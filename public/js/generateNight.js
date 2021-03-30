@@ -129,7 +129,7 @@ const peopleWorking = function(night, npc, period, npcProfessionList, profession
 
 const peopleSleeping = function(night, npc, period, npcProfessionList, professionList, npcPreferencesList, businessList, businessRulesList, homeList){
 	if(Math.random() < MAGIC_NUMBERS["SLEEP_AT_"+period]){
-		setNpcLocation(night, period, npc.id, null, npc.home_id, null, true);
+		setNpcLocation(night, period, npc.id, null, npc.home, null, true);
 		return true;
 	}
 
@@ -146,7 +146,7 @@ const peopleWandering = function(night, npc, period, npcProfessionList, professi
 }
 
 const peopleChillingAtHome = function(night, npc, period, npcProfessionList, professionList, npcPreferencesList, businessList, businessRulesList, homeList){
-	setNpcLocation(night, period, npc.id, null, npc.home_id, null, false);
+	setNpcLocation(night, period, npc.id, null, npc.home, null, false);
 	return true;
 }
 
@@ -187,7 +187,7 @@ const peopleCallingInSick = function(night, npc, period, npcProfessionList, prof
 	}
 	let stayHomeCheck = Math.random();
 	if(stayHomeCheck < MAGIC_NUMBERS.CALL_IN_SICK){
-		setNpcLocation(night, period, npc.id, null, _.findWhere(homeList, {id: npc.home_id}).id, null, false);
+		setNpcLocation(night, period, npc.id, null, _.findWhere(homeList, {id: npc.home}).id, null, false);
 		return true;	
 	}
 }
