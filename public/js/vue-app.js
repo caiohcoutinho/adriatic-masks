@@ -984,7 +984,6 @@ Vue.component('main-area-character-sheet', {
 			occupation.profession = value;
 			if(!isNullOrUndefinedOrEmpty(occupation) &&
 				!isNullOrUndefinedOrEmpty(occupation.npc) &&
-				!isNullOrUndefinedOrEmpty(occupation.business) &&
 				!isNullOrUndefinedOrEmpty(occupation.profession)){
 				this.$emit("character-sheet-occupation-change", occupation);
 			}
@@ -994,7 +993,6 @@ Vue.component('main-area-character-sheet', {
 			occupation.business = value;
 			if(!isNullOrUndefinedOrEmpty(occupation) &&
 				!isNullOrUndefinedOrEmpty(occupation.npc) &&
-				!isNullOrUndefinedOrEmpty(occupation.business) &&
 				!isNullOrUndefinedOrEmpty(occupation.profession)){
 				this.$emit("character-sheet-occupation-change", occupation);
 			}

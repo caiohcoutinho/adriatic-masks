@@ -726,7 +726,7 @@ app.post("/occupation", (req, res, next) => {
 		}
 		let occupation = req.body;
 		if(isNullOrUndefinedOrEmpty(occupation.id)){
-			client.query("insert into npc_profession(npc, profession, business) values ("+occupation.npc+", "+occupation.profession+", "+occupation.business+") returning id",
+			client.query("insert into npc_profession(npc, profession, business) values ("+occupation.npc+", "+occupation.profession+", "+(isNullOrUndefinedOrEmpty(occupation.business)?"null":occupation.business)+") returning id",
 			 (err, result) => {
 		 		done()
 			  if(err){
@@ -739,7 +739,7 @@ app.post("/occupation", (req, res, next) => {
 			  
 			});
 		} else {
-			client.query("update npc_profession set profession = "+occupation.profession+", business = "+occupation.business+" where id = "+occupation.id,
+			client.query("update npc_profession set profession = "+occupation.profession+", business = "+(isNullOrUndefinedOrEmpty(occupation.business)?"null":occupation.business)+" where id = "+occupation.id,
 			 (err, result) => {
 		 		done()
 			  if(err){
