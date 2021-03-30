@@ -103,6 +103,9 @@
 				v-on:character-sheet-wealth-change="characterSheetWealthChange"
 				v-on:character-sheet-max-health-change="characterSheetMaxHealthChange"
 				v-on:character-sheet-ressonance-change="characterSheetRessonanceChange"
+				v-on:character-sheet-occupation-change="characterSheetOccupationChange"
+				v-on:character-sheet-delete-occupation="characterSheetDeleteOccupation"
+				v-on:character-sheet-add-occupation="characterSheetAddOccupation"
 				v-on:character-sheet-health-bar-change="characterSheetHealthBarChange"
 				v-bind:oath-list="oathList"
 				v-bind:oath-nature-list="oathNatureList"
@@ -227,6 +230,9 @@
 				v-bind:oath-list="oathList"
 				v-bind:oath-nature-list="oathNatureList"
 				v-bind:ressonance-list="ressonanceList"
+				v-bind:npc-profession-list="npcProfessionList"
+				v-bind:profession-list="professionList"
+				v-bind:business-list="businessList"
 				v-bind:selected-character-sheet-npc="selectedCharacterSheetNpc"
 				v-on:character-sheet-name-change="characterSheetNameInputChange"
 				v-on:character-sheet-nickname-change="characterSheetNicknameInputChange"
@@ -252,6 +258,9 @@
 				v-on:character-sheet-wealth-change="characterSheetWealthChange"
 				v-on:character-sheet-max-health-change="characterSheetMaxHealthChange"
 				v-on:character-sheet-ressonance-change="characterSheetRessonanceChange"
+				v-on:character-sheet-occupation-change="characterSheetOccupationChange"
+				v-on:character-sheet-delete-occupation="characterSheetDeleteOccupation"
+				v-on:character-sheet-add-occupation="characterSheetAddOccupation"
 				v-on:character-sheet-health-bar-change="characterSheetHealthBarChange"
 				v-on:selected-character-sheet-npc-change="selectedCharacterSheetNpcChange"
 				/>
@@ -534,6 +543,29 @@
 								{{oathNature.name}}
 							</option>
 							</select></td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Ocupações</td>
+						<table>
+							<tr v-for="occupation in occupationByNpcId[selectedNpc.id]">
+								<td><span class="characterSheetDeleteOccupationButton clickable" v-on:click="characterSheetDeleteOccupation(occupation)">&#10060;</span></td>
+								<td><select class="characterSheetOccupationProfessionSelect" v-bind:value="occupation.profession" v-on:change="characterSheetOccupationProfessionChange($event, occupation)">
+									<option value="">Profissão</option>
+									<option v-for="profession in professionList" v-bind:value="profession.id">
+										{{profession.name}}
+									</option>
+									</select></td>
+								<td><select class="characterSheetOccupationBusinessSelect" v-bind:value="occupation.business" v-on:change="characterSheetOccupationBusinessChange($event, occupation)">
+									<option value="">Negócio</option>
+									<option v-for="business in orderedBusinessList" v-bind:value="business.id">
+										{{business.name}}
+									</option>
+									</select></td>
+							</tr>
+							<tr>
+								<td colspan="3"><button v-on:click="characterSheetAddOccupation(selectedNpc.id)">Add</button></td>
+							</tr>
+						</table>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Doente</td>

@@ -16,6 +16,10 @@ const PORT = process.env.PORT || 3000;
 
 const pool = new Pool();
 
+const isNullOrUndefinedOrEmpty = function(o){
+	return _.isNull(o) || _.isUndefined(o) || o === "";
+}
+
 app.listen(PORT, () => {
 	console.log("Server running on port "+PORT);
 });
@@ -710,6 +714,67 @@ app.post("/saveDescription", (req, res, next) => {
 			  res.json(result.rows)
 			}
 		  
+		});
+	});
+});
+
+app.post("/occupation", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		let occupation = req.body;
+		if(isNullOrUndefinedOrEmpty(occupation.id)){
+			client.query("insert into npc_profession(npc, profession, business) values ("+occupation.npc+", "+occupation.profession+", "+occupation.business+") returning id",
+			 (err, result) => {
+		 		done()
+			  if(err){
+			  	  console.log(err);
+			  	  res.status(500);
+				  res.json(err);
+				} else{
+				  res.json(result.rows[0].id)
+				}
+			  
+			});
+		} else {
+			client.query("update npc_profession set profession = "+occupation.profession+", business = "+occupation.business+" where id = "+occupation.id,
+			 (err, result) => {
+		 		done()
+			  if(err){
+			  	  console.log(err);
+			  	  res.status(500);
+				  res.json(err);
+				} else{
+				  res.json(occupation.id)
+				}			  
+			});
+		}
+	});
+});
+
+app.delete("/occupation", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		let occupation = req.body;
+		console.log("occupation = "+JSON.stringify(occupation));
+		client.query("delete from npc_profession where id = "+occupation.id,
+		 (err, result) => {
+		 	console.log("delete 5");
+	 		done()
+		  if(err){
+		  	console.log("delete 6");
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+				console.log("delete 7");
+			  res.json("ok");
+			}
 		});
 	});
 });

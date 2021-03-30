@@ -63,6 +63,8 @@ const TASK_TYPES = {
 	SAVE_S: "saveS",
 	SAVE_WEALTH: "saveWealth",
 	SAVE_MAX_HEALTH: "saveMaxHealth",
+	SAVE_OCCUPATION: "saveOccupation",
+	DELETE_OCCUPATION: "deleteOccupation",
 	LOAD_RESSONANCE: "loadRessonance",
 	LOAD_PROFESSION: "loadProfession",
 	LOAD_NPC_PROFESSION: "loadNpcProfession",
@@ -93,6 +95,12 @@ const TASK_TYPES = {
 const createPostUrlAction = (url) => {
 	return function(self, data){
 		self.axios.post(url, data).then(self.thenAction).catch(self.errorAction);
+	}
+}
+
+const createDeleteUrlAction = (url) => {
+	return function(self, data){
+		self.axios.delete(url, {data: data}).then(self.thenAction).catch(self.errorAction);
 	}
 }
 
@@ -146,6 +154,14 @@ TASK_EXECUTIONS[TASK_TYPES.SAVE_S] = createPostUrlAction("/s");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_WEALTH] = createPostUrlAction("/wealth");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_MAX_HEALTH] = createPostUrlAction("/maxHealth");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_RESSONANCE] = createPostUrlAction("/ressonance");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_OCCUPATION] = function(self, occupation){
+	self.axios.post("/occupation", occupation).then(function(response){
+		occupation.id = parseInt(response.data);
+		self.thenAction();
+	}).catch(self.errorAction);
+};
+
+TASK_EXECUTIONS[TASK_TYPES.DELETE_OCCUPATION] = createDeleteUrlAction("/occupation");
 
 TASK_EXECUTIONS[TASK_TYPES.LOAD_RESSONANCE] = createLoadListUrlAction("/ressonance", "ressonanceList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_PROFESSION] = createLoadListUrlAction("/profession", "professionList");
@@ -209,6 +225,8 @@ TASK_EXECUTIONS[TASK_TYPES.GENERATE_RESSONANCE] = function(self, data){
 };
 
 let crazyIdGeneratorDeleteMe = 9000;
+
+let tempIdForOccupation = 10000;
 
 TASK_EXECUTIONS[TASK_TYPES.GENERATE_NEW_NPC] = function(self, data){
 	if(!window.Worker){
@@ -494,8 +512,17 @@ Vue.component('main-area', {
 		characterSheetRessonanceChange: function(event){
 			this.$emit("character-sheet-ressonance-change", event);
 		},
+		characterSheetOccupationChange: function(occupation){
+			this.$emit("character-sheet-occupation-change", occupation);
+		},
 		characterSheetHealthBarChange: function(event){
 			this.$emit("character-sheet-health-bar-change", event);
+		},
+		characterSheetDeleteOccupation: function(occupation){
+			this.$emit("character-sheet-delete-occupation", occupation);
+		},
+		characterSheetAddOccupation: function(npcId){
+			this.$emit("character-sheet-add-occupation", npcId);
 		}
 	}
 });
@@ -848,7 +875,8 @@ Vue.component('main-area-character-sheet', {
 			'healthList', 'nationalityList', 'neighbourhoodList',
 			'skinList', 'eyesList', 'hairList', 'homeList', 'familyList',
 			'instinctList', 'humorList', 'oathList', 'oathNatureList',
-			'ressonanceList', 'healthList'],
+			'ressonanceList', 'healthList', 'npcProfessionList', 'professionList',
+			'businessList'],
 	methods: {
 		selectedCharacterSheetNpcChange: function(npcId){
 			this.$emit("selected-character-sheet-npc-change", npcId);
@@ -930,6 +958,32 @@ Vue.component('main-area-character-sheet', {
 				npc: this.selectedCharacterSheetNpc,
 				health: health
 			});
+		},
+		characterSheetOccupationProfessionChange: function(event, occupation){
+			let value = event.target.value;
+			occupation.profession = value;
+			if(!isNullOrUndefinedOrEmpty(occupation) &&
+				!isNullOrUndefinedOrEmpty(occupation.npc) &&
+				!isNullOrUndefinedOrEmpty(occupation.business) &&
+				!isNullOrUndefinedOrEmpty(occupation.profession)){
+				this.$emit("character-sheet-occupation-change", occupation);
+			}
+		},
+		characterSheetOccupationBusinessChange: function(event, occupation){
+			let value = event.target.value;
+			occupation.business = value;
+			if(!isNullOrUndefinedOrEmpty(occupation) &&
+				!isNullOrUndefinedOrEmpty(occupation.npc) &&
+				!isNullOrUndefinedOrEmpty(occupation.business) &&
+				!isNullOrUndefinedOrEmpty(occupation.profession)){
+				this.$emit("character-sheet-occupation-change", occupation);
+			}
+		},
+		characterSheetDeleteOccupation: function(occupation){
+			this.$emit("character-sheet-delete-occupation", occupation);
+		},
+		characterSheetAddOccupation: function(npcId){
+			this.$emit("character-sheet-add-occupation", npcId);
 		}
 	},
 	computed: {
@@ -956,6 +1010,12 @@ Vue.component('main-area-character-sheet', {
 			});
 			return cache;
 		},
+		occupationByNpcId: function(){
+			return _.groupBy(this.npcProfessionList, (occ) => occ.npc);
+		},
+		orderedBusinessList: function(){
+			return _.sortBy(this.businessList, "name");
+		}
 	}
 })
 
@@ -2125,6 +2185,13 @@ var app = new Vue({
 				}
 			));
 		},
+		characterSheetOccupationChange: function(occupation){
+			let self = this;
+			this.log("Saving occupation "+JSON.stringify(occupation)+" (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_OCCUPATION, occupation
+			));
+		},
 		selectedCharacterSheetNpcChange: function(event){
 			let npcIdText = event.target.value;
 			if(isNullOrUndefinedOrEmpty(npcIdText)){
@@ -2146,6 +2213,32 @@ var app = new Vue({
 		},
 		changeDarkTheme: function(){
 			this.darkTheme = !this.darkTheme;
+		},
+		characterSheetDeleteOccupation: function(occupation){
+			if(isNullOrUndefinedOrEmpty(occupation.id)){
+				let index = _.findIndex(this.npcProfessionList, (occ) => {
+					return occ.tempId == occupation.tempId;
+				});
+				if(index != -1){
+					this.npcProfessionList.splice(index, 1);
+				}
+			} else{
+				this.addTask(new Task(
+					TASK_TYPES.DELETE_OCCUPATION, occupation
+				));
+				let index = _.findIndex(this.npcProfessionList, (occ) => {
+					return occ.id == occupation.id;
+				});
+				if(index != -1){
+					this.npcProfessionList.splice(index, 1);
+				}
+			}
+		},
+		characterSheetAddOccupation: function(npcId){
+			this.npcProfessionList.push({
+				npc: npcId,
+				tempId: tempIdForOccupation++
+			});
 		}
 	},
 	mounted: function() {
