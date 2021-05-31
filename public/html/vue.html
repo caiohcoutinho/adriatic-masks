@@ -61,7 +61,8 @@
 				v-bind:instinct-list="instinctList"
 				v-bind:humor-list="humorList"
 				v-bind:neighbourhood-list="neighbourhoodList"
-				v-bind:ressonance-list="ressonanceList"
+				v-bind:clan-list="clanList"
+				v-bind:predator-type-list="predatorTypeList"
 				v-on:clear-filter="clearFilter"
 				v-on:select-family="selectFamily"
 				v-on:clear-warnings="clearWarnings"
@@ -104,7 +105,7 @@
 				v-on:character-sheet-max-health-change="characterSheetMaxHealthChange"
 				v-on:character-sheet-ressonance-change="characterSheetRessonanceChange"
 				v-on:character-sheet-occupation-change="characterSheetOccupationChange"
-				v-on:character-sheet-delete-occupation="characterSheetDeleteOccupation"
+				v-on:charactelistr-sheet-delete-occupation="characterSheetDeleteOccupation"
 				v-on:character-sheet-delete-npc="characterSheetDeleteNpc"
 				v-on:character-sheet-add-occupation="characterSheetAddOccupation"
 				v-on:character-sheet-health-bar-change="characterSheetHealthBarChange"
@@ -137,6 +138,8 @@
 				v-bind:humor-list="humorList"
 				v-bind:oath-list="oathList"
 				v-bind:oath-nature-list="oathNatureList"
+				v-bind:clan-list="clanList"
+				v-bind:predator-type-list="predatorTypeList"
 				v-on:selected-npc-sick-change="selectedNpcSickChange"
 				v-on:selected-npc-alive-change="selectedNpcAliveChange"
 				v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
@@ -204,6 +207,8 @@
 				v-bind:neighbourhood-list="neighbourhoodList"
 				v-bind:npc-list="npcList"
 				v-bind:health-list="healthList"
+				v-bind:clan-list="clanList"
+				v-bind:predator-type-list="predatorTypeList"
 				v-on:select-family="selectFamily"
 				v-on:click-npc="clickNpc"
 				v-on:clear-filter="clearFilter"
@@ -276,6 +281,8 @@
 				v-bind:key="lastUpdate"
 				v-bind:profession-list="professionList"
 				v-bind:business-list="businessList"
+				v-bind:clan-list="clanList"
+				v-bind:predator-type-list="predatorTypeList"
 				v-bind:ressonance-list="ressonanceList"
 				v-bind:neighbourhood-list="neighbourhoodList"/>
 			<main-area-config 
@@ -305,6 +312,7 @@
 			<h1>Noite</h1>
 			<div>Gerar noite: <button v-on:click="generateNight">Gerar</button></div>
 			<div>Gerar NPC aleatório: <button v-on:click="generateNewNpc">Gerar</button></div>
+			<div>Gerar Vampiro aleatório: <button v-on:click="generateNewVampire">Gerar</button></div>
 			<h1>Ressonância</h1>
 			<div>
 				<p v-for="ressonance in ressonanceList">{{ressonance.name}}: {{ressonanceCount[ressonance.id]}} ({{ Math.floor(100*(ressonanceCount[ressonance.id] / (1.0*nonVampireCount))) }}%)</p>
@@ -381,7 +389,7 @@
 							v-on:click="clickNpc(npc.id)"
 							v-bind:class="{npcTableDataRowEven: (index+1)%2==0, npcTableDataRowOdd: (index+1)%2!=0}">
 							<td class="npcTableColumn npcTableColumnId">{{npc.id}}</td>
-							<td class="npcTableColumn npcTableColumnName"><span v-bind:class="{npcNameLabel: true, npcDead: !npc.alive}">{{npc.name}}</span> <clan-icon v-bind:dark-theme="darkTheme" v-if="npc.clan != undefined" v-bind:clan="npc.clan"/></td>
+							<td class="npcTableColumn npcTableColumnName"><span v-bind:class="{npcNameLabel: true, npcDead: !npc.alive}">{{npc.name}}</span> <clan-icon v-bind:clan-list="clanList" v-bind:dark-theme="darkTheme" v-if="npc.clan != undefined" v-bind:clan="npc.clan"/></td>
 							<td class="npcTableColumn npcTableColumnNationality">{{nationalityById[npc.nationality]}}</td>
 							<td class="npcTableColumn npcTableColumnGender">{{npc.gender}}</td>
 							<td class="npcTableColumn npcTableColumnNeighbourhood">
@@ -689,7 +697,7 @@
 
 	<script type="text/x-template" id="clanIconTemplate">
 		<span class="clanIcon" v-bind:title="clan">
-			<img v-bind:src="'/img/'+clan+'-icon'+(darkTheme?'-dark':'')+'.png'">
+			<img v-if="clanNameById[clan] != undefined" v-bind:src="'/img/'+clanNameById[clan]+'-icon'+(darkTheme?'-dark':'')+'.png'">
 		</span>
 	</script>
 
@@ -737,6 +745,7 @@
 											  v-if="night != undefined && night.businessActivity != undefined && night.businessActivity[business.id] != undefined"
 											  v-bind:profession-list="professionList"
 											  v-bind:npc-list="npcList"
+											  v-bind:clan-list="clanList"
 											  v-bind:business-activity="night.businessActivity[business.id]['n'+(period+1)]"
 											  v-bind:ressonance-list="ressonanceList"
 											  v-bind:neighbourhood-list="neighbourhoodList"/>
@@ -773,6 +782,7 @@
 						<clan-icon
 							v-if="npcById[npcAttendance.npcId].clan != undefined"
 							v-bind:dark-theme="darkTheme"
+							v-bind:clan-list="clanList"
 							v-bind:clan="npcById[npcAttendance.npcId].clan"/>
 						<ressonance 
 							v-if="npcById[npcAttendance.npcId].clan == undefined"
@@ -819,6 +829,7 @@
 				v-bind:npc-profession-list="npcProfessionList"
 				v-bind:oath-list="oathList"
 				v-bind:oath-nature-list="oathNatureList"
+				v-bind:predator-type-list="predatorTypeList"
 				v-on:selected-npc-sick-change="selectedNpcSickChange"
 				v-on:selected-npc-alive-change="selectedNpcAliveChange"
 				v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
@@ -827,7 +838,8 @@
 				v-on:save-selected-npc-description="saveSelectedNpcDescription"
 				v-on:save-selected-npc-story="saveSelectedNpcStory"
 				v-on:save-selected-npc-health-change="saveSelectedNpcHealthChange"
-				v-on:click-family="clickFamily">
+				v-on:click-family="clickFamily"
+				v-bind:clan-list="clanList">
 			</npc-details>
 			<business-details
 				v-if="business != null"
@@ -886,6 +898,8 @@
 					v-bind:humor-list="humorList"
 					v-bind:oath-list="oathList"
 					v-bind:oath-nature-list="oathNatureList"
+					v-bind:clan-list="clanList"
+					v-bind:predator-type-list="predatorTypeList"
 					v-on:selected-npc-sick-change="selectedNpcSickChange"
 					v-on:selected-npc-alive-change="selectedNpcAliveChange"
 					v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
@@ -944,9 +958,9 @@
 				<tr v-if="npc.clan != undefined">
 					<td colspan="2">
 						{{npc.generation}}ª 
-						{{npc.clan}} 
-						<clan-icon v-if="npc.clan != undefined" v-bind:dark-theme="darkTheme" v-bind:clan="npc.clan"/>, 
-						{{npc.predator_type}}
+						{{clanNameById[npc.clan]}} 
+						<clan-icon v-if="npc.clan != undefined" v-bind:clan-list="clanList" v-bind:dark-theme="darkTheme" v-bind:clan="npc.clan"/>, 
+						{{predatorTypeById[npc.predator_type]}}
 					</td>
 				</tr>
 				<tr>
@@ -956,7 +970,7 @@
 					<td colspan="2">${{npc.wealth}}<span v-if="npcProfessionByNpc[npc.id] != undefined && npcProfessionByNpc[npc.id].length > 0"><span v-for="occupation in npcProfessionByNpc[npc.id]">, {{professionById[occupation.profession]}}<span v-if="occupation.business != undefined"> em {{businessById[occupation.business]}}</span></span></span></td>
 				</tr>
 				<tr>
-					<td colspan="2">{{instinctById[npc.instinct]}} ({{humorById[instinctHumorIdById[npc.instinct]]}} <span v-if="npc.ressonance != undefined">/ <ressonance v-bind:value="npc.ressonance" v-bind:ressonanceList="ressonanceList"/></span>), {{oathById[npc.oath]}} por {{oathNatureById[npc.oath_nature]}}</td>
+					<td colspan="2">{{instinctById[npc.instinct]}} ({{humorById[instinctHumorIdById[npc.instinct]]}}<span v-if="npc.ressonance != undefined"> / <ressonance v-bind:value="npc.ressonance" v-bind:ressonanceList="ressonanceList"/></span>), {{oathById[npc.oath]}} por {{oathNatureById[npc.oath_nature]}}</td>
 				</tr>
 				<tr v-for="period in [1, 2, 3]">
 					<td>N{{period}}</td>

@@ -10,7 +10,8 @@ const random = function(){
 
 const generateNewNpc = function(distributionList, genderList, nationalityList, 
 		skinList, eyesList, hairList, neighbourhoodList, homeList,
-		instinctList, oathList, oathNatureList, ressonanceList, randomNameList){
+		instinctList, oathList, oathNatureList, ressonanceList, randomNameList, 
+		clanList, predatorTypeList, isVampire){
 	let attrRange = [0, 1, 2, 3];
 	let npc = {};
 
@@ -37,9 +38,14 @@ const generateNewNpc = function(distributionList, genderList, nationalityList,
 	let seed_max_health = random();
 	let seed_ressonance = random();
 
+	let seed_generation = random();
+	let seed_clan = random();
+	let seed_predator_type = random();
+
 	let gender = selectRandomFromEvenDistribution(seed_gender, genderList);
 
     npc.gender = gender.symbol;
+
     npc.nationality = selectRandomFromUnevenDistribution(seed_nationality, nationalityList, distributionList, "nationality").id
 
     npc.name = selectRandomFromEvenDistribution(seed_name, _.filter(randomNameList, (n) => n.nationality == npc.nationality && n.gender == gender.id)).name + (seed_family > 0.5 ? " + FAMILY" : "");
@@ -59,10 +65,19 @@ const generateNewNpc = function(distributionList, genderList, nationalityList,
     npc.oath_nature = selectRandomFromEvenDistribution(npc.seed_oath_nature, oathNatureList).id;
     npc.wealth = selectRandomFromEvenDistribution(seed_wealth, attrRange);
     npc.max_health = 2+selectRandomFromEvenDistribution(seed_max_health, [1, 2, 3]);
-    npc.ressonance = selectRandomFromEvenDistribution(seed_ressonance, ressonanceList).id;
+    
     npc.alive = true;
     npc.sick = false;
     npc.hospitalized = false;
+
+    if(isVampire){
+    	let fakeGenerationList = _.map(_.range(10), (i) => ({id: i+1, generation: i+1}));
+    	npc.generation = selectRandomFromUnevenDistribution(seed_generation, fakeGenerationList, distributionList, "generation").id;
+    	npc.clan = selectRandomFromEvenDistribution(seed_clan, clanList).id;
+    	npc.predator_type = selectRandomFromEvenDistribution(seed_predator_type, predatorTypeList).id;
+    } else {
+    	npc.ressonance = selectRandomFromEvenDistribution(seed_ressonance, ressonanceList).id;
+    }
 
     return npc;
 }
@@ -127,10 +142,13 @@ onmessage = function(e){
 	let professionList = args[12];
 	let businessList = args[13];
 	let randomNameList = args[14];
+	let clanList = args[15];
+	let predatorTypeList = args[16];
+	let isVampire = args[17];
 
 	let npc = generateNewNpc(distributionList, genderList, nationalityList, 
 		skinList, eyesList, hairList, neighbourhoodList, homeList,
-		instinctList, oathList, oathNatureList, ressonanceList, randomNameList);
+		instinctList, oathList, oathNatureList, ressonanceList, randomNameList, clanList, predatorTypeList, isVampire);
 
 	let professionId = selectRandomFromUnevenDistribution(random(), professionList, distributionList, "profession").id;
 	let businessId = selectRandomFromUnevenDistribution(random(), businessList, distributionList, "business").id;

@@ -62,8 +62,8 @@ app.get("/npc", (req, res, next) => {
 			npc.story,
 			npc.notes,
 			v.generation,
-			clan.name clan,
-			pt.name predator_type,
+			v.clan,
+			v.predator_type,
 			seed_nickname,
 			seed_age,
 			seed_eyes,
@@ -78,8 +78,6 @@ app.get("/npc", (req, res, next) => {
 		from npc
 		join gender on npc.gender = gender.id
 		left join vampire v on v.id = npc.id
-		left join clan on clan.id = v.clan
-		left join predator_type pt on pt.id = v.predator_type
 		order by npc.id
 		`,
 		 (err, result) => {
@@ -762,7 +760,7 @@ app.post("/npc", (req, res, next) => {
 		}
 		let npc = req.body;
 
-		let theQuery = "insert into npc(name, gender, nationality, age, nickname, skin, eyes, hair, physical, social, mental, family, home, instinct, oath, oath_nature, seed_nickname, seed_age, seed_eyes, seed_hair, seed_neighborhood, seed_physical, seed_social, seed_mental, seed_instinct, seed_oath, seed_oath_nature, notes, wealth, max_health, ressonance, description, alive, sick, hospitalized, story) values ('"+npc.name+"', (select id from gender where symbol = '"+npc.gender+"'), "+npc.nationality+", "+npc.age+", "+(isNullOrUndefinedOrEmpty(npc.nickname) ? "null": "'"+npc.nickname+"'" )+", "+npc.skin+", "+npc.eyes+", "+npc.hair+", "+npc.f+", "+npc.s+", "+npc.m+", "+(isNullOrUndefinedOrEmpty(npc.family) ? "null": ""+npc.family+"" )+", "+npc.home+", "+npc.instinct+", "+npc.oath+", "+npc.oath_nature+", "+npc.seed_nickname+", "+npc.seed_age+", "+npc.seed_eyes+", "+npc.seed_hair+", "+npc.seed_neighborhood+", "+npc.seed_physical+", "+npc.seed_social+", "+npc.seed_mental+", "+npc.seed_instinct+", "+npc.seed_oath+", "+npc.seed_oath_nature+", "+(isNullOrUndefinedOrEmpty(npc.notes) ? "null": "'"+npc.notes+"'" )+", "+npc.wealth+", "+npc.max_health+", "+npc.ressonance+", "+(isNullOrUndefinedOrEmpty(npc.description) ? "null": "'"+npc.description+"'" )+", "+npc.alive+", "+npc.sick+", "+npc.hospitalized+", "+(isNullOrUndefinedOrEmpty(npc.story) ? "null": "'"+npc.story+"'" )+") returning id";
+		let theQuery = "insert into npc(name, gender, nationality, age, nickname, skin, eyes, hair, physical, social, mental, family, home, instinct, oath, oath_nature, seed_nickname, seed_age, seed_eyes, seed_hair, seed_neighborhood, seed_physical, seed_social, seed_mental, seed_instinct, seed_oath, seed_oath_nature, notes, wealth, max_health, ressonance, description, alive, sick, hospitalized, story) values ('"+npc.name+"', (select id from gender where symbol = '"+npc.gender+"'), "+npc.nationality+", "+npc.age+", "+(isNullOrUndefinedOrEmpty(npc.nickname) ? "null": "'"+npc.nickname+"'" )+", "+npc.skin+", "+npc.eyes+", "+npc.hair+", "+npc.f+", "+npc.s+", "+npc.m+", "+(isNullOrUndefinedOrEmpty(npc.family) ? "null": ""+npc.family+"" )+", "+npc.home+", "+npc.instinct+", "+npc.oath+", "+npc.oath_nature+", "+npc.seed_nickname+", "+npc.seed_age+", "+npc.seed_eyes+", "+npc.seed_hair+", "+npc.seed_neighborhood+", "+npc.seed_physical+", "+npc.seed_social+", "+npc.seed_mental+", "+npc.seed_instinct+", "+npc.seed_oath+", "+npc.seed_oath_nature+", "+(isNullOrUndefinedOrEmpty(npc.notes) ? "null": "'"+npc.notes+"'" )+", "+npc.wealth+", "+npc.max_health+", "+(isNullOrUndefinedOrEmpty(npc.ressonance) ? "null": npc.ressonance)+", "+(isNullOrUndefinedOrEmpty(npc.description) ? "null": "'"+npc.description+"'" )+", "+npc.alive+", "+npc.sick+", "+npc.hospitalized+", "+(isNullOrUndefinedOrEmpty(npc.story) ? "null": "'"+npc.story+"'" )+") returning id";
 		
 		client.query(theQuery, (err, result) => {
 		  if(err){
@@ -787,6 +785,31 @@ app.post("/npc", (req, res, next) => {
 	});
 });
 
+app.post("/vampire", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		let vampire = req.body;
+
+		let theQuery = "insert into vampire(id, generation, clan, predator_type) values ("+vampire.id+", "+vampire.generation+", "+vampire.clan+", "+vampire.predator_type+")";
+		
+		client.query(theQuery, (err, result) => {
+	 		done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json("ok");
+			}
+		});
+		
+	});
+});
+
+
 app.delete("/npc", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){
@@ -795,24 +818,35 @@ app.delete("/npc", (req, res, next) => {
 		}
 		let npcId = req.body.id;
 		
+		let theVampireQuery = "delete from vampire where id = "+npcId;
 		let thePreferencesQuery = "delete from npc_preferences where npc = "+npcId;
 		let theQuery = "delete from npc where id = "+npcId;
-		client.query(thePreferencesQuery, (err, result) => {
-		  if(err){
-		  	  console.log(err);
-		  	  res.status(500);
+		client.query(theVampireQuery, (err, result) => {
+			if(err){
+				done();
+	  	  console.log(err);
+	  	  res.status(500);
 			  res.json(err);
 			} else{
-			  client.query(theQuery, (err, result) => {
-		 		done()
-			  if(err){
+				client.query(thePreferencesQuery, (err, result) => {
+				  if(err){
+				  	done();
 			  	  console.log(err);
 			  	  res.status(500);
-				  res.json(err);
-				} else{
-				  res.json("ok");
-				}
-			});
+					  res.json(err);
+					} else{
+					  client.query(theQuery, (err, result) => {
+				 		done();
+					  if(err){
+					  	  console.log(err);
+					  	  res.status(500);
+						  res.json(err);
+						} else{
+						  res.json("ok");
+						}
+					});
+					}
+				});
 			}
 		});
 	});
@@ -915,6 +949,56 @@ app.get("/home", (req, res, next) => {
 			`
 			select *
 			from home h
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows)
+			}
+		})
+	});
+});
+
+app.get("/clan", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			console.log("Error: "+JSON.stringify(err));
+			res.json(err);
+			return;
+		}
+		client.query(
+			`
+			select *
+			from clan c
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows)
+			}
+		})
+	});
+});
+
+app.get("/predator_type", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			console.log("Error: "+JSON.stringify(err));
+			res.json(err);
+			return;
+		}
+		client.query(
+			`
+			select *
+			from predator_type pt
 			`,
 			 (err, result) => {
 		 	done()

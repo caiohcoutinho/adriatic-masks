@@ -1602,6 +1602,17 @@ insert into distribution(weight, concept, referenceId)
 insert into distribution(weight, concept, referenceId)
 (select count(1) as weight, 'business', business from npc_profession where business is not null group by business)
 
+insert into distribution(weight, concept, referenceId)
+	values
+(1, 'generation', 4),
+(1, 'generation', 5),
+(2, 'generation', 8),
+(3, 'generation', 9),
+(3, 'generation', 10),
+(5, 'generation', 11),
+(5, 'generation', 12),
+(6, 'generation', 13);
+
 
 create sequence random_name_id_seq;
 
@@ -1613,9 +1624,7 @@ create table random_name(
 	PRIMARY KEY (id)
 );
 
-insert into random_name(nationality, gender, name)
-	values
-((select id from nationality where name = ''), (select id from gender where symbol = ''), ''),
+--insert into random_name(nationality, gender, name) values ((select id from nationality where name = ''), (select id from gender where symbol = ''), ''),
 
 
 
@@ -1935,3 +1944,5 @@ insert into random_name(nationality, gender, name) values
 ((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'F'), 'Aurora Zesiger'),
 ((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'F'), 'Seraina Weiss'),
 ((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'F'), 'Lumi Trachsler');
+
+

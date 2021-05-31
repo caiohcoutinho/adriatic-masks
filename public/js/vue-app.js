@@ -64,6 +64,7 @@ const TASK_TYPES = {
 	SAVE_WEALTH: "saveWealth",
 	SAVE_MAX_HEALTH: "saveMaxHealth",
 	SAVE_OCCUPATION: "saveOccupation",
+	SAVE_VAMPIRE: "saveVampire",
 	DELETE_OCCUPATION: "deleteOccupation",
 	DELETE_NPC: "deleteNpc",
 	LOAD_RESSONANCE: "loadRessonance",
@@ -88,6 +89,8 @@ const TASK_TYPES = {
 	LOAD_DISTRIBUTION: "loadDistribution",
 	LOAD_GENDER: "loadGender",
 	LOAD_RANDOM_NAME: "loadRandomName",
+	LOAD_CLAN: "loadClan",
+	LOAD_PREDATOR_TYPE: "loadPredatorType",
 	GENERATE_NIGHT: "generateNight",
 	GENERATE_RESSONANCE: "generateRessonance",
 	GENERATE_NEW_NPC: "generateNewNpc"
@@ -155,6 +158,7 @@ TASK_EXECUTIONS[TASK_TYPES.SAVE_S] = createPostUrlAction("/s");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_WEALTH] = createPostUrlAction("/wealth");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_MAX_HEALTH] = createPostUrlAction("/maxHealth");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_RESSONANCE] = createPostUrlAction("/ressonance");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_VAMPIRE] = createPostUrlAction("/vampire");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_OCCUPATION] = function(self, occupation){
 	self.axios.post("/occupation", occupation).then(function(response){
 		occupation.id = parseInt(response.data);
@@ -187,6 +191,8 @@ TASK_EXECUTIONS[TASK_TYPES.LOAD_DISTRIBUTION] = createLoadListUrlAction("/distri
 TASK_EXECUTIONS[TASK_TYPES.LOAD_GENDER] = createLoadListUrlAction("/gender", "genderList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_HOME] = createLoadListUrlAction("/home", "homeList", (h) => h.name);
 TASK_EXECUTIONS[TASK_TYPES.LOAD_RANDOM_NAME] = createLoadListUrlAction("/randomname", "randomNameList");
+TASK_EXECUTIONS[TASK_TYPES.LOAD_CLAN] = createLoadListUrlAction("/clan", "clanList", (c) => c.name);
+TASK_EXECUTIONS[TASK_TYPES.LOAD_PREDATOR_TYPE] = createLoadListUrlAction("/predator_type", "predatorTypeList", (pt) => pt.name);
 
 TASK_EXECUTIONS[TASK_TYPES.GENERATE_NIGHT] = function(self, data){
 	if(!window.Worker){
@@ -230,11 +236,13 @@ let crazyIdGeneratorDeleteMe = 9000;
 
 let tempIdForOccupation = 10000;
 
-TASK_EXECUTIONS[TASK_TYPES.GENERATE_NEW_NPC] = function(self, data){
+TASK_EXECUTIONS[TASK_TYPES.GENERATE_NEW_NPC] = function(self, task){
 	if(!window.Worker){
 		alert("no support for web workers.");
 		self.thenAction();
 	}
+	let isVampire = task.isVampire;
+
 	let tic = new Date().getTime();
 	var worker = new Worker('../js/generateNewNpc.js');
 	worker.onmessage = function(event){
@@ -260,6 +268,17 @@ TASK_EXECUTIONS[TASK_TYPES.GENERATE_NEW_NPC] = function(self, data){
 				TASK_TYPES.SAVE_OCCUPATION, occupation
 			));
 
+			if(isVampire){
+				self.addTask(new Task(
+					TASK_TYPES.SAVE_VAMPIRE, {
+						id: npcId,
+						generation: npc.generation,
+						clan: npc.clan,
+						predator_type: npc.predator_type
+					}
+				));				
+			}
+
 			self.selectedCharacterSheetNpc = npc.id;
 			self.npcList.push(npc);
 
@@ -276,7 +295,8 @@ TASK_EXECUTIONS[TASK_TYPES.GENERATE_NEW_NPC] = function(self, data){
  		self.skinList, self.eyesList, self.hairList, 
  		self.neighbourhoodList, self.homeList, self.instinctList, 
  		self.oathList, self.oathNatureList, self.ressonanceList, 
- 		self.professionList, self.businessList, self.randomNameList];
+ 		self.professionList, self.businessList, self.randomNameList, 
+ 		self.clanList, self.predatorTypeList, isVampire];
 
 	worker.postMessage(args);
 };
@@ -360,7 +380,16 @@ Vue.component('ressonance', {
 
 Vue.component('clan-icon', {
 	template: '#clanIconTemplate',
-	props: ['clan', 'darkTheme']
+	props: ['clan', 'darkTheme', 'clanList'],
+	computed: {
+		clanNameById: function(){
+			let cache = [];
+			_.each(this.clanList, (c) => {
+				cache[c.id] = c.name;
+			});
+			return cache;
+		},
+	}
 });
 
 Vue.component('main-area', {
@@ -375,7 +404,8 @@ Vue.component('main-area', {
 			'ressonanceUpdate', 'selectedCharacterSheetNpc',
 			'selectedFamily', 'businessList', 'lastUpdate', 'lastUpdateDetails',
 			'skinList', 'eyesList', 'hairList',
-			'instinctList', 'humorList', 'oathList', 'oathNatureList'],
+			'instinctList', 'humorList', 'oathList', 'oathNatureList',
+			'clanList', 'predatorTypeList'],
 	computed: {
 		showNpc: function(){
 			return this.mainArea == NPC;
@@ -448,8 +478,8 @@ Vue.component('main-area', {
 		generateRessonance: function(){
 			this.$emit('generate-ressonance');	
 		},
-		generateNewNpc: function(){
-			this.$emit('generate-new-npc');	
+		generateNewNpc: function(event){
+			this.$emit('generate-new-npc', event);	
 		},
 		saveBatchRessonanceUpdate: function(){
 			this.$emit('save-batch-ressonance-update');	
@@ -607,7 +637,10 @@ Vue.component('main-area-night', {
 			this.$emit('generate-ressonance');	
 		},
 		generateNewNpc: function(){
-			this.$emit('generate-new-npc');	
+			this.$emit('generate-new-npc', {isVampire: false});	
+		},
+		generateNewVampire: function(){
+			this.$emit('generate-new-npc', {isVampire: true});	
 		},
 		saveBatchRessonanceUpdate: function(){
 			this.$emit('save-batch-ressonance-update');	
@@ -621,7 +654,8 @@ Vue.component('main-area-npc', {
 	'maximunAgeFilter', 'neighbourhoodFilter', 'vampireFilter',
 	'aliveFilter', 'sickFilter', 'ressonanceList', 'darkTheme',
 	'professionList', 'npcProfessionList', 'healthList', 'nationalityList',
-	'businessList', 'neighbourhoodList', 'familyList', 'familyFilter', 'homeList'],
+	'businessList', 'neighbourhoodList', 'familyList', 'familyFilter', 'homeList',
+	'clanList', 'predatorTypeList'],
 	data: function(){
 		return {
 			'orderById': null,
@@ -815,7 +849,8 @@ Vue.component('main-area-npc', {
 Vue.component('main-area-business', {
 	template: '#mainAreaBusinessTemplate',
 	props: ['night', 'businessList', 'neighbourhoodList', 
-			'professionList', 'ressonanceList', 'npcList', 'darkTheme'],
+			'professionList', 'ressonanceList', 'npcList', 'darkTheme',
+			'clanList', 'predatorTypeList'],
 	data: function(){
 		return {
 			'nameFilter': null,
@@ -1113,7 +1148,8 @@ Vue.component('side-details', {
 		'npcList', 'npcProfessionList', 'businessList', 'healthList',
 		'professionList', 'ressonanceList', 'darkTheme', 'familyList',
 		'skinList', 'eyesList', 'hairList', 'neighbourhoodList',
-		'instinctList', 'humorList', 'oathList', 'oathNatureList'],
+		'instinctList', 'humorList', 'oathList', 'oathNatureList', 
+		'clanList', 'predatorTypeList'],
 	template: '#sideDetailsTemplate',
 	methods: {
 		clickFamily: function(familyId){
@@ -1189,7 +1225,8 @@ Vue.component('npc-details', {
 		'healthList', 'darkTheme', 'nationalityList', 'familyList',
 		'businessList', 'professionList', 'npcProfessionList',
 		'skinList', 'eyesList', 'hairList', 'neighbourhoodList', 
-		'instinctList', 'humorList', 'oathList', 'oathNatureList'],
+		'instinctList', 'humorList', 'oathList', 'oathNatureList',
+		'clanList', 'predatorTypeList'],
 	template: '#npcDetailsTemplate',
 	methods: {
 		clickFamily: function(familyId){
@@ -1285,7 +1322,8 @@ Vue.component('neighbourhood-icon', {
 
 Vue.component('npc-list', {
 	props: ['npcList', 'neighbourhoodList', 'darkTheme',
-		'ressonanceList', 'businessActivity', 'professionList'],
+		'ressonanceList', 'businessActivity', 'professionList',
+		'clanList', 'predatorTypeList'],
 	template: '#npcListTemplate',
 	methods: {
 		clickNpc: function(npcId){
@@ -1328,7 +1366,8 @@ Vue.component('npc-information', {
 		'darkTheme', 'neighbourhoodList', 'nationalityList',
 		'professionList', 'npcProfessionList', 'homeList', 'businessList',
 		'skinList', 'eyesList', 'hairList', 'familyList',
-		'instinctList', 'humorList', 'oathList', 'oathNatureList'],
+		'instinctList', 'humorList', 'oathList', 'oathNatureList',
+		'clanList', 'predatorTypeList'],
 	template: '#npcInformationTemplate',
 	methods: {
 		clickFamily: function(familyId){
@@ -1363,6 +1402,20 @@ Vue.component('npc-information', {
 		}
 	},
 	computed: {
+		predatorTypeById: function(){
+			let cache = [];
+			_.each(this.predatorTypeList, (p) => {
+				cache[p.id] = p.name;
+			});
+			return cache;
+		},
+		clanNameById: function(){
+			let cache = [];
+			_.each(this.clanList, (p) => {
+				cache[p.id] = p.name;
+			});
+			return cache;
+		},
 		professionById: function(){
 			let cache = [];
 			_.each(this.professionList, (p) => {
@@ -1553,7 +1606,9 @@ var app = new Vue({
 		night: {},
 		distributionList: [],
 		randomNameList: [],
-		ressonanceUpdate: []
+		ressonanceUpdate: [],
+		clanList: [],
+		predatorTypeList: []
 	},
 	methods: {
 		thenAction: function(response){
@@ -1593,8 +1648,8 @@ var app = new Vue({
 		generateRessonance: function(){
 			this.addTask(new Task(TASK_TYPES.GENERATE_RESSONANCE, {}));
 		},
-		generateNewNpc: function(){
-			this.addTask(new Task(TASK_TYPES.GENERATE_NEW_NPC, {}));	
+		generateNewNpc: function(event){
+			this.addTask(new Task(TASK_TYPES.GENERATE_NEW_NPC, event));	
 		},
 		showMainArea: function(mainArea){
 			this.mainArea = mainArea;
