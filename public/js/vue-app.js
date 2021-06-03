@@ -52,6 +52,9 @@ const TASK_TYPES = {
 	SAVE_SICK: "saveSick",
 	SAVE_HOSPITALIZED: "saveHospitalized",
 	SAVE_RESSONANCE: "saveRessonance",
+	SAVE_CLAN: "saveClan",
+	SAVE_GENERATION: "saveGeneration",
+	SAVE_PREDATOR_TYPE: "savePredatorType",
 	SAVE_FAMILY: "saveFamily",
 	SAVE_HOME: "saveHome",
 	SAVE_INSTINCT: "saveInstinct",
@@ -559,6 +562,15 @@ Vue.component('main-area', {
 		characterSheetRessonanceChange: function(event){
 			this.$emit("character-sheet-ressonance-change", event);
 		},
+		characterSheetClanChange: function(event){
+			this.$emit("character-sheet-clan-change", event);
+		},
+		characterSheetGenerationChange: function(event){
+			this.$emit("character-sheet-generation-change", event);
+		},
+		characterSheetPredatorTypeChange: function(health){
+			this.$emit('character-sheet-predator-type-change', event);
+		},
 		characterSheetOccupationChange: function(occupation){
 			this.$emit("character-sheet-occupation-change", occupation);
 		},
@@ -573,6 +585,9 @@ Vue.component('main-area', {
 		},
 		characterSheetDeleteNpc: function(){
 			this.$emit("character-sheet-delete-npc");
+		},
+		characterSheetSelectNpc: function(){
+			this.$emit("character-sheet-select-npc");
 		}
 	}
 });
@@ -931,7 +946,8 @@ Vue.component('main-area-character-sheet', {
 			'skinList', 'eyesList', 'hairList', 'homeList', 'familyList',
 			'instinctList', 'humorList', 'oathList', 'oathNatureList',
 			'ressonanceList', 'healthList', 'npcProfessionList', 'professionList',
-			'businessList'],
+			'businessList', 'darkTheme',
+			'clanList', 'predatorTypeList'],
 	methods: {
 		selectedCharacterSheetNpcChange: function(npcId){
 			this.$emit("selected-character-sheet-npc-change", npcId);
@@ -987,6 +1003,12 @@ Vue.component('main-area-character-sheet', {
 		characterSheetHospitalizedChange: function(event){
 			this.$emit("character-sheet-hospitalized-change", event);
 		},
+        characterSheetHealthBarChange: function(health){
+            this.$emit('character-sheet-health-bar-change', {
+                    npc: this.selectedCharacterSheetNpc,
+                    health: health
+    		});
+		},
 		characterSheetAgeChange: function(event){
 			this.$emit("character-sheet-age-change", event);
 		},
@@ -1008,11 +1030,14 @@ Vue.component('main-area-character-sheet', {
 		characterSheetRessonanceChange: function(event){
 			this.$emit("character-sheet-ressonance-change", event);
 		},
-		characterSheetHealthBarChange: function(health){
-			this.$emit('character-sheet-health-bar-change', {
-				npc: this.selectedCharacterSheetNpc,
-				health: health
-			});
+		characterSheetClanChange: function(event){
+			this.$emit("character-sheet-clan-change", event);
+		},
+		characterSheetGenerationChange: function(event){
+			this.$emit("character-sheet-generation-change", event);
+		},
+		characterSheetPredatorTypeChange: function(health){
+			this.$emit('character-sheet-predator-type-change', event);
 		},
 		characterSheetOccupationProfessionChange: function(event, occupation){
 			let value = event.target.value;
@@ -1040,6 +1065,9 @@ Vue.component('main-area-character-sheet', {
 		},
 		characterSheetDeleteNpc: function(){
 			this.$emit("character-sheet-delete-npc");
+		},
+		characterSheetSelectNpc: function(){
+			this.$emit("character-sheet-select-npc");
 		}
 	},
 	computed: {
@@ -1178,6 +1206,9 @@ Vue.component('side-details', {
 		},
 		selectedNpcSickChange: function(){
 			this.$emit('selected-npc-sick-change');
+		},
+		selectedNpcShowCharacterSheet: function(event){
+			this.$emit('selected-npc-show-character-sheet', event);	
 		}
 	}
 });
@@ -1255,6 +1286,9 @@ Vue.component('npc-details', {
 		},
 		selectedNpcSickChange: function(event){
 			this.$emit('selected-npc-sick-change', event);	
+		},
+		selectedNpcShowCharacterSheet: function(event){
+			this.$emit('selected-npc-show-character-sheet', event);	
 		}
 	}
 });
@@ -2261,6 +2295,69 @@ var app = new Vue({
 				}
 			));
 		},
+		characterSheetClanChange: function(event){
+			let self = this;
+			let npcId = self.selectedCharacterSheetNpc;
+			let npc = _.findWhere(this.npcList, {id: npcId});
+			if(isNullOrUndefinedOrEmpty(event.target.value)){
+				npc.clan = null;
+			} else {
+				npc.clan = parseInt(event.target.value);
+			}
+			let value = npc.clan;
+			this.log("Saving npc "+npcId+" clan "+value+" change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_VAMPIRE,
+				{
+					id: npcId,
+					clan: value,
+					generation: npc.generation,
+					predator_type: npc.predator_type
+				}
+			));
+		},
+		characterSheetGenerationChange: function(event){
+			let self = this;
+			let npcId = self.selectedCharacterSheetNpc;
+			let npc = _.findWhere(this.npcList, {id: npcId});
+			if(isNullOrUndefinedOrEmpty(event.target.value)){
+				npc.generation = null;
+			} else {
+				npc.generation = parseInt(event.target.value);
+			}
+			let value = npc.generation;
+			this.log("Saving npc "+npcId+" generation "+value+" change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_VAMPIRE,
+				{
+					id: npcId,
+					clan: npc.clan,
+					generation: value,
+					predator_type: npc.predator_type
+				}
+			));
+		},
+		characterSheetPredatorTypeChange: function(health){
+			let self = this;
+			let npcId = self.selectedCharacterSheetNpc;
+			let npc = _.findWhere(this.npcList, {id: npcId});
+			if(isNullOrUndefinedOrEmpty(event.target.value)){
+				npc.predator_type = null;
+			} else {
+				npc.predator_type = parseInt(event.target.value);
+			}
+			let value = npc.predator_type;
+			this.log("Saving npc "+npcId+" predator_type "+value+" change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_VAMPIRE,
+				{
+					id: npcId,
+					clan: npc.clan,
+					generation: npc.generation,
+					predator_type: value
+				}
+			));
+		},
 		characterSheetOccupationChange: function(occupation){
 			let self = this;
 			this.log("Saving occupation "+JSON.stringify(occupation)+" (character sheet)");
@@ -2343,15 +2440,27 @@ var app = new Vue({
 			this.addTask(new Task(
 				TASK_TYPES.DELETE_NPC, npc
 			));
-			delete self.selectedCharacterSheetNpc;
+			self.selectedCharacterSheetNpc = null;
 			if(!isNullOrUndefinedOrEmpty(self.selectedNpc) && self.selectedNpc.id == npcId){
-				delete self.selectedNpc;
+				self.selectedNpc = null;
 			}
 			let index = _.findIndex(this.npcList, (npc) => {
 				return npc.id == npcId;
 			});
 			if(index != -1){
 				this.npcList.splice(index, 1);
+			}
+		},
+		characterSheetSelectNpc: function(){
+			if(!isNullOrUndefinedOrEmpty(this.selectedCharacterSheetNpc)){
+				let npcId = this.selectedCharacterSheetNpc;
+				this.selectedNpc = _.findWhere(this.npcList, {id: npcId});
+			}
+		},
+		selectedNpcShowCharacterSheet: function(event){
+			if(!isNullOrUndefinedOrEmpty(this.selectedNpc)){
+				this.selectedCharacterSheetNpc = this.selectedNpc.id;
+				this.showMainArea(CHARACTER_SHEET);
 			}
 		}
 	},

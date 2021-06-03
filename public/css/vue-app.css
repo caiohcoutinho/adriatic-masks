@@ -22,6 +22,8 @@ img.npcInformationSaveButtonLoader{
 	width: 40px;
 }
 
+span.selectedNpcShowCharacterSheet img,
+span.characterSheetSelectNpcButton img,
 span.sickIcon img{
 	width: 20px;	
 }
@@ -267,7 +269,9 @@ table.businessTable tr.businessTableHeaderRow th{
 table.npcTable tr.npcTableHeaderRow th.clickable,
 table.businessTable tr.businessTableHeaderRow th.clickable,
 span.characterSheetDeleteOccupationButton.clickable,
-span.characterSheetDeleteNpcButton.clickable{
+span.characterSheetDeleteNpcButton.clickable,
+span.characterSheetSelectNpcButton.clickable,
+span.selectedNpcShowCharacterSheet.clickable{
 	cursor:	pointer;
 }
 

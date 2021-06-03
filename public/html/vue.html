@@ -104,9 +104,13 @@
 				v-on:character-sheet-wealth-change="characterSheetWealthChange"
 				v-on:character-sheet-max-health-change="characterSheetMaxHealthChange"
 				v-on:character-sheet-ressonance-change="characterSheetRessonanceChange"
+				v-on:character-sheet-clan-change="characterSheetClanChange"
+				v-on:character-sheet-generation-change="characterSheetGenerationChange"
+				v-on:character-sheet-predator-type-change="characterSheetPredatorTypeChange"
 				v-on:character-sheet-occupation-change="characterSheetOccupationChange"
 				v-on:character-sheet-delete-occupation="characterSheetDeleteOccupation"
 				v-on:character-sheet-delete-npc="characterSheetDeleteNpc"
+				v-on:character-sheet-select-npc="characterSheetSelectNpc"
 				v-on:character-sheet-add-occupation="characterSheetAddOccupation"
 				v-on:character-sheet-health-bar-change="characterSheetHealthBarChange"
 				v-bind:oath-list="oathList"
@@ -144,6 +148,7 @@
 				v-on:selected-npc-alive-change="selectedNpcAliveChange"
 				v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
 				v-on:selected-npc-ressonance-change="selectedNpcRessonanceChange"
+				v-on:selected-npc-show-character-sheet="selectedNpcShowCharacterSheet"
 				v-on:save-selected-npc-notes="saveSelectedNpcNotes"
 				v-on:save-selected-npc-description="saveSelectedNpcDescription"
 				v-on:save-selected-npc-story="saveSelectedNpcStory"
@@ -222,6 +227,7 @@
 				v-on:home-filter-change="homeFilterChange"/>
 			<main-area-character-sheet 
 				v-if="showCharacterSheet"
+				v-bind:dark-theme="darkTheme"
 				v-bind:npc-list="npcList"
 				v-bind:health-list="healthList"
 				v-bind:nationality-list="nationalityList"
@@ -236,6 +242,8 @@
 				v-bind:oath-list="oathList"
 				v-bind:oath-nature-list="oathNatureList"
 				v-bind:ressonance-list="ressonanceList"
+				v-bind:clan-list="clanList"
+				v-bind:predator-type-list="predatorTypeList"
 				v-bind:npc-profession-list="npcProfessionList"
 				v-bind:profession-list="professionList"
 				v-bind:business-list="businessList"
@@ -262,11 +270,15 @@
 				v-on:character-sheet-m-change="characterSheetMChange"
 				v-on:character-sheet-s-change="characterSheetSChange"
 				v-on:character-sheet-wealth-change="characterSheetWealthChange"
+				v-on:character-sheet-occupation-change="characterSheetOccupationChange"
 				v-on:character-sheet-max-health-change="characterSheetMaxHealthChange"
 				v-on:character-sheet-ressonance-change="characterSheetRessonanceChange"
-				v-on:character-sheet-occupation-change="characterSheetOccupationChange"
+				v-on:character-sheet-clan-change="characterSheetClanChange"
+				v-on:character-sheet-generation-change="characterSheetGenerationChange"
+				v-on:character-sheet-predator-type-change="characterSheetPredatorTypeChange"
 				v-on:character-sheet-delete-occupation="characterSheetDeleteOccupation"
 				v-on:character-sheet-delete-npc="characterSheetDeleteNpc"
+				v-on:character-sheet-select-npc="characterSheetSelectNpc"
 				v-on:character-sheet-add-occupation="characterSheetAddOccupation"
 				v-on:character-sheet-health-bar-change="characterSheetHealthBarChange"
 				v-on:selected-character-sheet-npc-change="selectedCharacterSheetNpcChange"
@@ -428,6 +440,7 @@
 					</option>
 				</select>
 				<span v-if="selectedNpc != null" class="characterSheetDeleteNpcButton clickable" v-on:click="characterSheetDeleteNpc">&#10060;</span>
+				<span v-if="selectedNpc != null" class="characterSheetSelectNpcButton clickable" v-on:click="characterSheetSelectNpc"><img v-bind:src="'/img/right-arrow-icon'+(darkTheme?'-dark':'')+'.png'"></span>
 			</div>
 			<div class="scrollableDiv">
 				<table v-if="selectedNpc != null"
@@ -448,6 +461,28 @@
 					<tr>
 						<td class="characterSheetLabelTd">Nome</td>
 						<td><input class="characterSheetNameInput" type="text" v-model="selectedNpc.name" v-on:input="characterSheetNameInputChange"/></td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Clã</td>
+						<td><select class="characterSheetClanSelect" v-bind:value="selectedNpc.clan" v-on:change="characterSheetClanChange">
+							<option value="">Clã</option>
+							<option v-for="clan in clanList" v-bind:value="clan.id">
+								{{clan.name}}
+							</option>
+							</select></td></td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Geração</td>
+						<td><input class="characterSheetGenerationInput" type="number" min="1" max="15" v-bind:value="selectedNpc.generation" v-on:input="characterSheetGenerationChange"/></td>
+					</tr>
+					<tr>
+						<td class="characterSheetLabelTd">Predador</td>
+						<td><select class="characterSheetPredatorTypeSelect" v-bind:value="selectedNpc.predatorType" v-on:change="characterSheetPredatorTypeChange">
+							<option value="">Predador</option>
+							<option v-for="predatorType in predatorTypeList" v-bind:value="predatorType.id">
+								{{predatorType.name}}
+							</option>
+							</select></td></td>
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Nacionalidade</td>
@@ -834,6 +869,7 @@
 				v-on:selected-npc-alive-change="selectedNpcAliveChange"
 				v-on:selected-npc-hospitalized-change="selectedNpcHospitalizedChange"
 				v-on:selected-npc-ressonance-change="selectedNpcRessonanceChange"
+				v-on:selected-npc-show-character-sheet="selectedNpcShowCharacterSheet"
 				v-on:save-selected-npc-notes="saveSelectedNpcNotes"
 				v-on:save-selected-npc-description="saveSelectedNpcDescription"
 				v-on:save-selected-npc-story="saveSelectedNpcStory"
@@ -868,7 +904,7 @@
 
 	<script type="text/x-template" id="npcDetailsTemplate">
 		<div v-if="npc != null && npc != undefined" class="details">
-			<h5>{{npc.id}} - <span v-bind:class="{npcDead: !npc.alive}">{{npc.name}}</span></h5>
+			<h5>{{npc.id}} - <span v-bind:class="{npcDead: !npc.alive}">{{npc.name}} <span  class="selectedNpcShowCharacterSheet clickable" v-on:click="selectedNpcShowCharacterSheet"><img src="/img/characterSheet.png"></span></span></h5>
 			<div class="npcDetailsPortrait">
 				<portrait 
 					v-bind:skin-list="skinList"

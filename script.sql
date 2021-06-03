@@ -1495,25 +1495,32 @@ create table clan(
  	PRIMARY KEY (id)
 );
 
-insert into clan(id, nome) values (1, 'Capadoccio');
-insert into clan(id, nome) values (2, 'Toreador');
-insert into clan(id, nome) values (3, 'Brujah');
-insert into clan(id, nome) values (4, 'Nosferatu');
-insert into clan(id, nome) values (5, 'Assamita');
-insert into clan(id, nome) values (6, 'Giovanni');
-insert into clan(id, nome) values (7, 'Gangrel');
-insert into clan(id, nome) values (8, 'Ventrue');
-insert into clan(id, nome) values (10, 'Caitiff');
-insert into clan(id, nome) values (11, 'Malkavian');
+insert into clan(id, name) values (1, 'Capadoccio');
+insert into clan(id, name) values (2, 'Toreador');
+insert into clan(id, name) values (3, 'Brujah');
+insert into clan(id, name) values (4, 'Nosferatu');
+insert into clan(id, name) values (5, 'Assamita');
+insert into clan(id, name) values (6, 'Giovanni');
+insert into clan(id, name) values (7, 'Gangrel');
+insert into clan(id, name) values (8, 'Ventrue');
+insert into clan(id, name) values (10, 'Caitiff');
+insert into clan(id, name) values (11, 'Malkavian');
+
+insert into clan(id, name) values (12, 'Tremere');
+insert into clan(id, name) values (13, 'ThinBlood');
+insert into clan(id, name) values (14, 'Ravnos');
+insert into clan(id, name) values (15, 'Tzimisce');
+insert into clan(id, name) values (16, 'Ministry');
+insert into clan(id, name) values (17, 'LaSombra');	
 
 
 create sequence vampiro_id_seq;
 
 create table vampiro(
 	id int NOT NULL DEFAULT nextval('vampiro_id_seq') references npc(id), 
-	geracao int NOT NULL,
-	clan int NOT NULL references clan(id),
-	predator_type int NOT NULL references predator_type(id),
+	geracao int,
+	clan int references clan(id),
+	predator_type int references predator_type(id),
  	PRIMARY KEY (id)
 );
 
