@@ -477,7 +477,7 @@
 					</tr>
 					<tr>
 						<td class="characterSheetLabelTd">Predador</td>
-						<td><select class="characterSheetPredatorTypeSelect" v-bind:value="selectedNpc.predatorType" v-on:change="characterSheetPredatorTypeChange">
+						<td><select class="characterSheetPredatorTypeSelect" v-bind:value="selectedNpc.predator_type" v-on:change="characterSheetPredatorTypeChange">
 							<option value="">Predador</option>
 							<option v-for="predatorType in predatorTypeList" v-bind:value="predatorType.id">
 								{{predatorType.name}}
