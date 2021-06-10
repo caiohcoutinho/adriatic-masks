@@ -66,6 +66,7 @@ app.get("/npc", (req, res, next) => {
 			v.generation,
 			v.clan,
 			v.predator_type,
+			v.blood_potency,
 			seed_nickname,
 			seed_age,
 			seed_eyes,
