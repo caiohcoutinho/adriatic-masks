@@ -438,8 +438,6 @@
 
 	<script type="text/x-template" id="mainAreaCharacterSheetTemplate">
 		<div class="mainAreaCharacterSheet">
-			<h5>newVersion = <bistate v-on:bistate-change="newVersion = !newVersion"
-								 v-bind:value="newVersion"/></h5>
 			<h1>Planilha</h1>
 			<div>
 				NPC: 
@@ -452,7 +450,7 @@
 				<span v-if="selectedNpc != null" class="characterSheetDeleteNpcButton clickable" v-on:click="characterSheetDeleteNpc">&#10060;</span>
 				<span v-if="selectedNpc != null" class="characterSheetSelectNpcButton clickable" v-on:click="characterSheetSelectNpc"><img v-bind:src="'/img/right-arrow-icon'+(darkTheme?'-dark':'')+'.png'"></span>
 			</div>
-			<div class="scrollableDiv" v-if="!newVersion">
+			<div class="scrollableDiv" v-if="false">
 				<table v-if="selectedNpc != null"
 					class="mainAreaCharacterSheetTable">
 					<tr>
@@ -712,7 +710,7 @@
 					</tr>
 				</table>
 			</div>
-			<div class="scrollableDiv" v-if="newVersion">
+			<div class="scrollableDiv">
 				<table class="mainAreaCharacterSheetTable">
 					<tr>
 						<td class="characterSheetPortrait" rowspan="2">
@@ -817,6 +815,10 @@
 						<td colspan="3"><attribute-type-section v-bind:npc-id="selectedNpc.id" attribute-type-name="Physical Skill" v-bind:attribute-type-list="attributeTypeList" v-bind:attribute-list="attributeList" v-bind:npc-attribute-list="npcAttributeList" v-on:character-sheet-attribute-change="characterSheetAttributeChange"/></td>
 						<td colspan="3"><attribute-type-section v-bind:npc-id="selectedNpc.id" attribute-type-name="Social Skill" v-bind:attribute-type-list="attributeTypeList" v-bind:attribute-list="attributeList" v-bind:npc-attribute-list="npcAttributeList" v-on:character-sheet-attribute-change="characterSheetAttributeChange"/></td>
 						<td colspan="3"><attribute-type-section v-bind:npc-id="selectedNpc.id" attribute-type-name="Mental Skill" v-bind:attribute-type-list="attributeTypeList" v-bind:attribute-list="attributeList" v-bind:npc-attribute-list="npcAttributeList" v-on:character-sheet-attribute-change="characterSheetAttributeChange"/></td>
+					</tr>
+					<tr>
+						<td colspan="3"><attribute-type-section v-bind:npc-id="selectedNpc.id" attribute-type-name="Discipline" v-bind:attribute-type-list="attributeTypeList" v-bind:attribute-list="attributeList" v-bind:npc-attribute-list="npcAttributeList" v-on:character-sheet-attribute-change="characterSheetAttributeChange"/></td>
+						<td colspan="6">TODO: List Discipline powers here</td>
 					</tr>
 				</table>
 			</div>

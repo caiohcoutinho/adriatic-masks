@@ -963,8 +963,7 @@ Vue.component('main-area-character-sheet', {
 			'attributeTypeList', 'attributeList', 'npcAttributeList'],
 	data: function(){
 		return {
-			advancedCollapsed: true,
-			newVersion: true
+			advancedCollapsed: true
 		}
 	},
 	methods: {
