@@ -786,8 +786,6 @@ app.post("/npc", (req, res, next) => {
 });
 
 app.post("/vampire", (req, res, next) => {
-	console.log("vampire post");
-	console.log(JSON.stringify(req.body));
 	pool.connect((err, client, done) => {
 		if(err){
 			res.json(err);
@@ -796,7 +794,6 @@ app.post("/vampire", (req, res, next) => {
 		let vampire = req.body;
 
 		client.query("select count(1) from vampire where id = "+vampire.id, (err, result) => {
-			console.log("result = "+JSON.stringify(result.rows));
 			if(err){
 		  	  console.log(err);
 		  	  res.status(500);
@@ -805,11 +802,45 @@ app.post("/vampire", (req, res, next) => {
 				let isVampire = result.rows[0].count == 1;
 				let theQuery = "";
 				if(isVampire){
-					console.log("isVampire");
 					theQuery = "update vampire set generation = "+vampire.generation+", clan = "+vampire.clan+", predator_type = "+vampire.predator_type+" where id = "+vampire.id;
 				} else {
-					console.log("!isVampire");
 					theQuery = "insert into vampire(id, generation, clan, predator_type) values ("+vampire.id+", "+vampire.generation+", "+vampire.clan+", "+vampire.predator_type+")";
+				}
+				client.query(theQuery, (err, result) => {
+			 		done()
+				  if(err){
+				  	  console.log(err);
+				  	  res.status(500);
+					  res.json(err);
+					} else{
+					  res.json("ok");
+					}
+				});
+			}
+		});
+	});
+});
+
+app.post("/attribute", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		let event = req.body;
+
+		client.query("select count(1) from npc_attribute where npc = "+event.npcId+" and attribute = "+event.attributeId, (err, result) => {
+			if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else {
+				let hasAttribute = result.rows[0].count == 1;
+				let theQuery = "";
+				if(hasAttribute){
+					theQuery = "update npc_attribute set value = "+event.value+" where npc = "+event.npcId+" and attribute = "+event.attributeId;
+				} else {
+					theQuery = "insert into npc_attribute(npc, attribute, value) values ("+event.npcId+", "+event.attributeId+", "+event.value+")";
 				}
 				client.query(theQuery, (err, result) => {
 			 		done()
@@ -1476,3 +1507,74 @@ app.get("/randomname", (req, res, next) => {
 	});
 });
 
+app.get("/attribute_type", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query(
+			`
+			select *
+			from attribute_type 
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows)
+			}
+		})
+	});
+});
+
+app.get("/attribute", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query(
+			`
+			select *
+			from attribute 
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows)
+			}
+		})
+	});
+});
+
+app.get("/npc_attribute", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query(
+			`
+			select *
+			from npc_attribute 
+			`,
+			 (err, result) => {
+		 	done()
+		  if(err){
+		  	  console.log(err);
+		  	  res.status(500);
+			  res.json(err);
+			} else{
+			  res.json(result.rows)
+			}
+		})
+	});
+});

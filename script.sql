@@ -1953,3 +1953,102 @@ insert into random_name(nationality, gender, name) values
 ((select id from nationality where name = 'Suíça'), (select id from gender where symbol = 'F'), 'Lumi Trachsler');
 
 
+create sequence attribute_type_id_seq;
+
+create table attribute_type(
+	id int NOT NULL DEFAULT nextval('attribute_type_id_seq'), 
+	name varchar(255) NOT NULL,
+	PRIMARY KEY (id)
+);
+
+create unique index idx_attribute_type_name on attribute_type(name);
+
+insert into attribute_type(name) values						
+('Physical'),
+('Social'),
+('Mental'),
+('Physical Skill'),
+('Social Skill'),
+('Mental Skill'),
+('Discipline');
+
+create sequence attribute_id_seq;
+
+create table attribute(
+	id int NOT NULL DEFAULT nextval('attribute_id_seq'), 
+	name varchar(255) NOT NULL,
+	type int NOT NULL references attribute_type(id),
+	PRIMARY KEY (id)
+);
+
+create unique index idx_attribute_name on attribute(name);
+
+insert into attribute(name, type) values						
+('Strength', (select id from attribute_type where name = 'Physical')),
+('Dexterity', (select id from attribute_type where name = 'Physical')),
+('Stamina', (select id from attribute_type where name = 'Physical')),
+('Charisma', (select id from attribute_type where name = 'Social')),
+('Manipulation', (select id from attribute_type where name = 'Social')),
+('Composure', (select id from attribute_type where name = 'Social')),
+('Intelligence', (select id from attribute_type where name = 'Mental')),
+('Wits', (select id from attribute_type where name = 'Mental')),
+('Resolve', (select id from attribute_type where name = 'Mental'));
+
+insert into attribute(name, type) values						
+('Athletics', (select id from attribute_type where name = 'Physical Skill')),
+('Brawl', (select id from attribute_type where name = 'Physical Skill')),
+('Craft', (select id from attribute_type where name = 'Physical Skill')),
+('Drive', (select id from attribute_type where name = 'Physical Skill')),
+('Firearms', (select id from attribute_type where name = 'Physical Skill')),
+('Melee', (select id from attribute_type where name = 'Physical Skill')),
+('Larceny', (select id from attribute_type where name = 'Physical Skill')),
+('Stealth', (select id from attribute_type where name = 'Physical Skill')),
+('Survival', (select id from attribute_type where name = 'Physical Skill'));
+
+insert into attribute(name, type) values						
+('Animal Ken', (select id from attribute_type where name = 'Social Skill')),
+('Etiquette', (select id from attribute_type where name = 'Social Skill')),
+('Insight', (select id from attribute_type where name = 'Social Skill')),
+('Intimidation', (select id from attribute_type where name = 'Social Skill')),
+('Leadership', (select id from attribute_type where name = 'Social Skill')),
+('Performance', (select id from attribute_type where name = 'Social Skill')),
+('Persuasion', (select id from attribute_type where name = 'Social Skill')),
+('Streetwise', (select id from attribute_type where name = 'Social Skill')),
+('Subterfuge', (select id from attribute_type where name = 'Social Skill'));
+
+insert into attribute(name, type) values						
+('Academics', (select id from attribute_type where name = 'Mental Skill')),
+('Awareness', (select id from attribute_type where name = 'Mental Skill')),
+('Finance', (select id from attribute_type where name = 'Mental Skill')),
+('Investigation', (select id from attribute_type where name = 'Mental Skill')),
+('Medicine', (select id from attribute_type where name = 'Mental Skill')),
+('Occult', (select id from attribute_type where name = 'Mental Skill')),
+('Politics', (select id from attribute_type where name = 'Mental Skill')),
+('Science', (select id from attribute_type where name = 'Mental Skill')),
+('Technology', (select id from attribute_type where name = 'Mental Skill'));
+
+
+insert into attribute(name, type) values						
+('Animalism', (select id from attribute_type where name = 'Discipline')),
+('Auspex', (select id from attribute_type where name = 'Discipline')),
+('Celerity', (select id from attribute_type where name = 'Discipline')),
+('Dominate', (select id from attribute_type where name = 'Discipline')),
+('Fortitude', (select id from attribute_type where name = 'Discipline')),
+('Obfuscate', (select id from attribute_type where name = 'Discipline')),
+('Potence', (select id from attribute_type where name = 'Discipline')),
+('Presence', (select id from attribute_type where name = 'Discipline')),
+('Protean', (select id from attribute_type where name = 'Discipline')),
+('Blood Sorcery', (select id from attribute_type where name = 'Discipline'));
+
+
+create sequence npc_attribute_id_seq;
+
+create table npc_attribute(
+	id int NOT NULL DEFAULT nextval('npc_attribute_id_seq'), 
+	npc int NOT NULL references npc(id),
+	attribute int NOT NULL references attribute(id),
+	value int,
+	PRIMARY KEY (id)	
+);
+
+create unique index idx_npc_attribute_npc_attribute on npc_attribute(npc, attribute);

@@ -68,6 +68,7 @@ const TASK_TYPES = {
 	SAVE_MAX_HEALTH: "saveMaxHealth",
 	SAVE_OCCUPATION: "saveOccupation",
 	SAVE_VAMPIRE: "saveVampire",
+	SAVE_ATTRIBUTE: "saveAttribute",
 	DELETE_OCCUPATION: "deleteOccupation",
 	DELETE_NPC: "deleteNpc",
 	LOAD_RESSONANCE: "loadRessonance",
@@ -94,6 +95,9 @@ const TASK_TYPES = {
 	LOAD_RANDOM_NAME: "loadRandomName",
 	LOAD_CLAN: "loadClan",
 	LOAD_PREDATOR_TYPE: "loadPredatorType",
+	LOAD_ATTRIBUTE: "loadAttribute",
+	LOAD_ATTRIBUTE_TYPE: "loadAtributeType",
+	LOAD_NPC_ATTRIBUTE: "loadNpcAtribute",
 	GENERATE_NIGHT: "generateNight",
 	GENERATE_RESSONANCE: "generateRessonance",
 	GENERATE_NEW_NPC: "generateNewNpc"
@@ -162,6 +166,7 @@ TASK_EXECUTIONS[TASK_TYPES.SAVE_WEALTH] = createPostUrlAction("/wealth");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_MAX_HEALTH] = createPostUrlAction("/maxHealth");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_RESSONANCE] = createPostUrlAction("/ressonance");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_VAMPIRE] = createPostUrlAction("/vampire");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_ATTRIBUTE] = createPostUrlAction("/attribute");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_OCCUPATION] = function(self, occupation){
 	self.axios.post("/occupation", occupation).then(function(response){
 		occupation.id = parseInt(response.data);
@@ -196,6 +201,9 @@ TASK_EXECUTIONS[TASK_TYPES.LOAD_HOME] = createLoadListUrlAction("/home", "homeLi
 TASK_EXECUTIONS[TASK_TYPES.LOAD_RANDOM_NAME] = createLoadListUrlAction("/randomname", "randomNameList");
 TASK_EXECUTIONS[TASK_TYPES.LOAD_CLAN] = createLoadListUrlAction("/clan", "clanList", (c) => c.name);
 TASK_EXECUTIONS[TASK_TYPES.LOAD_PREDATOR_TYPE] = createLoadListUrlAction("/predator_type", "predatorTypeList", (pt) => pt.name);
+TASK_EXECUTIONS[TASK_TYPES.LOAD_ATTRIBUTE] = createLoadListUrlAction("/attribute", "attributeList", (att) => att.name);
+TASK_EXECUTIONS[TASK_TYPES.LOAD_ATTRIBUTE_TYPE] = createLoadListUrlAction("/attribute_type", "attributeTypeList", (att) => att.name);
+TASK_EXECUTIONS[TASK_TYPES.LOAD_NPC_ATTRIBUTE] = createLoadListUrlAction("/npc_attribute", "npcAttributeList");
 
 TASK_EXECUTIONS[TASK_TYPES.GENERATE_NIGHT] = function(self, data){
 	if(!window.Worker){
@@ -408,7 +416,8 @@ Vue.component('main-area', {
 			'selectedFamily', 'businessList', 'lastUpdate', 'lastUpdateDetails',
 			'skinList', 'eyesList', 'hairList',
 			'instinctList', 'humorList', 'oathList', 'oathNatureList',
-			'clanList', 'predatorTypeList'],
+			'clanList', 'predatorTypeList',
+			'attributeTypeList', 'attributeList', 'npcAttributeList'],
 	computed: {
 		showNpc: function(){
 			return this.mainArea == NPC;
@@ -585,6 +594,9 @@ Vue.component('main-area', {
 		},
 		characterSheetDeleteNpc: function(){
 			this.$emit("character-sheet-delete-npc");
+		},
+		characterSheetAttributeChange: function(event){
+			this.$emit("character-sheet-attribute-change", event);
 		},
 		characterSheetSelectNpc: function(){
 			this.$emit("character-sheet-select-npc");
@@ -947,7 +959,14 @@ Vue.component('main-area-character-sheet', {
 			'instinctList', 'humorList', 'oathList', 'oathNatureList',
 			'ressonanceList', 'healthList', 'npcProfessionList', 'professionList',
 			'businessList', 'darkTheme',
-			'clanList', 'predatorTypeList'],
+			'clanList', 'predatorTypeList',
+			'attributeTypeList', 'attributeList', 'npcAttributeList'],
+	data: function(){
+		return {
+			advancedCollapsed: true,
+			newVersion: true
+		}
+	},
 	methods: {
 		selectedCharacterSheetNpcChange: function(npcId){
 			this.$emit("selected-character-sheet-npc-change", npcId);
@@ -1068,6 +1087,9 @@ Vue.component('main-area-character-sheet', {
 		},
 		characterSheetSelectNpc: function(){
 			this.$emit("character-sheet-select-npc");
+		},
+		characterSheetAttributeChange: function(event){
+			this.$emit("character-sheet-attribute-change", event);
 		}
 	},
 	computed: {
@@ -1587,6 +1609,38 @@ Vue.component('health-bar', {
 	}
 });
 
+Vue.component('attribute-type-section', {
+	props: ['npcId', 'attributeTypeName', 
+			'attributeTypeList', 'attributeList', 'npcAttributeList'],
+	template: '#attributeTypeSection',
+	methods: {
+		characterSheetAttributeChange: function(event, attributeId){
+			this.$emit('character-sheet-attribute-change', {
+				npcId: this.npcId,
+				attributeId: attributeId,
+				value: parseInt(event.target.value)
+			});
+		}
+	},
+	computed: {
+		filteredAttributeList: function(){
+			let thisAttributeTypeName = this.attributeTypeName;
+			let attributeTypeId = _.findWhere(this.attributeTypeList, {name: thisAttributeTypeName}).id;
+			return _.filter(this.attributeList, att => att.type == attributeTypeId);
+		},
+		npcAttributeByAttributeId: function(){
+			let thisNpcId = this.npcId;
+			let filterdNpcAttributeList = _.filter(this.npcAttributeList, att => att.npc == thisNpcId);
+			let cache = [];
+			_.each(filterdNpcAttributeList, (att) => {
+				cache[att.attribute] = att.value;
+			});
+			return cache;
+		}
+	}
+});
+
+
 const DAMAGE_CLEAN = "clean";
 const DAMAGE_SUPERFICIAL = "superficial";
 const DAMAGE_AGGRAVATED = "aggravated";
@@ -1642,7 +1696,10 @@ var app = new Vue({
 		randomNameList: [],
 		ressonanceUpdate: [],
 		clanList: [],
-		predatorTypeList: []
+		predatorTypeList: [],
+		attributeList: [],
+		attributeTypeList: [],
+		npcAttributeList: []
 	},
 	methods: {
 		thenAction: function(response){
@@ -2456,6 +2513,15 @@ var app = new Vue({
 				let npcId = this.selectedCharacterSheetNpc;
 				this.selectedNpc = _.findWhere(this.npcList, {id: npcId});
 			}
+		},
+		characterSheetAttributeChange: function(event){
+			let self = this;
+			let npcId = self.selectedCharacterSheetNpc;
+
+			this.log("Saving attribute "+JSON.stringify(event)+" (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_ATTRIBUTE, event
+			));
 		},
 		selectedNpcShowCharacterSheet: function(event){
 			if(!isNullOrUndefinedOrEmpty(this.selectedNpc)){

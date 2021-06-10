@@ -225,6 +225,20 @@ table.mainAreaCharacterSheetTable td.characterSheetPortrait div.portrait{
 	position: relative;
 }
 
+table.attributeTypeSectionTable{
+	width: 100%;
+}
+
+table.attributeTypeSectionTable th{
+	text-align: center;
+}
+
+table.attributeTypeSectionTable td{
+	text-align: left;
+}
+
+
+
 table.businessTable, 
 table.mainAreaCharacterSheetTable, 
 table.characterSheetSeedsTable{
@@ -232,6 +246,28 @@ table.characterSheetSeedsTable{
 	width: 99%;
 	border-collapse: collapse;
 	border-spacing: 0px;	
+}
+
+table.fixedInputs span.bistate img{
+	width: 30px;
+}
+
+table.mainAreaCharacterSheetTable{
+	text-align: left;
+}
+
+table.fixedInputs input, table.fixedInputs select{
+	width: 180px;
+	height: 18px;
+}
+
+table.fixedInputs input[type="number"]{
+	width: 60px;
+	height: 18px;
+}
+
+input.characterSheetAgeInput{
+	width: 60px
 }
 
 table.npcTable tr.npcTableDataRow,

@@ -63,6 +63,9 @@
 				v-bind:neighbourhood-list="neighbourhoodList"
 				v-bind:clan-list="clanList"
 				v-bind:predator-type-list="predatorTypeList"
+				v-bind:attribute-type-list="attributeTypeList"
+				v-bind:attribute-list="attributeList"
+				v-bind:npc-attribute-list="npcAttributeList"
 				v-on:clear-filter="clearFilter"
 				v-on:select-family="selectFamily"
 				v-on:clear-warnings="clearWarnings"
@@ -113,6 +116,7 @@
 				v-on:character-sheet-select-npc="characterSheetSelectNpc"
 				v-on:character-sheet-add-occupation="characterSheetAddOccupation"
 				v-on:character-sheet-health-bar-change="characterSheetHealthBarChange"
+				v-on:character-sheet-attribute-change="characterSheetAttributeChange"
 				v-bind:oath-list="oathList"
 				v-bind:oath-nature-list="oathNatureList"
 				v-bind:ressonance-update="ressonanceUpdate"
@@ -248,6 +252,9 @@
 				v-bind:profession-list="professionList"
 				v-bind:business-list="businessList"
 				v-bind:selected-character-sheet-npc="selectedCharacterSheetNpc"
+				v-bind:attribute-type-list="attributeTypeList"
+				v-bind:attribute-list="attributeList"
+				v-bind:npc-attribute-list="npcAttributeList"
 				v-on:character-sheet-name-change="characterSheetNameInputChange"
 				v-on:character-sheet-nickname-change="characterSheetNicknameInputChange"
 				v-on:character-sheet-description-change="characterSheetDescriptionChange"
@@ -281,6 +288,7 @@
 				v-on:character-sheet-select-npc="characterSheetSelectNpc"
 				v-on:character-sheet-add-occupation="characterSheetAddOccupation"
 				v-on:character-sheet-health-bar-change="characterSheetHealthBarChange"
+				v-on:character-sheet-attribute-change="characterSheetAttributeChange"
 				v-on:selected-character-sheet-npc-change="selectedCharacterSheetNpcChange"
 				/>
 			<main-area-business
@@ -430,6 +438,8 @@
 
 	<script type="text/x-template" id="mainAreaCharacterSheetTemplate">
 		<div class="mainAreaCharacterSheet">
+			<h5>newVersion = <bistate v-on:bistate-change="newVersion = !newVersion"
+								 v-bind:value="newVersion"/></h5>
 			<h1>Planilha</h1>
 			<div>
 				NPC: 
@@ -442,7 +452,7 @@
 				<span v-if="selectedNpc != null" class="characterSheetDeleteNpcButton clickable" v-on:click="characterSheetDeleteNpc">&#10060;</span>
 				<span v-if="selectedNpc != null" class="characterSheetSelectNpcButton clickable" v-on:click="characterSheetSelectNpc"><img v-bind:src="'/img/right-arrow-icon'+(darkTheme?'-dark':'')+'.png'"></span>
 			</div>
-			<div class="scrollableDiv">
+			<div class="scrollableDiv" v-if="!newVersion">
 				<table v-if="selectedNpc != null"
 					class="mainAreaCharacterSheetTable">
 					<tr>
@@ -699,6 +709,114 @@
 								</tr>
 							</table>
 						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="scrollableDiv" v-if="newVersion">
+				<table class="mainAreaCharacterSheetTable">
+					<tr>
+						<td class="characterSheetPortrait" rowspan="2">
+							<portrait 
+								v-bind:skin-list="skinList"
+								v-bind:eyes-list="eyesList"
+								v-bind:hair-list="hairList"
+								v-bind:npc="selectedNpc"/>
+						</td>
+						<td colspan="2">
+							Descrição<textarea class="characterSheetTextArea characterSheetDescriptionTextArea" v-model="selectedNpc.description" v-on:input="characterSheetDescriptionChange"/>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2" class="characterSheetLabelTd">História<textarea class="characterSheetTextArea characterSheetStoryTextArea" v-model="selectedNpc.story" v-on:input="characterSheetStoryChange"/></td>
+					</tr>
+				</table>
+				<table class="mainAreaCharacterSheetTable fixedInputs">
+					<tr>
+						<td class="label">Nome:</td>
+						<td colspan="2"><input class="characterSheetNameInput" type="text" v-model="selectedNpc.name" v-on:input="characterSheetNameInputChange"/></td>
+						<td class="label">Clã:</td>
+						<td colspan="2"><select class="characterSheetClanSelect" v-bind:value="selectedNpc.clan" v-on:change="characterSheetClanChange">
+							<option value="">Clã</option>
+							<option v-for="clan in clanList" v-bind:value="clan.id">
+								{{clan.name}}
+							</option>
+							</select></td>
+						<td class="label">Família:</td>
+						<td colspan="2"><select class="characterSheetFamilySelect" v-bind:value="selectedNpc.family" v-on:change="characterSheetFamilyChange">
+							<option value="">Família</option>
+							<option v-for="family in familyList" v-bind:value="family.id">
+								{{family.name}}
+							</option>
+							</select></td>
+					</tr>
+					<tr>
+						<td class="label">Apelido:</td>
+						<td colspan="2"><input class="characterSheetNicknameInput" type="text" v-model="selectedNpc.nickname" v-on:input="characterSheetNicknameInputChange"/></td>
+						<td class="label">Geração:</td>
+						<td colspan="2"><input class="characterSheetGenerationInput" type="number" min="1" max="15" v-bind:value="selectedNpc.generation" v-on:input="characterSheetGenerationChange"/></td>
+						<td class="label">Moradia</td>
+						<td colspan="2"><select class="characterSheetHomeSelect" v-bind:value="selectedNpc.home" v-on:change="characterSheetHomeChange">
+							<option value="">Moradia</option>
+							<option v-for="home in homeList" v-bind:value="home.id">
+								{{home.name}}
+							</option>
+							</select></td>
+					</tr>
+					<tr>
+						<td colspan="3"><input class="characterSheetAgeInput" type="number" v-bind:value="selectedNpc.age" v-on:input="characterSheetAgeChange"/>, <select class="characterSheetNationalitySelect" v-bind:value="selectedNpc.nationality" v-on:change="characterSheetNationalityChange">
+							<option value="">Nacionalidade</option>
+							<option v-for="nationality in nationalityList" v-bind:value="nationality.id">
+								{{nationality.name}}
+							</option>
+							</select></td>
+						<td class="label">Predador:</td>
+						<td colspan="2"><select class="characterSheetPredatorTypeSelect" v-bind:value="selectedNpc.predator_type" v-on:change="characterSheetPredatorTypeChange">
+								<option value="">Predador</option>
+								<option v-for="predatorType in predatorTypeList" v-bind:value="predatorType.id">
+									{{predatorType.name}}
+								</option>
+								</select></td>
+						<td class="label">Bairro:</td>
+						<td colspan="2">{{neighbourhoodById[homeNeighbourhoodIdById[selectedNpc.home]]}}</td>
+					</tr>
+					<tr>
+						<td class="label">Doente:</td>
+						<td colspan="2"><bistate v-on:bistate-change="characterSheetSickChange"
+								 v-bind:value="selectedNpc.sick"/></td>
+						<td class="label">Hospitalizado:</td>
+						<td colspan="2"><bistate v-on:bistate-change="characterSheetHospitalizedChange"
+								 v-bind:value="selectedNpc.hospitalized"/></td>
+					    <td class="label">Vivo:</td>
+						<td colspan="2"><bistate v-on:bistate-change="characterSheetAliveChange"
+								 v-bind:value="selectedNpc.alive"/></td>
+					</tr>
+					<tr>
+						<td class="label">Saúde Máx:</td>
+						<td colspan="2"><input class="characterSheetMaxHealthInput" type="number" v-bind:value="selectedNpc.max_health" v-on:input="characterSheetMaxHealthChange"/></td>
+						<td class="label">Saúde:</td>
+						<td colspan="2"><health-bar 
+							v-bind:npc="selectedNpc"
+							v-bind:health-list="healthList"
+							v-on:click-health="characterSheetHealthBarChange"/></td>
+						<td colspan="3"></td>
+					</tr>
+					<tr>
+						<td class="label">F</td>
+						<td colspan="2"><input class="characterSheetFInput" type="number" v-bind:value="selectedNpc.f" v-on:input="characterSheetFChange"/></td>
+						<td class="label">S</td>
+						<td colspan="2"><input class="characterSheetSInput" type="number" v-bind:value="selectedNpc.s" v-on:input="characterSheetSChange"/></td>
+						<td class="label">M</td>
+						<td colspan="2"><input class="characterSheetMInput" type="number" v-bind:value="selectedNpc.m" v-on:input="characterSheetMChange"/></td>
+					</tr>
+					<tr>
+						<td colspan="3"><attribute-type-section v-bind:npc-id="selectedNpc.id" attribute-type-name="Physical" v-bind:attribute-type-list="attributeTypeList" v-bind:attribute-list="attributeList" v-bind:npc-attribute-list="npcAttributeList" v-on:character-sheet-attribute-change="characterSheetAttributeChange"/></td>
+						<td colspan="3"><attribute-type-section v-bind:npc-id="selectedNpc.id" attribute-type-name="Social" v-bind:attribute-type-list="attributeTypeList" v-bind:attribute-list="attributeList" v-bind:npc-attribute-list="npcAttributeList" v-on:character-sheet-attribute-change="characterSheetAttributeChange"/></td>
+						<td colspan="3"><attribute-type-section v-bind:npc-id="selectedNpc.id" attribute-type-name="Mental" v-bind:attribute-type-list="attributeTypeList" v-bind:attribute-list="attributeList" v-bind:npc-attribute-list="npcAttributeList" v-on:character-sheet-attribute-change="characterSheetAttributeChange"/></td>
+					</tr>
+					<tr>
+						<td colspan="3"><attribute-type-section v-bind:npc-id="selectedNpc.id" attribute-type-name="Physical Skill" v-bind:attribute-type-list="attributeTypeList" v-bind:attribute-list="attributeList" v-bind:npc-attribute-list="npcAttributeList" v-on:character-sheet-attribute-change="characterSheetAttributeChange"/></td>
+						<td colspan="3"><attribute-type-section v-bind:npc-id="selectedNpc.id" attribute-type-name="Social Skill" v-bind:attribute-type-list="attributeTypeList" v-bind:attribute-list="attributeList" v-bind:npc-attribute-list="npcAttributeList" v-on:character-sheet-attribute-change="characterSheetAttributeChange"/></td>
+						<td colspan="3"><attribute-type-section v-bind:npc-id="selectedNpc.id" attribute-type-name="Mental Skill" v-bind:attribute-type-list="attributeTypeList" v-bind:attribute-list="attributeList" v-bind:npc-attribute-list="npcAttributeList" v-on:character-sheet-attribute-change="characterSheetAttributeChange"/></td>
 					</tr>
 				</table>
 			</div>
@@ -1017,7 +1135,7 @@
 						v-bind:home-list="homeList"
 						v-bind:attendance="night.npcActivity[npc.id]['n'+period]"/></td>
 				</tr>
-				<tr><td>Attr(F/M/S)</td><td>{{npc.f}}/{{npc.m}}/{{npc.s}}</td></tr>
+				<tr><td>Attr(F/S/M)</td><td>{{npc.f}}/{{npc.s}}/{{npc.m}}</td></tr>
 				<tr><td colspan="2">Mora em {{homeNameById[npc.home]}} em {{neighbourhoodById[homeNeighbourhoodIdById[npc.home]]}}</td></tr>
 				<tr><td colspan="2">Pele {{skinColorById[npc.skin]}}, olhos {{eyesColorById[npc.eyes]}}, cabelo {{hairColorById[npc.hair]}}</td></tr>
 				<tr><td colspan="2">Notas</td></tr>
@@ -1064,6 +1182,18 @@
 				</tr>
 			</table>
 		</div>
+	</script>
+
+	<script type="text/x-template" id="attributeTypeSection">
+		<table class="attributeTypeSectionTable">
+			<tr>
+				<th colspan="3">{{attributeTypeName}}</th>
+			</tr>
+			<tr v-for="attribute in filteredAttributeList">
+				<td class="label">{{attribute.name}}</td>
+				<td colspan="2"><input class="characterSheetFInput" type="number" v-bind:value="npcAttributeByAttributeId[attribute.id]" v-on:input="characterSheetAttributeChange($event, attribute.id)"/></td>
+			</tr>
+		</table>
 	</script>
 
 	<script type="text/x-template" id="healthBar">
