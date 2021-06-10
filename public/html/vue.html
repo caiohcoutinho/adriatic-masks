@@ -105,6 +105,8 @@
 				v-on:character-sheet-m-change="characterSheetMChange"
 				v-on:character-sheet-s-change="characterSheetSChange"
 				v-on:character-sheet-wealth-change="characterSheetWealthChange"
+				v-on:character-sheet-max-willpower-change="characterSheetMaxWillpowerChange"
+				v-on:character-sheet-humanity-change="characterSheetHumanityChange"
 				v-on:character-sheet-max-health-change="characterSheetMaxHealthChange"
 				v-on:character-sheet-ressonance-change="characterSheetRessonanceChange"
 				v-on:character-sheet-clan-change="characterSheetClanChange"
@@ -117,6 +119,7 @@
 				v-on:character-sheet-add-occupation="characterSheetAddOccupation"
 				v-on:character-sheet-health-bar-change="characterSheetHealthBarChange"
 				v-on:character-sheet-attribute-change="characterSheetAttributeChange"
+				v-on:character-sheet-blood-potency-change="characterSheetBloodPotencyChange"
 				v-bind:oath-list="oathList"
 				v-bind:oath-nature-list="oathNatureList"
 				v-bind:ressonance-update="ressonanceUpdate"
@@ -277,6 +280,8 @@
 				v-on:character-sheet-m-change="characterSheetMChange"
 				v-on:character-sheet-s-change="characterSheetSChange"
 				v-on:character-sheet-wealth-change="characterSheetWealthChange"
+				v-on:character-sheet-max-willpower-change="characterSheetMaxWillpowerChange"
+				v-on:character-sheet-humanity-change="characterSheetHumanityChange"
 				v-on:character-sheet-occupation-change="characterSheetOccupationChange"
 				v-on:character-sheet-max-health-change="characterSheetMaxHealthChange"
 				v-on:character-sheet-ressonance-change="characterSheetRessonanceChange"
@@ -289,6 +294,7 @@
 				v-on:character-sheet-add-occupation="characterSheetAddOccupation"
 				v-on:character-sheet-health-bar-change="characterSheetHealthBarChange"
 				v-on:character-sheet-attribute-change="characterSheetAttributeChange"
+				v-on:character-sheet-blood-potency-change="characterSheetBloodPotencyChange"
 				v-on:selected-character-sheet-npc-change="selectedCharacterSheetNpcChange"
 				/>
 			<main-area-business
@@ -796,7 +802,15 @@
 							v-bind:npc="selectedNpc"
 							v-bind:health-list="healthList"
 							v-on:click-health="characterSheetHealthBarChange"/></td>
+						<td class="label">Blood Pot.:</td>
+						<td colspan="2"><input class="characterSheetBloodPotencyInput" type="number" min="0" v-bind:value="selectedNpc.blood_potency" v-on:input="characterSheetBloodPotencyChange"/></td>
+					</tr>
+					<tr>
+						<td class="label">Will Máx:</td>
+						<td colspan="2"><input class="characterSheetMaxWillpowerInput" type="number" v-bind:value="selectedNpc.max_willpower" v-on:input="characterSheetMaxWillpowerChange"/></td>
 						<td colspan="3"></td>
+						<td class="label">Humanity:</td>
+						<td colspan="2"><input class="characterSheetHumanityInput" type="number" v-bind:value="selectedNpc.humanity" v-on:input="characterSheetHumanityChange"/></td>
 					</tr>
 					<tr>
 						<td class="label">F</td>
@@ -819,6 +833,9 @@
 					<tr>
 						<td colspan="3"><attribute-type-section v-bind:npc-id="selectedNpc.id" attribute-type-name="Discipline" v-bind:attribute-type-list="attributeTypeList" v-bind:attribute-list="attributeList" v-bind:npc-attribute-list="npcAttributeList" v-on:character-sheet-attribute-change="characterSheetAttributeChange"/></td>
 						<td colspan="6">TODO: List Discipline powers here</td>
+					</tr>
+					<tr>
+						<td colspan="9">TODO: Humanity, Willpower</td>
 					</tr>
 				</table>
 			</div>
@@ -1193,7 +1210,7 @@
 			</tr>
 			<tr v-for="attribute in filteredAttributeList">
 				<td class="label">{{attribute.name}}</td>
-				<td colspan="2"><input class="characterSheetFInput" type="number" v-bind:value="npcAttributeByAttributeId[attribute.id]" v-on:input="characterSheetAttributeChange($event, attribute.id)"/></td>
+				<td colspan="2"><input class="characterSheetFInput" type="number" min="0" v-bind:value="npcAttributeByAttributeId[attribute.id]" v-on:input="characterSheetAttributeChange($event, attribute.id)"/></td>
 			</tr>
 		</table>
 	</script>

@@ -55,6 +55,8 @@ app.get("/npc", (req, res, next) => {
 			alive,
 			sick,
 			hospitalized,
+			max_willpower,
+			humanity,
 			health,
 			max_health,
 			ressonance,
@@ -675,6 +677,46 @@ app.post("/wealth", (req, res, next) => {
 	});
 });
 
+app.post("/humanity", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set humanity = "+req.body.humanity+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+			if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}		  
+		});
+	});
+});
+
+app.post("/max_willpower", (req, res, next) => {
+	pool.connect((err, client, done) => {
+		if(err){
+			res.json(err);
+			return;
+		}
+		client.query("update npc set max_willpower = "+req.body.max_willpower+" where id = "+req.body.id,
+			 (err, result) => {
+	 		done()
+			if(err){
+				console.log(err);
+				res.status(500);
+				res.json(err);
+			} else{
+				res.json(result.rows)
+			}		  
+		});
+	});
+});
+
 app.post("/maxHealth", (req, res, next) => {
 	pool.connect((err, client, done) => {
 		if(err){
@@ -802,9 +844,9 @@ app.post("/vampire", (req, res, next) => {
 				let isVampire = result.rows[0].count == 1;
 				let theQuery = "";
 				if(isVampire){
-					theQuery = "update vampire set generation = "+vampire.generation+", clan = "+vampire.clan+", predator_type = "+vampire.predator_type+" where id = "+vampire.id;
+					theQuery = "update vampire set generation = "+vampire.generation+", clan = "+vampire.clan+", predator_type = "+vampire.predator_type+", blood_potency = "+vampire.blood_potency+" where id = "+vampire.id;
 				} else {
-					theQuery = "insert into vampire(id, generation, clan, predator_type) values ("+vampire.id+", "+vampire.generation+", "+vampire.clan+", "+vampire.predator_type+")";
+					theQuery = "insert into vampire(id, generation, clan, predator_type, blood_potency) values ("+vampire.id+", "+vampire.generation+", "+vampire.clan+", "+vampire.predator_type+", "+vampire.blood_potency+")";
 				}
 				client.query(theQuery, (err, result) => {
 			 		done()
@@ -836,8 +878,11 @@ app.post("/attribute", (req, res, next) => {
 			  res.json(err);
 			} else {
 				let hasAttribute = result.rows[0].count == 1;
+				let valueIsZero = event.value == 0;
 				let theQuery = "";
-				if(hasAttribute){
+				if(hasAttribute && valueIsZero){
+					theQuery = "delete from npc_attribute where npc = "+event.npcId+" and attribute = "+event.attributeId;
+				}else if(hasAttribute){
 					theQuery = "update npc_attribute set value = "+event.value+" where npc = "+event.npcId+" and attribute = "+event.attributeId;
 				} else {
 					theQuery = "insert into npc_attribute(npc, attribute, value) values ("+event.npcId+", "+event.attributeId+", "+event.value+")";

@@ -69,6 +69,8 @@ const TASK_TYPES = {
 	SAVE_OCCUPATION: "saveOccupation",
 	SAVE_VAMPIRE: "saveVampire",
 	SAVE_ATTRIBUTE: "saveAttribute",
+	SAVE_HUMANITY: "saveHumanity",
+	SAVE_MAX_WILLPOWER: "saveMaxWillpower",
 	DELETE_OCCUPATION: "deleteOccupation",
 	DELETE_NPC: "deleteNpc",
 	LOAD_RESSONANCE: "loadRessonance",
@@ -167,6 +169,8 @@ TASK_EXECUTIONS[TASK_TYPES.SAVE_MAX_HEALTH] = createPostUrlAction("/maxHealth");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_RESSONANCE] = createPostUrlAction("/ressonance");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_VAMPIRE] = createPostUrlAction("/vampire");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_ATTRIBUTE] = createPostUrlAction("/attribute");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_HUMANITY] = createPostUrlAction("/humanity");
+TASK_EXECUTIONS[TASK_TYPES.SAVE_MAX_WILLPOWER] = createPostUrlAction("/max_willpower");
 TASK_EXECUTIONS[TASK_TYPES.SAVE_OCCUPATION] = function(self, occupation){
 	self.axios.post("/occupation", occupation).then(function(response){
 		occupation.id = parseInt(response.data);
@@ -565,6 +569,12 @@ Vue.component('main-area', {
 		characterSheetWealthChange: function(event){
 			this.$emit("character-sheet-wealth-change", event);
 		},
+		characterSheetHumanityChange: function(event){
+			this.$emit("character-sheet-humanity-change", event);
+		},
+		characterSheetMaxWillpowerChange: function(event){
+			this.$emit("character-sheet-max-willpower-change", event);
+		},
 		characterSheetMaxHealthChange: function(event){
 			this.$emit("character-sheet-max-health-change", event);
 		},
@@ -597,6 +607,9 @@ Vue.component('main-area', {
 		},
 		characterSheetAttributeChange: function(event){
 			this.$emit("character-sheet-attribute-change", event);
+		},
+		characterSheetBloodPotencyChange: function(event){
+			this.$emit("character-sheet-blood-potency-change", event);
 		},
 		characterSheetSelectNpc: function(){
 			this.$emit("character-sheet-select-npc");
@@ -1042,6 +1055,12 @@ Vue.component('main-area-character-sheet', {
 		characterSheetWealthChange: function(event){
 			this.$emit("character-sheet-wealth-change", event);
 		},
+		characterSheetMaxWillpowerChange: function(event){
+			this.$emit("character-sheet-max-willpower-change", event);
+		},
+		characterSheetHumanityChange: function(event){
+			this.$emit("character-sheet-humanity-change", event);
+		},
 		characterSheetMaxHealthChange: function(event){
 			this.$emit("character-sheet-max-health-change", event);
 		},
@@ -1089,6 +1108,9 @@ Vue.component('main-area-character-sheet', {
 		},
 		characterSheetAttributeChange: function(event){
 			this.$emit("character-sheet-attribute-change", event);
+		},
+		characterSheetBloodPotencyChange: function(event){
+			this.$emit("character-sheet-blood-potency-change", event);
 		}
 	},
 	computed: {
@@ -2520,6 +2542,58 @@ var app = new Vue({
 			this.log("Saving attribute "+JSON.stringify(event)+" (character sheet)");
 			this.addTask(new Task(
 				TASK_TYPES.SAVE_ATTRIBUTE, event
+			));
+		},
+		characterSheetBloodPotencyChange: function(event){
+			let self = this;
+			let npcId = self.selectedCharacterSheetNpc;
+			let npc = _.findWhere(this.npcList, {id: npcId});
+			if(isNullOrUndefinedOrEmpty(event.target.value)){
+				npc.blood_potency = null;
+			} else {
+				npc.blood_potency = parseInt(event.target.value);
+			}
+			let value = npc.blood_potency;
+			this.log("Saving npc "+npcId+" blood_potency "+value+" change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_VAMPIRE,
+				{
+					id: npcId,
+					clan: npc.clan,
+					generation: npc.generation,
+					predator_type: npc.predator_type,
+					blood_potency: value
+				}
+			));
+		},
+		characterSheetHumanityChange: function(event){
+			let self = this;
+			let npcId = self.selectedCharacterSheetNpc;
+			let npc = _.findWhere(this.npcList, {id: npcId});
+			npc.humanity = parseInt(event.target.value);
+			let value = npc.humanity;
+			this.log("Saving npc "+npcId+" humanity "+value+" change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_HUMANITY,
+				{
+					id: npcId,
+					humanity: value
+				}
+			));
+		},
+		characterSheetMaxWillpowerChange: function(event){
+			let self = this;
+			let npcId = self.selectedCharacterSheetNpc;
+			let npc = _.findWhere(this.npcList, {id: npcId});
+			npc.max_willpower = parseInt(event.target.value);
+			let value = npc.max_willpower;
+			this.log("Saving npc "+npcId+" max_willpower "+value+" change (character sheet)");
+			this.addTask(new Task(
+				TASK_TYPES.SAVE_MAX_WILLPOWER,
+				{
+					id: npcId,
+					max_willpower: value
+				}
 			));
 		},
 		selectedNpcShowCharacterSheet: function(event){

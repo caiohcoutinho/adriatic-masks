@@ -522,6 +522,7 @@ create table npc(
 	recursos int,
 	saude int,
 	saude_max int,
+	humanity int,
 	ressonancia int references ressonancia(id),
  	PRIMARY KEY (id)
 );
@@ -1521,6 +1522,7 @@ create table vampiro(
 	geracao int,
 	clan int references clan(id),
 	predator_type int references predator_type(id),
+	blood_potency int,
  	PRIMARY KEY (id)
 );
 
@@ -2038,7 +2040,8 @@ insert into attribute(name, type) values
 ('Potence', (select id from attribute_type where name = 'Discipline')),
 ('Presence', (select id from attribute_type where name = 'Discipline')),
 ('Protean', (select id from attribute_type where name = 'Discipline')),
-('Blood Sorcery', (select id from attribute_type where name = 'Discipline'));
+('Blood Sorcery', (select id from attribute_type where name = 'Discipline')),
+('Oblivion', (select id from attribute_type where name = 'Discipline'));
 
 
 create sequence npc_attribute_id_seq;
