@@ -716,8 +716,8 @@
 					</tr>
 				</table>
 			</div>
-			<div class="scrollableDiv">
-				<table class="mainAreaCharacterSheetTable">
+			<div v-if="selectedNpc != null" class="scrollableDiv">
+				<table  class="mainAreaCharacterSheetTable">
 					<tr>
 						<td class="characterSheetPortrait" rowspan="2">
 							<portrait 
