@@ -2030,7 +2030,7 @@ insert into attribute(name, type) values
 ('Technology', (select id from attribute_type where name = 'Mental Skill'));
 
 
-insert into attribute(name, type) values						
+insert into attribute(name, type) values
 ('Animalism', (select id from attribute_type where name = 'Discipline')),
 ('Auspex', (select id from attribute_type where name = 'Discipline')),
 ('Celerity', (select id from attribute_type where name = 'Discipline')),
@@ -2041,7 +2041,8 @@ insert into attribute(name, type) values
 ('Presence', (select id from attribute_type where name = 'Discipline')),
 ('Protean', (select id from attribute_type where name = 'Discipline')),
 ('Blood Sorcery', (select id from attribute_type where name = 'Discipline')),
-('Oblivion', (select id from attribute_type where name = 'Discipline'));
+('Oblivion', (select id from attribute_type where name = 'Discipline')),
+('True Faith', (select id from attribute_type where name = 'Discipline'));
 
 
 create sequence npc_attribute_id_seq;
