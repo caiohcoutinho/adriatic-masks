@@ -757,7 +757,7 @@ Vue.component('main-area-npc', {
 			}
 			if(!isNullOrUndefinedOrEmpty(this.neighbourhoodFilter)){
 				list = _.filter(list, (npc) => {
-					return npc.neighbourhoodid == this.neighbourhoodFilter;
+					return this.homeNeighbourhoodIdById[npc.home] == this.neighbourhoodFilter;
 				});
 			}
 			if(!isNullOrUndefinedOrEmpty(this.familyFilter)){
@@ -812,7 +812,7 @@ Vue.component('main-area-npc', {
 				list = _.sortBy(list, (npc) => {return npc.age*(this.orderByAge ? 1 : -1);});
 			}
 			if(!_.isNull(this.orderByNeighbourhood)){
-				list = _.sortBy(list, (npc) => {return npc.neighbourhoodid*(this.orderByNeighbourhood ? 1 : -1);});
+				list = _.sortBy(list, (npc) => {return this.homeNeighbourhoodIdById[npc.home]*(this.orderByNeighbourhood ? 1 : -1);});
 			}
 			if(!_.isNull(this.orderByNationality)){
 				list = _.sortBy(list, (npc) => {return npc.nationality});
