@@ -834,6 +834,28 @@
 						<td colspan="3"><attribute-type-section v-bind:npc-id="selectedNpc.id" attribute-type-name="Discipline" v-bind:attribute-type-list="attributeTypeList" v-bind:attribute-list="attributeList" v-bind:npc-attribute-list="npcAttributeList" v-on:character-sheet-attribute-change="characterSheetAttributeChange"/></td>
 						<td colspan="6">TODO: List Discipline powers here</td>
 					</tr>
+					<tbody>
+						<tr><td colspan="9">Ocupações</td></tr>
+						<tr v-for="occupation in occupationByNpcId[selectedNpc.id]">
+							<td><span class="characterSheetDeleteOccupationButton clickable" v-on:click="characterSheetDeleteOccupation(occupation)">&#10060;</span></td>
+							<td colspan="4"><select class="characterSheetOccupationProfessionSelect" v-bind:value="occupation.profession" v-on:change="characterSheetOccupationProfessionChange($event, occupation)">
+								<option value="">Profissão</option>
+								<option v-for="profession in professionList" v-bind:value="profession.id">
+									{{profession.name}}
+								</option>
+								</select></td>
+							<td colspan="4"><select class="characterSheetOccupationBusinessSelect" v-bind:value="occupation.business" v-on:change="characterSheetOccupationBusinessChange($event, occupation)">
+								<option value="">Negócio</option>
+								<option v-for="business in orderedBusinessList" v-bind:value="business.id">
+									{{business.name}}
+								</option>
+								</select></td>
+						</tr>
+						<tr>
+							<td colspan="2"><button v-on:click="characterSheetAddOccupation(selectedNpc.id)">Add</button></td>
+							<td colspan="7"></td>
+						</tr>
+					</tbody>
 				</table>
 			</div>
 		</div>
